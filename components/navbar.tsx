@@ -5,6 +5,7 @@ import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export function Navbar() {
   const { isSignedIn } = useAuth();
@@ -72,6 +73,7 @@ export function Navbar() {
         )}
 
         <div className="flex items-center gap-4">
+          <ThemeSwitcher />
           {isSignedIn ? (
             <>
               <Button>
