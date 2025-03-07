@@ -11,13 +11,29 @@ export async function GET() {
   }
 
   try {
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId },
+    // First check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        subscription: true
+      }
     });
+
+    if (!user) {
+      return NextResponse.json({ 
+        hasActiveSubscription: false,
+        subscription: null
+      });
+    }
+
+    const subscription = user.subscription;
+
+    // Check if subscription exists and is active
+    const hasActiveSubscription = Boolean(subscription && subscription.status === "active");
 
     return NextResponse.json({ 
       subscription,
-      hasActiveSubscription: subscription?.status === "active"
+      hasActiveSubscription
     });
   } catch (error) {
     console.error("Error fetching subscription:", error);

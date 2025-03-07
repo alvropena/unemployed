@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Initialize Stripe
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -58,18 +59,69 @@ export default function Home() {
 	const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 	const searchParams = useSearchParams();
 
-	// Check subscription status from localStorage
+	// Handle successful payment
 	useEffect(() => {
-		if (!isSignedIn || !userId) return;
+		if (searchParams.get("success") === "true" && userId) {
+			// Immediately hide the subscription modal and set hasPaid to true
+			setHasPaid(true);
+			setShowSubscriptionModal(false);
+			
+			// Store the payment success in localStorage to persist across page refreshes
+			localStorage.setItem('hasActiveSubscription', 'true');
+			
+			// Refresh subscription status after successful payment
+			fetch('/api/subscription').then(res => res.json()).then(data => {
+				if (data.hasActiveSubscription) {
+					setHasPaid(true);
+					setShowSubscriptionModal(false);
+				}
+			}).catch(console.error);
+
+			toast.success("Payment successful! Your premium features are now active.");
+		}
+
+		if (searchParams.get("canceled") === "true") {
+			toast.error("Payment was canceled. Please try again when you're ready.");
+		}
+	}, [searchParams, userId]);
+
+	// Check subscription status
+	useEffect(() => {
+		if (!isSignedIn || !userId) {
+			setHasPaid(false);
+			setShowSubscriptionModal(false);
+			return;
+		}
 
 		const checkSubscriptionStatus = async () => {
+			// First check if we have a successful payment in the URL
+			if (searchParams.get("success") === "true") {
+				setHasPaid(true);
+				setShowSubscriptionModal(false);
+				localStorage.setItem('hasActiveSubscription', 'true');
+				return;
+			}
+			
+			// Then check localStorage for cached subscription status
+			if (typeof window !== 'undefined' && localStorage.getItem('hasActiveSubscription') === 'true') {
+				setHasPaid(true);
+				setShowSubscriptionModal(false);
+				return;
+			}
+			
 			try {
 				const response = await fetch('/api/subscription');
+				if (!response.ok) throw new Error('Failed to fetch subscription status');
+				
 				const data = await response.json();
 				
 				if (data.hasActiveSubscription) {
 					setHasPaid(true);
 					setShowSubscriptionModal(false);
+					// Cache the subscription status
+					if (typeof window !== 'undefined') {
+						localStorage.setItem('hasActiveSubscription', 'true');
+					}
 				} else {
 					setHasPaid(false);
 					setShowSubscriptionModal(true);
@@ -82,33 +134,7 @@ export default function Home() {
 		};
 
 		checkSubscriptionStatus();
-	}, [isSignedIn, userId]);
-
-	// Handle successful payment
-	useEffect(() => {
-		if (searchParams.get("success") === "true" && userId) {
-			// Store subscription data in localStorage
-			localStorage.setItem(
-				`subscription_${userId}`,
-				JSON.stringify({
-					userId,
-					status: "active",
-					plan: searchParams.get("plan") || "default",
-					updatedAt: new Date().toISOString(),
-				}),
-			);
-
-			toast.success(
-				"Payment successful! Your premium features are now active.",
-			);
-			setHasPaid(true);
-			setShowSubscriptionModal(false);
-		}
-
-		if (searchParams.get("canceled") === "true") {
-			toast.error("Payment was canceled. Please try again when you're ready.");
-		}
-	}, [searchParams, userId]);
+	}, [isSignedIn, userId, searchParams]);
 
 	// Load saved resume data when authenticated
 	useEffect(() => {
@@ -182,27 +208,31 @@ export default function Home() {
 					<div className="fixed inset-0 bg-black/50 z-40" />
 				)}
 
-				<main
-					className={`container mx-auto p-4 relative ${showSubscriptionModal ? "pointer-events-none opacity-80" : ""}`}
-				>
+				<main className={`container mx-auto h-[calc(100vh-2rem)] p-4 relative ${showSubscriptionModal ? "pointer-events-none opacity-80" : ""}`}>
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-						<div className="bg-card rounded-lg shadow p-4 overflow-auto max-h-[calc(100vh-150px)]">
-							<ResumeForm data={resumeData} setData={setResumeData} />
-						</div>
-						<div className="bg-muted/10 rounded-lg shadow-md p-4 max-h-[calc(100vh-150px)]">
-							<div className="bg-white border border-gray-200 shadow-sm p-6 rounded-md min-h-[800px]">
-								<ResumePreview data={resumeData} />
-							</div>
-						</div>
+						<Card className="h-full overflow-auto">
+							<CardContent className="p-6">
+								<ResumeForm data={resumeData} setData={setResumeData} />
+							</CardContent>
+						</Card>
+						<Card className="h-full overflow-auto">
+							<CardContent className="p-0 h-full">
+								<div className="transform scale-[0.73] origin-top">
+									<ResumePreview data={resumeData} />
+								</div>
+							</CardContent>
+						</Card>
 					</div>
 				</main>
 
 				{/* Subscription Modal */}
 				<Dialog
-					open={showSubscriptionModal}
+					open={showSubscriptionModal && !hasPaid}
 					onOpenChange={(open) => {
 						// Only allow closing if user has paid
 						if (hasPaid) {
+							setShowSubscriptionModal(false);
+						} else {
 							setShowSubscriptionModal(open);
 						}
 					}}

@@ -30,9 +30,12 @@ export async function POST(req: Request) {
                 signature,
                 process.env.STRIPE_WEBHOOK_SECRET
             );
-        } catch (err: any) {
-            console.error("Webhook signature verification failed:", err.message);
-            return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.error("Webhook signature verification failed:", err.message);
+                return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+            }
+            return new NextResponse("Webhook Error: Unknown error occurred", { status: 400 });
         }
 
         switch (event.type) {
@@ -52,19 +55,21 @@ export async function POST(req: Request) {
                         },
                     });
                     
-                    // Create or update subscription
+                    // Create or update subscription with active status
                     await prisma.subscription.upsert({
                         where: { userId },
                         update: {
                             status: "active",
                             plan,
                             stripeCustomerId: session.customer as string,
+                            updatedAt: new Date(),
                         },
                         create: {
                             userId,
                             status: "active",
                             plan,
                             stripeCustomerId: session.customer as string,
+                            updatedAt: new Date(),
                         },
                     });
                     
@@ -87,6 +92,7 @@ export async function POST(req: Request) {
                         where: { id: userSubscription.id },
                         data: {
                             status: subscription.status,
+                            updatedAt: new Date(),
                         },
                     });
                     
@@ -108,6 +114,7 @@ export async function POST(req: Request) {
                         where: { id: userSubscription.id },
                         data: {
                             status: "canceled",
+                            updatedAt: new Date(),
                         },
                     });
                     

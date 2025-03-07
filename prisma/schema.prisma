@@ -47,17 +47,13 @@ model Resume {
   linkedin      String?
   github        String?
   
-  // Education
+  // Education, Experience, and Projects as JSON arrays
   education     Json[]    @default([])
-  
-  // Work Experience
   experience    Json[]    @default([])
-  
-  // Projects
   projects      Json[]    @default([])
   
-  // Skills
-  skills        Json      @default("{\"languages\":\"\",\"frameworks\":\"\",\"tools\":\"\",\"libraries\":\"\"}")
+  // Skills as a JSON object
+  skills        Json      @default("{\"languages\":[],\"frameworks\":[],\"developer_tools\":[],\"libraries\":[]}")
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
