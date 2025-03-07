@@ -2,13 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
-import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
 import PricingCard from "@/components/pricing-card";
 import TestimonialCard from "@/components/testimonial-card";
 import FaqAccordion from "@/components/faq-accordion";
 import Image from "next/image";
-import Link from "next/link";
 import ResumePreview from "@/components/resume-preview";
 import ResumeForm from "@/components/resume-form";
 import { ResumeData } from "@/lib/types";
@@ -16,12 +14,24 @@ import { defaultResumeData } from "@/lib/default-data";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { loadResumeData } from "@/lib/resumeService";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useAuth();
   const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
   const [hasPaid, setHasPaid] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   // Check if user has paid - this would be replaced with your actual payment verification
   useEffect(() => {
@@ -34,11 +44,13 @@ export default function Home() {
       // setHasPaid(response.data.hasPaid)
 
       // For now, we'll just mock it
-      setHasPaid(true); // Set to false to test the unpaid state
+      const isPaid = false; // Set to false to test the unpaid state
+      setHasPaid(isPaid);
+      setShowSubscriptionModal(!isPaid);
     };
 
     checkPaymentStatus();
-  }, [isSignedIn]);
+  }, [isSignedIn]); // Only run when isSignedIn changes
 
   // Load saved resume data when authenticated
   useEffect(() => {
@@ -58,43 +70,146 @@ export default function Home() {
     }
   }, [isSignedIn]);
 
+  // Function to handle subscription checkout
+  const handleSubscribe = async (plan: string) => {
+    try {
+      // Create a checkout session
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plan,
+        }),
+      });
+
+      const { sessionId } = await response.json();
+      
+      // Redirect to Stripe checkout
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error('Stripe failed to initialize');
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
+
+      if (error) {
+        console.error('Stripe checkout error:', error);
+      }
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+    }
+  };
+
   // If not loaded yet, show loading
   if (!isLoaded || isLoadingData) {
     return <div className="container mx-auto p-8 text-center">Loading...</div>;
   }
 
-  // If signed in, show the resume builder
+  // If signed in, show the resume builder with subscription modal if needed
   if (isSignedIn) {
-    if (!hasPaid) {
-      return (
-        <div className="container mx-auto p-8 text-center">
-          <h1 className="text-3xl font-bold mb-6">Resume Generator</h1>
-          <div className="bg-primary/5 rounded-lg p-6 max-w-md mx-auto">
-            <h2 className="text-xl font-bold mb-4">Subscription Required</h2>
-            <p className="mb-6">
-              You need to subscribe to access the resume generator.
-            </p>
-            <Link href="/checkout">
-              <Button>Subscribe Now</Button>
-            </Link>
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <main className="container mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-card rounded-lg shadow p-4 overflow-auto max-h-[calc(100vh-150px)]">
-            <ResumeForm data={resumeData} setData={setResumeData} />
-          </div>
-          <div className="bg-muted/10 rounded-lg shadow-md p-4 max-h-[calc(100vh-150px)]">
-            <div className="bg-white border border-gray-200 shadow-sm p-6 rounded-md min-h-[800px]">
-              <ResumePreview data={resumeData} />
+      <>
+        {/* Dark overlay when modal is open - using standard opacity */}
+        {showSubscriptionModal && (
+          <div className="fixed inset-0 bg-black/50 z-40" />
+        )}
+        
+        <main className={`container mx-auto p-4 relative ${showSubscriptionModal ? 'pointer-events-none opacity-80' : ''}`}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-card rounded-lg shadow p-4 overflow-auto max-h-[calc(100vh-150px)]">
+              <ResumeForm data={resumeData} setData={setResumeData} />
+            </div>
+            <div className="bg-muted/10 rounded-lg shadow-md p-4 max-h-[calc(100vh-150px)]">
+              <div className="bg-white border border-gray-200 shadow-sm p-6 rounded-md min-h-[800px]">
+                <ResumePreview data={resumeData} />
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+
+        {/* Subscription Modal */}
+        <Dialog 
+          open={showSubscriptionModal} 
+          onOpenChange={(open) => {
+            // Only allow closing if user has paid
+            if (hasPaid) {
+              setShowSubscriptionModal(open);
+            }
+          }}
+        >
+          <DialogContent 
+            className="max-w-5xl w-[90vw] z-50" 
+            onInteractOutside={(e) => e.preventDefault()} 
+            onEscapeKeyDown={(e) => e.preventDefault()}
+            forceMount
+          >
+            <DialogHeader className="pb-4">
+              <DialogTitle className="text-2xl font-bold text-center">Choose a Subscription Plan</DialogTitle>
+              <DialogDescription className="text-base mt-3 text-center">
+                Select a plan to access all features of the resume generator.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="cursor-pointer">
+                <PricingCard
+                  title="Monthly"
+                  price="$12"
+                  period="per month"
+                  description="Perfect for job seekers who need a quick resume update."
+                  features={[
+                    "Unlimited resume creation",
+                    "AI-powered suggestions",
+                    "Export to PDF, Word, and more",
+                    "Access to all templates",
+                  ]}
+                  buttonText="Select Plan"
+                  popular={false}
+                  onClick={() => handleSubscribe('monthly')}
+                />
+              </div>
+
+              <div className="cursor-pointer">
+                <PricingCard
+                  title="Annual"
+                  price="$89"
+                  period="per year"
+                  description="Our most popular plan for serious job seekers."
+                  features={[
+                    "Everything in Monthly",
+                    "Save $55 compared to monthly",
+                    "Priority customer support",
+                    "Cover letter generator",
+                  ]}
+                  buttonText="Select Plan"
+                  popular={true}
+                  onClick={() => handleSubscribe('annual')}
+                />
+              </div>
+
+              <div className="cursor-pointer">
+                <PricingCard
+                  title="Lifetime"
+                  price="$249"
+                  period="one-time payment"
+                  description="For professionals who want lifetime access."
+                  features={[
+                    "Everything in Annual",
+                    "One-time payment",
+                    "Free updates for life",
+                    "LinkedIn profile optimization",
+                  ]}
+                  buttonText="Select Plan"
+                  popular={false}
+                  onClick={() => handleSubscribe('lifetime')}
+                />
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 

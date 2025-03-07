@@ -10,6 +10,7 @@ interface PricingCardProps {
   features: string[]
   buttonText: string
   popular?: boolean
+  onClick?: () => void
 }
 
 export default function PricingCard({
@@ -20,6 +21,7 @@ export default function PricingCard({
   features,
   buttonText,
   popular = false,
+  onClick,
 }: PricingCardProps) {
   return (
     <div
@@ -55,6 +57,7 @@ export default function PricingCard({
       <Button
         className={cn("w-full mt-auto", popular ? "" : "")}
         variant={popular ? "default" : "outline"}
+        onClick={onClick}
       >
         {buttonText}
       </Button>
