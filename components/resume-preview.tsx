@@ -6,11 +6,11 @@ interface ResumePreviewProps {
 
 export default function ResumePreview({ data }: ResumePreviewProps) {
   return (
-    <div className="font-sans text-sm leading-tight">
+    <div className="font-sans text-sm leading-tight text-black">
       {/* Header */}
-      <div className="text-center mb-4">
-        <h1 className="text-2xl font-bold">{data.personal.name || "Your Name"}</h1>
-        <p className="text-sm">
+      <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-black">{data.personal.name || "Your Name"}</h1>
+        <p className="text-sm text-gray-700 mt-1">
           {[data.personal.phone, data.personal.email, data.personal.linkedin, data.personal.github]
             .filter(Boolean)
             .join(" | ")}
@@ -19,17 +19,17 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 
       {/* Education Section */}
       {data.education.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-lg font-bold border-b border-gray-300 mb-2">Education</h2>
+        <div className="mb-5">
+          <h2 className="text-lg font-bold border-b border-gray-400 mb-2 pb-1 text-black">Education</h2>
           {data.education.map((edu, index) => (
-            <div key={index} className="mb-2">
+            <div key={index} className="mb-3">
               <div className="flex justify-between">
-                <div className="font-semibold">{edu.institution}</div>
-                <div>{edu.location}</div>
+                <div className="font-semibold text-black">{edu.institution}</div>
+                <div className="text-gray-700">{edu.location}</div>
               </div>
               <div className="flex justify-between">
-                <div>{edu.degree}</div>
-                <div>{edu.date}</div>
+                <div className="text-gray-800">{edu.degree}</div>
+                <div className="text-gray-700">{edu.date}</div>
               </div>
             </div>
           ))}
@@ -38,19 +38,19 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 
       {/* Experience Section */}
       {data.experience.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-lg font-bold border-b border-gray-300 mb-2">Experience</h2>
+        <div className="mb-5">
+          <h2 className="text-lg font-bold border-b border-gray-400 mb-2 pb-1 text-black">Experience</h2>
           {data.experience.map((exp, index) => (
-            <div key={index} className="mb-3">
+            <div key={index} className="mb-4">
               <div className="flex justify-between">
-                <div className="font-semibold">{exp.title}</div>
-                <div>{exp.date}</div>
+                <div className="font-semibold text-black">{exp.title}</div>
+                <div className="text-gray-700">{exp.date}</div>
               </div>
               <div className="flex justify-between">
-                <div>{exp.company}</div>
-                <div>{exp.location}</div>
+                <div className="text-gray-800">{exp.company}</div>
+                <div className="text-gray-700">{exp.location}</div>
               </div>
-              <ul className="list-disc pl-5 mt-1">
+              <ul className="list-disc pl-5 mt-2 text-gray-800">
                 {exp.responsibilities.map((resp, respIndex) => (
                   <li key={respIndex}>{resp}</li>
                 ))}
@@ -62,18 +62,18 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 
       {/* Projects Section */}
       {data.projects.length > 0 && (
-        <div className="mb-4">
-          <h2 className="text-lg font-bold border-b border-gray-300 mb-2">Projects</h2>
+        <div className="mb-5">
+          <h2 className="text-lg font-bold border-b border-gray-400 mb-2 pb-1 text-black">Projects</h2>
           {data.projects.map((project, index) => (
-            <div key={index} className="mb-3">
+            <div key={index} className="mb-4">
               <div className="flex justify-between">
-                <div className="font-semibold">
+                <div className="font-semibold text-black">
                   {project.name}
-                  {project.technologies && ` | ${project.technologies}`}
+                  {project.technologies && <span className="text-gray-700"> | {project.technologies}</span>}
                 </div>
-                <div>{project.date}</div>
+                <div className="text-gray-700">{project.date}</div>
               </div>
-              <ul className="list-disc pl-5 mt-1">
+              <ul className="list-disc pl-5 mt-2 text-gray-800">
                 {project.details.map((detail, detailIndex) => (
                   <li key={detailIndex}>{detail}</li>
                 ))}
@@ -86,29 +86,29 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
       {/* Technical Skills Section */}
       {(data.skills.languages || data.skills.frameworks || data.skills.tools || data.skills.libraries) && (
         <div>
-          <h2 className="text-lg font-bold border-b border-gray-300 mb-2">Technical Skills</h2>
+          <h2 className="text-lg font-bold border-b border-gray-400 mb-2 pb-1 text-black">Technical Skills</h2>
           {data.skills.languages && (
             <div className="mb-1">
-              <span className="font-semibold">Languages: </span>
-              {data.skills.languages}
+              <span className="font-semibold text-black">Languages: </span>
+              <span className="text-gray-800">{data.skills.languages}</span>
             </div>
           )}
           {data.skills.frameworks && (
             <div className="mb-1">
-              <span className="font-semibold">Frameworks: </span>
-              {data.skills.frameworks}
+              <span className="font-semibold text-black">Frameworks: </span>
+              <span className="text-gray-800">{data.skills.frameworks}</span>
             </div>
           )}
           {data.skills.tools && (
             <div className="mb-1">
-              <span className="font-semibold">Developer Tools: </span>
-              {data.skills.tools}
+              <span className="font-semibold text-black">Developer Tools: </span>
+              <span className="text-gray-800">{data.skills.tools}</span>
             </div>
           )}
           {data.skills.libraries && (
             <div className="mb-1">
-              <span className="font-semibold">Libraries: </span>
-              {data.skills.libraries}
+              <span className="font-semibold text-black">Libraries: </span>
+              <span className="text-gray-800">{data.skills.libraries}</span>
             </div>
           )}
         </div>
