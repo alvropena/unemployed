@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader } from "lucide-react";
 import Footer from "@/components/footer";
 import PricingCard from "@/components/pricing-card";
 import TestimonialCard from "@/components/testimonial-card";
@@ -104,7 +104,11 @@ export default function Home() {
 
   // If not loaded yet, show loading
   if (!isLoaded || isLoadingData) {
-    return <div className="container mx-auto p-8 text-center">Loading...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loader className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   // If signed in, show the resume builder with subscription modal if needed
