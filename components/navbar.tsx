@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 
 export function Navbar() {
   const { isSignedIn } = useAuth();
-  const pathname = usePathname();
 
   return (
     <header className="border-b">

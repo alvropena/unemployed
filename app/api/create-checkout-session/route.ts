@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 // Initialize Stripe with your secret key
 // In a real app, you would store this in an environment variable
 const stripe = new Stripe("sk_test_your_stripe_secret_key", {
-  apiVersion: "2023-10-16" as any,
+  apiVersion: "2023-10-16" as Stripe.LatestApiVersion,
 });
 
 const DOMAIN = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

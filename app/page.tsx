@@ -16,13 +16,11 @@ import ResumeForm from "@/components/resume-form";
 import ResumePreview from "@/components/resume-preview";
 import { defaultResumeData } from "@/lib/default-data";
 import type { ResumeData } from "@/lib/types";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useAuth();
   const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
   const [hasPaid, setHasPaid] = useState(false);
-  const router = useRouter();
 
   // Check if user has paid - this would be replaced with your actual payment verification
   useEffect(() => {

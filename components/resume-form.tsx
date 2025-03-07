@@ -301,6 +301,9 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
             </CardContent>
           </Card>
         ))}
+        <Button onClick={addEducation} className="w-full">
+          <Plus className="h-4 w-4 mr-2" /> Add Education
+        </Button>
       </TabsContent>
 
       <TabsContent value="experience" className="space-y-4">

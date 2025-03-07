@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { loadStripe } from "@stripe/stripe-js";
 
 // Initialize Stripe with your publishable key
 // In a real app, you would store this in an environment variable
-const stripePromise = loadStripe("pk_test_your_stripe_key");
+// Commenting out since it's not currently used
+// const stripePromise = loadStripe("pk_test_your_stripe_key");
 
 const plans = {
   pro: {
