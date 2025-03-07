@@ -2,14 +2,16 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, Save } from "lucide-react"
 import type { ResumeData } from "@/lib/types"
+import { useToast } from "@/components/ui/use-toast"
+import { saveResumeData, loadResumeData, saveResumeDataLocally } from "@/lib/resumeService"
 
 interface ResumeFormProps {
   data: ResumeData
@@ -18,6 +20,55 @@ interface ResumeFormProps {
 
 export default function ResumeForm({ data, setData }: ResumeFormProps) {
   const [activeTab, setActiveTab] = useState("personal")
+  const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    const fetchResumeData = async () => {
+      setIsLoading(true)
+      const savedData = await loadResumeData()
+      if (savedData) {
+        setData(savedData)
+      }
+      setIsLoading(false)
+    }
+
+    fetchResumeData()
+  }, [setData])
+
+  const handleSaveResume = async () => {
+    setIsSaving(true)
+    
+    saveResumeDataLocally(data)
+    
+    const success = await saveResumeData(data)
+    
+    setIsSaving(false)
+    
+    if (success) {
+      toast({
+        title: "Resume saved",
+        description: "Your resume has been saved successfully.",
+      })
+    } else {
+      toast({
+        title: "Failed to save",
+        description: "There was an error saving your resume. Your changes have been saved locally.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (!isLoading) {
+        saveResumeDataLocally(data)
+      }
+    }, 1000)
+    
+    return () => clearTimeout(timeoutId)
+  }, [data, isLoading])
 
   const updatePersonal = (field: string, value: string) => {
     setData((prev) => ({
@@ -200,293 +251,324 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList className="grid grid-cols-5 mb-4">
-        <TabsTrigger value="personal">Personal</TabsTrigger>
-        <TabsTrigger value="education">Education</TabsTrigger>
-        <TabsTrigger value="experience">Experience</TabsTrigger>
-        <TabsTrigger value="projects">Projects</TabsTrigger>
-        <TabsTrigger value="skills">Skills</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="personal" className="space-y-4">
-        <div className="grid gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <Input
-              value={data.personal.name}
-              onChange={(e) => updatePersonal("name", e.target.value)}
-              placeholder="Full Name"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Phone</label>
-            <Input
-              value={data.personal.phone}
-              onChange={(e) => updatePersonal("phone", e.target.value)}
-              placeholder="Phone Number"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <Input
-              value={data.personal.email}
-              onChange={(e) => updatePersonal("email", e.target.value)}
-              placeholder="Email Address"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">LinkedIn</label>
-            <Input
-              value={data.personal.linkedin}
-              onChange={(e) => updatePersonal("linkedin", e.target.value)}
-              placeholder="LinkedIn URL"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">GitHub</label>
-            <Input
-              value={data.personal.github}
-              onChange={(e) => updatePersonal("github", e.target.value)}
-              placeholder="GitHub URL"
-            />
-          </div>
+    <>
+      {isLoading ? (
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </TabsContent>
+      ) : (
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Resume Information</h2>
+            <Button 
+              onClick={handleSaveResume} 
+              disabled={isSaving}
+              className="flex items-center gap-2"
+            >
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Resume
+                </>
+              )}
+            </Button>
+          </div>
 
-      <TabsContent value="education" className="space-y-4">
-        {data.education.map((edu, index) => (
-          <Card key={index} className="mb-4">
-            <CardContent className="pt-4">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium">Education #{index + 1}</h3>
-                <Button variant="destructive" size="sm" onClick={() => removeEducation(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid grid-cols-5 mb-4">
+              <TabsTrigger value="personal">Personal</TabsTrigger>
+              <TabsTrigger value="education">Education</TabsTrigger>
+              <TabsTrigger value="experience">Experience</TabsTrigger>
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="skills">Skills</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="personal" className="space-y-4">
               <div className="grid gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Institution</label>
+                  <label className="block text-sm font-medium mb-1">Name</label>
                   <Input
-                    value={edu.institution}
-                    onChange={(e) => updateEducation(index, "institution", e.target.value)}
-                    placeholder="University/College Name"
+                    value={data.personal.name}
+                    onChange={(e) => updatePersonal("name", e.target.value)}
+                    placeholder="Full Name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Location</label>
+                  <label className="block text-sm font-medium mb-1">Phone</label>
                   <Input
-                    value={edu.location}
-                    onChange={(e) => updateEducation(index, "location", e.target.value)}
-                    placeholder="City, State"
+                    value={data.personal.phone}
+                    onChange={(e) => updatePersonal("phone", e.target.value)}
+                    placeholder="Phone Number"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Degree</label>
+                  <label className="block text-sm font-medium mb-1">Email</label>
                   <Input
-                    value={edu.degree}
-                    onChange={(e) => updateEducation(index, "degree", e.target.value)}
-                    placeholder="Degree and Major"
+                    value={data.personal.email}
+                    onChange={(e) => updatePersonal("email", e.target.value)}
+                    placeholder="Email Address"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Date</label>
+                  <label className="block text-sm font-medium mb-1">LinkedIn</label>
                   <Input
-                    value={edu.date}
-                    onChange={(e) => updateEducation(index, "date", e.target.value)}
-                    placeholder="Aug. 2018 – May 2021"
+                    value={data.personal.linkedin}
+                    onChange={(e) => updatePersonal("linkedin", e.target.value)}
+                    placeholder="LinkedIn URL"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">GitHub</label>
+                  <Input
+                    value={data.personal.github}
+                    onChange={(e) => updatePersonal("github", e.target.value)}
+                    placeholder="GitHub URL"
                   />
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-        <Button onClick={addEducation} className="w-full">
-          <Plus className="h-4 w-4 mr-2" /> Add Education
-        </Button>
-      </TabsContent>
+            </TabsContent>
 
-      <TabsContent value="experience" className="space-y-4">
-        {data.experience.map((exp, index) => (
-          <Card key={index} className="mb-4">
-            <CardContent className="pt-4">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium">Experience #{index + 1}</h3>
-                <Button variant="destructive" size="sm" onClick={() => removeExperience(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="grid gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Title</label>
-                  <Input
-                    value={exp.title}
-                    onChange={(e) => updateExperience(index, "title", e.target.value)}
-                    placeholder="Job Title"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Company</label>
-                  <Input
-                    value={exp.company}
-                    onChange={(e) => updateExperience(index, "company", e.target.value)}
-                    placeholder="Company Name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Location</label>
-                  <Input
-                    value={exp.location}
-                    onChange={(e) => updateExperience(index, "location", e.target.value)}
-                    placeholder="City, State"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date</label>
-                  <Input
-                    value={exp.date}
-                    onChange={(e) => updateExperience(index, "date", e.target.value)}
-                    placeholder="June 2020 – Present"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Responsibilities</label>
-                  {exp.responsibilities.map((resp, respIndex) => (
-                    <div key={respIndex} className="flex gap-2 mb-2">
-                      <Textarea
-                        value={resp}
-                        onChange={(e) => updateResponsibility(index, respIndex, e.target.value)}
-                        placeholder="Responsibility description"
-                        className="min-h-[80px]"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => removeResponsibility(index, respIndex)}
-                        disabled={exp.responsibilities.length <= 1}
-                      >
+            <TabsContent value="education" className="space-y-4">
+              {data.education.map((edu, index) => (
+                <Card key={index} className="mb-4">
+                  <CardContent className="pt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-medium">Education #{index + 1}</h3>
+                      <Button variant="destructive" size="sm" onClick={() => removeEducation(index)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  ))}
-                  <Button onClick={() => addResponsibility(index)} size="sm" variant="outline" className="mt-1">
-                    <Plus className="h-4 w-4 mr-2" /> Add Responsibility
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-        <Button onClick={addExperience} className="w-full">
-          <Plus className="h-4 w-4 mr-2" /> Add Experience
-        </Button>
-      </TabsContent>
+                    <div className="grid gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Institution</label>
+                        <Input
+                          value={edu.institution}
+                          onChange={(e) => updateEducation(index, "institution", e.target.value)}
+                          placeholder="University/College Name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Location</label>
+                        <Input
+                          value={edu.location}
+                          onChange={(e) => updateEducation(index, "location", e.target.value)}
+                          placeholder="City, State"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Degree</label>
+                        <Input
+                          value={edu.degree}
+                          onChange={(e) => updateEducation(index, "degree", e.target.value)}
+                          placeholder="Degree and Major"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Date</label>
+                        <Input
+                          value={edu.date}
+                          onChange={(e) => updateEducation(index, "date", e.target.value)}
+                          placeholder="Aug. 2018 – May 2021"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button onClick={addEducation} className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Add Education
+              </Button>
+            </TabsContent>
 
-      <TabsContent value="projects" className="space-y-4">
-        {data.projects.map((project, index) => (
-          <Card key={index} className="mb-4">
-            <CardContent className="pt-4">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium">Project #{index + 1}</h3>
-                <Button variant="destructive" size="sm" onClick={() => removeProject(index)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="grid gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Project Name</label>
-                  <Input
-                    value={project.name}
-                    onChange={(e) => updateProject(index, "name", e.target.value)}
-                    placeholder="Project Name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Technologies</label>
-                  <Input
-                    value={project.technologies}
-                    onChange={(e) => updateProject(index, "technologies", e.target.value)}
-                    placeholder="Python, Flask, React, PostgreSQL, Docker"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Date</label>
-                  <Input
-                    value={project.date}
-                    onChange={(e) => updateProject(index, "date", e.target.value)}
-                    placeholder="June 2020 – Present"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Details</label>
-                  {project.details.map((detail, detailIndex) => (
-                    <div key={detailIndex} className="flex gap-2 mb-2">
-                      <Textarea
-                        value={detail}
-                        onChange={(e) => updateProjectDetail(index, detailIndex, e.target.value)}
-                        placeholder="Project detail"
-                        className="min-h-[80px]"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => removeProjectDetail(index, detailIndex)}
-                        disabled={project.details.length <= 1}
-                      >
+            <TabsContent value="experience" className="space-y-4">
+              {data.experience.map((exp, index) => (
+                <Card key={index} className="mb-4">
+                  <CardContent className="pt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-medium">Experience #{index + 1}</h3>
+                      <Button variant="destructive" size="sm" onClick={() => removeExperience(index)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  ))}
-                  <Button onClick={() => addProjectDetail(index)} size="sm" variant="outline" className="mt-1">
-                    <Plus className="h-4 w-4 mr-2" /> Add Detail
-                  </Button>
+                    <div className="grid gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Title</label>
+                        <Input
+                          value={exp.title}
+                          onChange={(e) => updateExperience(index, "title", e.target.value)}
+                          placeholder="Job Title"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Company</label>
+                        <Input
+                          value={exp.company}
+                          onChange={(e) => updateExperience(index, "company", e.target.value)}
+                          placeholder="Company Name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Location</label>
+                        <Input
+                          value={exp.location}
+                          onChange={(e) => updateExperience(index, "location", e.target.value)}
+                          placeholder="City, State"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Date</label>
+                        <Input
+                          value={exp.date}
+                          onChange={(e) => updateExperience(index, "date", e.target.value)}
+                          placeholder="June 2020 – Present"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Responsibilities</label>
+                        {exp.responsibilities.map((resp, respIndex) => (
+                          <div key={respIndex} className="flex gap-2 mb-2">
+                            <Textarea
+                              value={resp}
+                              onChange={(e) => updateResponsibility(index, respIndex, e.target.value)}
+                              placeholder="Responsibility description"
+                              className="min-h-[80px]"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => removeResponsibility(index, respIndex)}
+                              disabled={exp.responsibilities.length <= 1}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button onClick={() => addResponsibility(index)} size="sm" variant="outline" className="mt-1">
+                          <Plus className="h-4 w-4 mr-2" /> Add Responsibility
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button onClick={addExperience} className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Add Experience
+              </Button>
+            </TabsContent>
+
+            <TabsContent value="projects" className="space-y-4">
+              {data.projects.map((project, index) => (
+                <Card key={index} className="mb-4">
+                  <CardContent className="pt-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-medium">Project #{index + 1}</h3>
+                      <Button variant="destructive" size="sm" onClick={() => removeProject(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Project Name</label>
+                        <Input
+                          value={project.name}
+                          onChange={(e) => updateProject(index, "name", e.target.value)}
+                          placeholder="Project Name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Technologies</label>
+                        <Input
+                          value={project.technologies}
+                          onChange={(e) => updateProject(index, "technologies", e.target.value)}
+                          placeholder="Python, Flask, React, PostgreSQL, Docker"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Date</label>
+                        <Input
+                          value={project.date}
+                          onChange={(e) => updateProject(index, "date", e.target.value)}
+                          placeholder="June 2020 – Present"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Details</label>
+                        {project.details.map((detail, detailIndex) => (
+                          <div key={detailIndex} className="flex gap-2 mb-2">
+                            <Textarea
+                              value={detail}
+                              onChange={(e) => updateProjectDetail(index, detailIndex, e.target.value)}
+                              placeholder="Project detail"
+                              className="min-h-[80px]"
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => removeProjectDetail(index, detailIndex)}
+                              disabled={project.details.length <= 1}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button onClick={() => addProjectDetail(index)} size="sm" variant="outline" className="mt-1">
+                          <Plus className="h-4 w-4 mr-2" /> Add Detail
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              <Button onClick={addProject} className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Add Project
+              </Button>
+            </TabsContent>
+
+            <TabsContent value="skills" className="space-y-4">
+              <div className="grid gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Languages</label>
+                  <Input
+                    value={data.skills.languages}
+                    onChange={(e) => updateSkills("languages", e.target.value)}
+                    placeholder="Java, Python, C/C++, SQL, JavaScript, HTML/CSS, R"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Frameworks</label>
+                  <Input
+                    value={data.skills.frameworks}
+                    onChange={(e) => updateSkills("frameworks", e.target.value)}
+                    placeholder="React, Node.js, Flask, JUnit, WordPress, Material-UI"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Developer Tools</label>
+                  <Input
+                    value={data.skills.tools}
+                    onChange={(e) => updateSkills("tools", e.target.value)}
+                    placeholder="Git, Docker, TravisCI, Google Cloud Platform, VS Code"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Libraries</label>
+                  <Input
+                    value={data.skills.libraries}
+                    onChange={(e) => updateSkills("libraries", e.target.value)}
+                    placeholder="pandas, NumPy, Matplotlib"
+                  />
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-        <Button onClick={addProject} className="w-full">
-          <Plus className="h-4 w-4 mr-2" /> Add Project
-        </Button>
-      </TabsContent>
-
-      <TabsContent value="skills" className="space-y-4">
-        <div className="grid gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Languages</label>
-            <Input
-              value={data.skills.languages}
-              onChange={(e) => updateSkills("languages", e.target.value)}
-              placeholder="Java, Python, C/C++, SQL, JavaScript, HTML/CSS, R"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Frameworks</label>
-            <Input
-              value={data.skills.frameworks}
-              onChange={(e) => updateSkills("frameworks", e.target.value)}
-              placeholder="React, Node.js, Flask, JUnit, WordPress, Material-UI"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Developer Tools</label>
-            <Input
-              value={data.skills.tools}
-              onChange={(e) => updateSkills("tools", e.target.value)}
-              placeholder="Git, Docker, TravisCI, Google Cloud Platform, VS Code"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Libraries</label>
-            <Input
-              value={data.skills.libraries}
-              onChange={(e) => updateSkills("libraries", e.target.value)}
-              placeholder="pandas, NumPy, Matplotlib"
-            />
-          </div>
-        </div>
-      </TabsContent>
-    </Tabs>
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
+    </>
   )
 }
 

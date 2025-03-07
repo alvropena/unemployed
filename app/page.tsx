@@ -15,11 +15,13 @@ import { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/default-data";
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { loadResumeData } from "@/lib/resumeService";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useAuth();
   const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
   const [hasPaid, setHasPaid] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   // Check if user has paid - this would be replaced with your actual payment verification
   useEffect(() => {
@@ -38,8 +40,26 @@ export default function Home() {
     checkPaymentStatus();
   }, [isSignedIn]);
 
+  // Load saved resume data when authenticated
+  useEffect(() => {
+    if (isSignedIn) {
+      const fetchResumeData = async () => {
+        setIsLoadingData(true);
+        const savedData = await loadResumeData();
+        if (savedData) {
+          setResumeData(savedData);
+        }
+        setIsLoadingData(false);
+      };
+
+      fetchResumeData();
+    } else {
+      setIsLoadingData(false);
+    }
+  }, [isSignedIn]);
+
   // If not loaded yet, show loading
-  if (!isLoaded) {
+  if (!isLoaded || isLoadingData) {
     return <div className="container mx-auto p-8 text-center">Loading...</div>;
   }
 
@@ -66,7 +86,6 @@ export default function Home() {
       <main className="container mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-card rounded-lg shadow p-4 overflow-auto max-h-[calc(100vh-150px)]">
-            <h2 className="text-xl font-semibold mb-4">Resume Information</h2>
             <ResumeForm data={resumeData} setData={setResumeData} />
           </div>
           <div className="bg-muted/10 rounded-lg shadow-md p-4 max-h-[calc(100vh-150px)]">
@@ -83,7 +102,10 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section id="hero" className="py-20 px-4 md:px-6 lg:py-32 bg-gradient-to-b from-background to-background/50">
+      <section
+        id="hero"
+        className="py-20 px-4 md:px-6 lg:py-32 bg-gradient-to-b from-background to-background/50"
+      >
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 space-y-6">
