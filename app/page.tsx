@@ -1,21 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useAuth } from "@clerk/nextjs";
-import ResumeForm from "@/components/resume-form";
+import { CheckCircle2, Link } from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import Footer from "@/components/footer";
+import PricingCard from "@/components/pricing-card";
+import TestimonialCard from "@/components/testimonial-card";
+import FaqAccordion from "@/components/faq-accordion";
+import Image from "next/image";
 import ResumePreview from "@/components/resume-preview";
+import ResumeForm from "@/components/resume-form";
+import { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/default-data";
-import type { ResumeData } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 export default function Home() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -65,13 +63,12 @@ export default function Home() {
 
     return (
       <main className="container mx-auto p-4">
-        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-card rounded-lg shadow p-4 overflow-auto max-h-[calc(100vh-150px)]">
             <h2 className="text-xl font-semibold mb-4">Resume Information</h2>
             <ResumeForm data={resumeData} setData={setResumeData} />
           </div>
-          <div className="bg-muted/10 rounded-lg shadow-md p-4 max-h-[calc(100vh-150px)]">            
+          <div className="bg-muted/10 rounded-lg shadow-md p-4 max-h-[calc(100vh-150px)]">
             <div className="bg-white border border-gray-200 shadow-sm p-6 rounded-md min-h-[800px]">
               <ResumePreview data={resumeData} />
             </div>
@@ -83,183 +80,265 @@ export default function Home() {
 
   // If not signed in, show the landing page
   return (
-    <main className="container mx-auto px-4 py-12">
-      <div className="flex flex-col items-center justify-center text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tight mb-4">
-          Resume AI Generator
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl">
-          Create professional resumes in minutes with our AI-powered resume
-          generator. Tailored for job seekers who want to stand out from the
-          crowd.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Free</CardTitle>
-            <CardDescription>Basic resume creation</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold mb-2">$0</div>
-            <ul className="space-y-2 mb-6">
-              <li>• Basic templates</li>
-              <li>• PDF downloads</li>
-              <li>• 1 resume</li>
-            </ul>
-          </CardContent>
-          <CardFooter>
-            <Link href="/sign-up" className="w-full">
-              <Button className="w-full">Get Started</Button>
-            </Link>
-          </CardFooter>
-        </Card>
-
-        <Card className="border-primary">
-          <CardHeader className="bg-primary/10">
-            <CardTitle>Pro</CardTitle>
-            <CardDescription>For serious job seekers</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold mb-2">$9.99</div>
-            <ul className="space-y-2 mb-6">
-              <li>• Premium templates</li>
-              <li>• PDF & DOCX downloads</li>
-              <li>• Up to 5 resumes</li>
-              <li>• AI suggestions</li>
-            </ul>
-          </CardContent>
-          <CardFooter>
-            <Link
-              href="/sign-up?redirect=/checkout?plan=pro"
-              className="w-full"
-            >
-              <Button className="w-full" variant="default">
-                Sign Up & Upgrade
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Enterprise</CardTitle>
-            <CardDescription>For teams and businesses</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold mb-2">$29.99</div>
-            <ul className="space-y-2 mb-6">
-              <li>• All Pro features</li>
-              <li>• Unlimited resumes</li>
-              <li>• Custom branding</li>
-              <li>• Team management</li>
-              <li>• Priority support</li>
-            </ul>
-          </CardContent>
-          <CardFooter>
-            <Link
-              href="/sign-up?redirect=/checkout?plan=enterprise"
-              className="w-full"
-            >
-              <Button className="w-full" variant="outline">
-                Sign Up & Upgrade
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-
-      <div className="mt-16 text-center">
-        <h2 className="text-3xl font-bold mb-6">
-          Why Choose Our Resume Builder?
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <div className="flex flex-col items-center">
-            <div className="bg-primary/10 p-4 rounded-full mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary"
-              >
-                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
-                <path d="m9 12 2 2 4-4"></path>
-              </svg>
+    <div className="min-h-screen flex flex-col">
+      {/* Hero Section */}
+      <section className="py-20 px-4 md:px-6 lg:py-32 bg-gradient-to-b from-slate-50 to-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+            <div className="flex-1 space-y-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900">
+                Craft the perfect resume in minutes
+              </h1>
+              <p className="text-xl text-slate-600 max-w-2xl">
+                Resume AI uses advanced technology to help you create
+                professional, ATS-friendly resumes that stand out to employers.
+              </p>
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="text-base px-8 py-6">
+                  Get Started
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-base px-8 py-6"
+                >
+                  View Demo
+                </Button>
+              </div>
             </div>
-            <h3 className="text-xl font-bold mb-2">Easy to Use</h3>
-            <p className="text-muted-foreground">
-              Create a professional resume in minutes with our intuitive
-              interface.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="bg-primary/10 p-4 rounded-full mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary"
-              >
-                <path d="M20 7h-3a2 2 0 0 1-2-2V2"></path>
-                <path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z"></path>
-                <path d="M3 7v10a2 2 0 0 0 2 2h4"></path>
-                <path d="M12 22v-6"></path>
-                <path d="m15 19-3 3-3-3"></path>
-              </svg>
+            <div className="flex-1 relative">
+              <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+                <Image
+                  src="/placeholder.svg?height=600&width=800"
+                  alt="Resume AI interface"
+                  className="w-full h-auto"
+                  width={800}
+                  height={600}
+                />
+              </div>
+              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg border border-slate-200">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="text-green-500 h-5 w-5" />
+                  <span className="text-sm font-medium">ATS-Optimized</span>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-bold mb-2">Multiple Formats</h3>
-            <p className="text-muted-foreground">
-              Download your resume in PDF or DOCX format for maximum
-              compatibility.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="bg-primary/10 p-4 rounded-full mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-primary"
-              >
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                <polyline points="3.29 7 12 12 20.71 7"></polyline>
-                <line x1="12" y1="22" x2="12" y2="12"></line>
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold mb-2">AI-Powered</h3>
-            <p className="text-muted-foreground">
-              Get intelligent suggestions to improve your resume and stand out.
-            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="mt-16 text-center">
-        <Link href="/sign-up">
-          <Button size="lg" className="px-8">
-            Sign Up & Get Started
+      {/* Features Section */}
+      <section className="py-20 px-4 md:px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Why choose Resume AI?
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Our platform offers everything you need to create professional
+              resumes that get results.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "AI-Powered Templates",
+                description:
+                  "Smart templates that adapt to your experience and career goals.",
+                icon: "✨",
+              },
+              {
+                title: "ATS-Friendly Format",
+                description:
+                  "Optimized for Applicant Tracking Systems to ensure your resume gets seen.",
+                icon: "🔍",
+              },
+              {
+                title: "Expert Suggestions",
+                description:
+                  "Get real-time feedback and suggestions to improve your resume.",
+                icon: "💡",
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="bg-slate-50 p-8 rounded-xl border border-slate-100"
+              >
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold mb-2 text-slate-900">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-20 px-4 md:px-6 bg-slate-50">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Choose the plan that works best for your needs.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <PricingCard
+              title="Monthly"
+              price="$12"
+              period="per month"
+              description="Perfect for job seekers who need a quick resume update."
+              features={[
+                "Unlimited resume creation",
+                "AI-powered suggestions",
+                "Export to PDF, Word, and more",
+                "Access to all templates",
+              ]}
+              buttonText="Get Started"
+              popular={false}
+            />
+
+            <PricingCard
+              title="Annual"
+              price="$89"
+              period="per year"
+              description="Our most popular plan for serious job seekers."
+              features={[
+                "Everything in Monthly",
+                "Save $55 compared to monthly",
+                "Priority customer support",
+                "Cover letter generator",
+              ]}
+              buttonText="Get Started"
+              popular={true}
+            />
+
+            <PricingCard
+              title="Lifetime"
+              price="$249"
+              period="one-time payment"
+              description="For professionals who want lifetime access."
+              features={[
+                "Everything in Annual",
+                "One-time payment",
+                "Free updates for life",
+                "LinkedIn profile optimization",
+              ]}
+              buttonText="Get Started"
+              popular={false}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-4 md:px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              What our users say
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Join thousands of professionals who&apos;ve landed their dream
+              jobs with Resume AI.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <TestimonialCard
+              quote="Resume AI helped me land interviews at 3 top tech companies. The AI suggestions were spot-on!"
+              author="Sarah J."
+              role="Software Engineer"
+              avatarUrl="/placeholder.svg?height=100&width=100"
+            />
+
+            <TestimonialCard
+              quote="I was struggling with my resume for weeks. Resume AI helped me create a professional resume in just 30 minutes."
+              author="Michael T."
+              role="Marketing Manager"
+              avatarUrl="/placeholder.svg?height=100&width=100"
+            />
+
+            <TestimonialCard
+              quote="The templates are beautiful and the AI suggestions helped me highlight achievements I would have otherwise missed."
+              author="Jessica L."
+              role="Product Designer"
+              avatarUrl="/placeholder.svg?height=100&width=100"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 px-4 md:px-6 bg-slate-50">
+        <div className="container mx-auto max-w-3xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Frequently asked questions
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+              Everything you need to know about Resume AI.
+            </p>
+          </div>
+
+          <FaqAccordion
+            items={[
+              {
+                question: "Is Resume AI really worth the cost?",
+                answer:
+                  "Absolutely. Our users report a 3x increase in interview callbacks after using Resume AI. The investment pays for itself when you land your dream job faster.",
+              },
+              {
+                question: "Can I cancel my subscription anytime?",
+                answer:
+                  "Yes, you can cancel your monthly or annual subscription at any time. Your access will continue until the end of your billing period.",
+              },
+              {
+                question: "How does the AI technology work?",
+                answer:
+                  "Our AI analyzes millions of successful resumes to provide tailored suggestions for your specific industry and role. It helps optimize your content for ATS systems and highlights your achievements effectively.",
+              },
+              {
+                question: "Do you offer refunds?",
+                answer:
+                  "We offer a 14-day money-back guarantee if you&apos;re not satisfied with our service. Simply contact our support team within 14 days of your purchase.",
+              },
+              {
+                question: "Can I use Resume AI on my mobile device?",
+                answer:
+                  "Yes, Resume AI is fully responsive and works on desktop, tablet, and mobile devices.",
+              },
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 md:px-6 bg-slate-900 text-white">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to create your standout resume?
+          </h2>
+          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+            Join thousands of professionals who&apos;ve accelerated their
+            careers with Resume AI.
+          </p>
+          <Button
+            size="lg"
+            className="text-base px-8 py-6 bg-white text-slate-900 hover:bg-slate-100"
+          >
+            Get Started Today
           </Button>
-        </Link>
-      </div>
-    </main>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
   );
 }
