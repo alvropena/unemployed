@@ -36,7 +36,6 @@ export default function Home() {
 	const [hasPaid, setHasPaid] = useState(false);
 	const [isLoadingData, setIsLoadingData] = useState(true);
 	const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-	const [loading, setLoading] = useState(false);
 	const searchParams = useSearchParams();
 
 	// Check if user has paid - this would be replaced with your actual payment verification
@@ -94,8 +93,6 @@ export default function Home() {
 	// Function to handle subscription checkout
 	const handleSubscribe = async (plan: string) => {
 		try {
-			setLoading(true);
-
 			const response = await fetch("/api/stripe/create-checkout", {
 				method: "POST",
 				headers: {
@@ -123,8 +120,6 @@ export default function Home() {
 		} catch (error) {
 			console.error("Error:", error);
 			toast.error("Something went wrong. Please try again later.");
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -332,7 +327,7 @@ export default function Home() {
 									"Get real-time feedback and suggestions to improve your resume.",
 								icon: "💡",
 							},
-						].map((feature, index) => (
+						].map((feature) => (
 							<div
 								key={feature.title}
 								className="bg-card p-8 rounded-xl border border-border"
