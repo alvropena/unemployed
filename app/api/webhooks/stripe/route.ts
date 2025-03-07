@@ -26,8 +26,12 @@ export async function POST(req: Request) {
         signature,
         webhookSecret
       );
-    } catch (err: any) {
-      console.error("Webhook signature verification failed:", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Stripe.errors.StripeError) {
+        console.error("Webhook signature verification failed:", err.message);
+      } else {
+        console.error("Webhook signature verification failed with unknown error");
+      }
       return new NextResponse("Webhook signature verification failed.", { status: 400 });
     }
 
