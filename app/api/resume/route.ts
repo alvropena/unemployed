@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { kv } from "@vercel/kv";
-import { ResumeData } from "@/lib/types";
 
 // GET endpoint to retrieve resume data for the authenticated user
 export async function GET() {

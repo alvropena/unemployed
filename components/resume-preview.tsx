@@ -1,5 +1,4 @@
 import type { ResumeData } from "@/lib/types"
-import { Inter } from "next/font/google"
 
 // Load Computer Modern-like font
 // Since we can't directly use Computer Modern, we'll use a similar serif font
