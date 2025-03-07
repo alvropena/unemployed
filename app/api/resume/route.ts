@@ -111,16 +111,6 @@ function parseSkills(data: unknown): Skills {
   }
 }
 
-// Replace 'any' types with proper types in the upsert operations
-type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
-
-interface ResumeData {
-  education: Education[];
-  experience: Experience[];
-  projects: Project[];
-  skills: Skills;
-}
-
 // GET endpoint to retrieve resume data for the authenticated user
 export async function GET() {
   const authResult = await auth();
