@@ -28,20 +28,15 @@ export const saveResumeData = async (data: ResumeData): Promise<boolean> => {
 export const loadResumeData = async (): Promise<ResumeData | null> => {
   try {
     const response = await fetch('/api/resume');
-
+    
     if (!response.ok) {
-      if (response.status === 404) {
-        // No data found is not an error, just return null
-        return null;
-      }
-      
       const errorData = await response.json();
       console.error('Error loading resume data:', errorData);
       return null;
     }
 
-    const result = await response.json();
-    return result.data as ResumeData;
+    const { data } = await response.json();
+    return data;
   } catch (error) {
     console.error('Error loading resume data:', error);
     return null;

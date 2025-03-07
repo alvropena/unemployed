@@ -13,7 +13,7 @@ import type { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/default-data";
 import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { loadResumeData } from "@/lib/resumeService";
+import { loadResumeData } from "@/lib/resume-service";
 import { loadStripe } from "@stripe/stripe-js";
 import {
 	Dialog,
@@ -62,14 +62,14 @@ export default function Home() {
 	useEffect(() => {
 		if (!isSignedIn || !userId) return;
 
-		const checkSubscriptionStatus = () => {
+		const checkSubscriptionStatus = async () => {
 			try {
-				const subscriptionData = localStorage.getItem(`subscription_${userId}`);
-				if (subscriptionData) {
-					const data = JSON.parse(subscriptionData);
-					const isValid = data.status === "active" && data.userId === userId;
-					setHasPaid(isValid);
-					setShowSubscriptionModal(!isValid);
+				const response = await fetch('/api/subscription');
+				const data = await response.json();
+				
+				if (data.hasActiveSubscription) {
+					setHasPaid(true);
+					setShowSubscriptionModal(false);
 				} else {
 					setHasPaid(false);
 					setShowSubscriptionModal(true);

@@ -1,12 +1,13 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { prisma } from "@/lib/db";
 
 if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2025-02-24.acacia",
     typescript: true,
 });
@@ -29,9 +30,9 @@ export async function POST(req: Request) {
                 signature,
                 process.env.STRIPE_WEBHOOK_SECRET
             );
-        } catch (err) {
-            console.error("Webhook signature verification failed:", err);
-            return new NextResponse("Webhook signature verification failed.", { status: 400 });
+        } catch (err: any) {
+            console.error("Webhook signature verification failed:", err.message);
+            return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
         }
 
         switch (event.type) {
@@ -39,22 +40,78 @@ export async function POST(req: Request) {
                 const session = event.data.object as Stripe.Checkout.Session;
                 const userId = session.metadata?.userId;
                 const plan = session.metadata?.plan;
-
+                
                 if (userId && plan) {
-                    // Log the successful payment - in a real app, you might want to store this in a database
-                    console.log(`User ${userId} has completed payment for ${plan} plan`);
+                    // Create or update user record
+                    await prisma.user.upsert({
+                        where: { id: userId },
+                        update: {},
+                        create: {
+                            id: userId,
+                            email: session.customer_details?.email || "unknown",
+                        },
+                    });
+                    
+                    // Create or update subscription
+                    await prisma.subscription.upsert({
+                        where: { userId },
+                        update: {
+                            status: "active",
+                            plan,
+                            stripeCustomerId: session.customer as string,
+                        },
+                        create: {
+                            userId,
+                            status: "active",
+                            plan,
+                            stripeCustomerId: session.customer as string,
+                        },
+                    });
+                    
+                    console.log(`User ${userId} subscription activated for ${plan} plan`);
                 }
                 break;
             }
-
-            case "customer.subscription.updated":
+            
+            case "customer.subscription.updated": {
+                const subscription = event.data.object as Stripe.Subscription;
+                const stripeCustomerId = subscription.customer as string;
+                
+                // Find user by Stripe customer ID
+                const userSubscription = await prisma.subscription.findFirst({
+                    where: { stripeCustomerId },
+                });
+                
+                if (userSubscription) {
+                    await prisma.subscription.update({
+                        where: { id: userSubscription.id },
+                        data: {
+                            status: subscription.status,
+                        },
+                    });
+                    
+                    console.log(`Subscription updated for customer ${stripeCustomerId}: ${subscription.status}`);
+                }
+                break;
+            }
+            
             case "customer.subscription.deleted": {
                 const subscription = event.data.object as Stripe.Subscription;
-                const userId = subscription.metadata?.userId;
-
-                if (userId) {
-                    // Log the subscription update - in a real app, you might want to store this in a database
-                    console.log(`Subscription ${subscription.id} ${event.type} for user ${userId}`);
+                const stripeCustomerId = subscription.customer as string;
+                
+                const userSubscription = await prisma.subscription.findFirst({
+                    where: { stripeCustomerId },
+                });
+                
+                if (userSubscription) {
+                    await prisma.subscription.update({
+                        where: { id: userSubscription.id },
+                        data: {
+                            status: "canceled",
+                        },
+                    });
+                    
+                    console.log(`Subscription canceled for customer ${stripeCustomerId}`);
                 }
                 break;
             }
@@ -63,6 +120,6 @@ export async function POST(req: Request) {
         return new NextResponse(null, { status: 200 });
     } catch (error) {
         console.error("Error processing webhook:", error);
-        return new NextResponse("Webhook handler failed.", { status: 500 });
+        return new NextResponse("Webhook handler failed", { status: 500 });
     }
 } 

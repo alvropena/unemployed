@@ -15,7 +15,7 @@ import {
 	saveResumeData,
 	loadResumeData,
 	saveResumeDataLocally,
-} from "@/lib/resumeService";
+} from "@/lib/resume-service";
 
 interface ResumeFormProps {
 	data: ResumeData;

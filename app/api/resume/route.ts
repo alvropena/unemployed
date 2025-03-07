@@ -1,9 +1,6 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-
-// Simple in-memory storage (note: this will reset on server restart)
-const memoryStore = new Map();
+import { prisma } from "@/lib/db";
 
 // GET endpoint to retrieve resume data for the authenticated user
 export async function GET() {
@@ -15,17 +12,51 @@ export async function GET() {
   }
 
   try {
-    // Retrieve resume data from memory store using the user's ID as the key
-    const resumeData = memoryStore.get(`resume:${userId}`);
+    const resume = await prisma.resume.findUnique({
+      where: { userId }
+    });
 
-    if (!resumeData) {
-      return NextResponse.json({ error: "No resume data found" }, { status: 404 });
+    if (!resume) {
+      return NextResponse.json({ 
+        data: {
+          name: "",
+          email: "",
+          phone: "",
+          location: "",
+          website: "",
+          education: [],
+          experience: [],
+          projects: [],
+          technicalSkills: [],
+          softSkills: [],
+          languages: []
+        } 
+      });
     }
+
+    // Format the data to match the expected structure in the frontend
+    const resumeData = {
+      personal: {
+        name: resume.name || "",
+        email: resume.email || "",
+        phone: resume.phone || "",
+        location: resume.location || "",
+        website: resume.website || "",
+      },
+      education: resume.education as any[],
+      experience: resume.experience as any[],
+      projects: resume.projects as any[],
+      skills: {
+        technical: resume.technicalSkills,
+        soft: resume.softSkills,
+        languages: resume.languages,
+      }
+    };
 
     return NextResponse.json({ data: resumeData });
   } catch (error) {
-    console.error("Error retrieving resume data:", error);
-    return NextResponse.json({ error: "Failed to retrieve resume data" }, { status: 500 });
+    console.error("Error fetching resume data:", error);
+    return NextResponse.json({ error: "Failed to fetch resume data" }, { status: 500 });
   }
 }
 
@@ -41,8 +72,47 @@ export async function POST(request: NextRequest) {
   try {
     const resumeData = await request.json();
 
-    // Save resume data to memory store using the user's ID as the key
-    memoryStore.set(`resume:${userId}`, resumeData);
+    // Ensure user exists
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: resumeData.personal?.email || "unknown",
+      },
+    });
+
+    // Save resume data
+    await prisma.resume.upsert({
+      where: { userId },
+      update: {
+        name: resumeData.personal?.name || "",
+        email: resumeData.personal?.email || "",
+        phone: resumeData.personal?.phone || "",
+        location: resumeData.personal?.location || "",
+        website: resumeData.personal?.website || "",
+        education: resumeData.education || [],
+        experience: resumeData.experience || [],
+        projects: resumeData.projects || [],
+        technicalSkills: resumeData.skills?.technical || [],
+        softSkills: resumeData.skills?.soft || [],
+        languages: resumeData.skills?.languages || [],
+      },
+      create: {
+        userId,
+        name: resumeData.personal?.name || "",
+        email: resumeData.personal?.email || "",
+        phone: resumeData.personal?.phone || "",
+        location: resumeData.personal?.location || "",
+        website: resumeData.personal?.website || "",
+        education: resumeData.education || [],
+        experience: resumeData.experience || [],
+        projects: resumeData.projects || [],
+        technicalSkills: resumeData.skills?.technical || [],
+        softSkills: resumeData.skills?.soft || [],
+        languages: resumeData.skills?.languages || [],
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

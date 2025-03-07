@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/db";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
@@ -13,13 +14,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const PLANS = {
   monthly: {
-    priceId: 'price_XXXXX', // Replace with your monthly plan price ID from Stripe
+    priceId: process.env.STRIPE_MONTHLY_PRICE_ID!,
+    name: "Monthly Plan",
   },
   annual: {
-    priceId: 'price_XXXXX', // Replace with your annual plan price ID from Stripe
+    priceId: process.env.STRIPE_ANNUAL_PRICE_ID!,
+    name: "Annual Plan",
   },
   lifetime: {
-    priceId: 'price_XXXXX', // Replace with your lifetime plan price ID from Stripe
+    priceId: process.env.STRIPE_LIFETIME_PRICE_ID!,
+    name: "Lifetime Plan",
   },
 };
 
@@ -27,6 +31,7 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const userId = session.userId;
+    const userEmail = session.sessionClaims?.email as string;
     
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -38,11 +43,21 @@ export async function POST(req: Request) {
       return new NextResponse("Invalid plan selected", { status: 400 });
     }
 
+    // Ensure user exists in database
+    await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        email: userEmail || "unknown",
+      },
+    });
+
     const selectedPlan = PLANS[plan as keyof typeof PLANS];
 
-    // Create Stripe checkout session
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
+      customer_email: userEmail,
       line_items: [
         {
           price: selectedPlan.priceId,
@@ -50,7 +65,7 @@ export async function POST(req: Request) {
         },
       ],
       mode: plan === "lifetime" ? "payment" : "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}?canceled=true`,
       metadata: {
         userId,
