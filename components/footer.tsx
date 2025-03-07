@@ -97,7 +97,7 @@ export default function Footer() {
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">© 2023 Resume AI. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="https://github.com/alvropena/resume-ai.git" className="text-muted-foreground hover:text-foreground transition-colors">
               <span className="sr-only">GitHub</span>
               <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
