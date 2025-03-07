@@ -209,17 +209,15 @@ export default function Home() {
 				)}
 
 				<main className={`container mx-auto h-[calc(100vh-2rem)] p-4 relative ${showSubscriptionModal ? "pointer-events-none opacity-80" : ""}`}>
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
 						<Card className="h-full overflow-auto">
 							<CardContent className="p-6">
 								<ResumeForm data={resumeData} setData={setResumeData} />
 							</CardContent>
 						</Card>
 						<Card className="h-full overflow-auto">
-							<CardContent className="p-0 h-full">
-								<div className="transform scale-[0.73] origin-top">
-									<ResumePreview data={resumeData} />
-								</div>
+							<CardContent className="p-0">
+								<ResumePreview data={resumeData} />
 							</CardContent>
 						</Card>
 					</div>
