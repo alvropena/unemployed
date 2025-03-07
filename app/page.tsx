@@ -25,6 +25,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
+import SubscriptionHandler from "@/components/subscription-handler";
 
 // Initialize Stripe
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -57,93 +58,6 @@ export default function Home() {
   const [hasPaid, setHasPaid] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-  const searchParams = useSearchParams();
-
-  // Handle successful payment
-  useEffect(() => {
-    if (searchParams.get("success") === "true" && userId) {
-      // Immediately hide the subscription modal and set hasPaid to true
-      setHasPaid(true);
-      setShowSubscriptionModal(false);
-
-      // Store the payment success in localStorage to persist across page refreshes
-      localStorage.setItem("hasActiveSubscription", "true");
-
-      // Refresh subscription status after successful payment
-      fetch("/api/subscription")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.hasActiveSubscription) {
-            setHasPaid(true);
-            setShowSubscriptionModal(false);
-          }
-        })
-        .catch(console.error);
-
-      toast.success(
-        "Payment successful! Your premium features are now active."
-      );
-    }
-
-    if (searchParams.get("canceled") === "true") {
-      toast.error("Payment was canceled. Please try again when you're ready.");
-    }
-  }, [searchParams, userId]);
-
-  // Check subscription status
-  useEffect(() => {
-    if (!isSignedIn || !userId) {
-      setHasPaid(false);
-      setShowSubscriptionModal(false);
-      return;
-    }
-
-    const checkSubscriptionStatus = async () => {
-      // First check if we have a successful payment in the URL
-      if (searchParams.get("success") === "true") {
-        setHasPaid(true);
-        setShowSubscriptionModal(false);
-        localStorage.setItem("hasActiveSubscription", "true");
-        return;
-      }
-
-      // Then check localStorage for cached subscription status
-      if (
-        typeof window !== "undefined" &&
-        localStorage.getItem("hasActiveSubscription") === "true"
-      ) {
-        setHasPaid(true);
-        setShowSubscriptionModal(false);
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/subscription");
-        if (!response.ok)
-          throw new Error("Failed to fetch subscription status");
-
-        const data = await response.json();
-
-        if (data.hasActiveSubscription) {
-          setHasPaid(true);
-          setShowSubscriptionModal(false);
-          // Cache the subscription status
-          if (typeof window !== "undefined") {
-            localStorage.setItem("hasActiveSubscription", "true");
-          }
-        } else {
-          setHasPaid(false);
-          setShowSubscriptionModal(true);
-        }
-      } catch (error) {
-        console.error("Error checking subscription:", error);
-        setHasPaid(false);
-        setShowSubscriptionModal(true);
-      }
-    };
-
-    checkSubscriptionStatus();
-  }, [isSignedIn, userId, searchParams]);
 
   // Load saved resume data when authenticated
   useEffect(() => {
@@ -209,8 +123,20 @@ export default function Home() {
   if (isSignedIn) {
     return (
       <>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense 
+          fallback={
+            <div className="h-screen w-full flex items-center justify-center">
+              <Loader className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          }
+        >
           <PaymentStatusHandler />
+          <SubscriptionHandler
+            userId={userId}
+            isSignedIn={isSignedIn}
+            setHasPaid={setHasPaid}
+            setShowSubscriptionModal={setShowSubscriptionModal}
+          />
 
           {/* Dark overlay when modal is open - using standard opacity */}
           {showSubscriptionModal && (
@@ -228,6 +154,7 @@ export default function Home() {
                   <ResumeForm data={resumeData} setData={setResumeData} />
                 </CardContent>
               </Card>
+
               <Card className="h-full overflow-auto">
                 <CardContent className="p-0">
                   <ResumePreview data={resumeData} />
