@@ -9,16 +9,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 const PLANS = {
   monthly: {
-    price: "price_monthly", // Replace with your actual Stripe price ID
-    amount: 1200, // $12.00
+    priceId: 'price_XXXXX', // Replace with your monthly plan price ID from Stripe
   },
   annual: {
-    price: "price_annual", // Replace with your actual Stripe price ID
-    amount: 8900, // $89.00
+    priceId: 'price_XXXXX', // Replace with your annual plan price ID from Stripe
   },
   lifetime: {
-    price: "price_lifetime", // Replace with your actual Stripe price ID
-    amount: 24900, // $249.00
+    priceId: 'price_XXXXX', // Replace with your lifetime plan price ID from Stripe
   },
 };
 
@@ -44,24 +41,13 @@ export async function POST(req: Request) {
       payment_method_types: ["card"],
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `Resume AI ${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
-              description: `Access to all Resume AI features with ${plan} billing`,
-            },
-            unit_amount: selectedPlan.amount,
-            recurring: plan === "lifetime" ? undefined : {
-              interval: plan === "monthly" ? "month" : "year",
-            },
-          },
+          price: selectedPlan.priceId,
           quantity: 1,
         },
       ],
       mode: plan === "lifetime" ? "payment" : "subscription",
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}?canceled=true`,
-      customer_email: undefined, // Clerk will handle this
       metadata: {
         userId,
         plan,
