@@ -197,7 +197,6 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
 	const addResponsibility = (expIndex: number) => {
 		setData((prev) => {
 			const newExperience = [...prev.experience];
-			const defaultResponsibility = defaultResumeData.experience[0].responsibilities[0];
 			newExperience[expIndex] = {
 				...newExperience[expIndex],
 				responsibilities: [...newExperience[expIndex].responsibilities, ""],
@@ -280,7 +279,6 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
 	const addProjectDetail = (projIndex: number) => {
 		setData((prev) => {
 			const newProjects = [...prev.projects];
-			const defaultDetail = defaultResumeData.projects[0].details[0];
 			newProjects[projIndex] = {
 				...newProjects[projIndex],
 				details: [...newProjects[projIndex].details, ""],

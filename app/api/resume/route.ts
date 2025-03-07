@@ -111,6 +111,16 @@ function parseSkills(data: unknown): Skills {
   }
 }
 
+// Replace 'any' types with proper types in the upsert operations
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+interface ResumeData {
+  education: Education[];
+  experience: Experience[];
+  projects: Project[];
+  skills: Skills;
+}
+
 // GET endpoint to retrieve resume data for the authenticated user
 export async function GET() {
   const authResult = await auth();
@@ -224,10 +234,10 @@ export async function POST(request: NextRequest) {
         website: resumeData.personal?.website || "",
         linkedin: resumeData.personal?.linkedin || "",
         github: resumeData.personal?.github || "",
-        education: education as any,
-        experience: experience as any,
-        projects: projects as any,
-        skills: skills as any
+        education: education as unknown as Prisma.InputJsonValue[],
+        experience: experience as unknown as Prisma.InputJsonValue[],
+        projects: projects as unknown as Prisma.InputJsonValue[],
+        skills: skills as unknown as Prisma.InputJsonValue
       },
       create: {
         userId,
@@ -238,10 +248,10 @@ export async function POST(request: NextRequest) {
         website: resumeData.personal?.website || "",
         linkedin: resumeData.personal?.linkedin || "",
         github: resumeData.personal?.github || "",
-        education: education as any,
-        experience: experience as any,
-        projects: projects as any,
-        skills: skills as any
+        education: education as unknown as Prisma.InputJsonValue[],
+        experience: experience as unknown as Prisma.InputJsonValue[],
+        projects: projects as unknown as Prisma.InputJsonValue[],
+        skills: skills as unknown as Prisma.InputJsonValue
       },
     });
 
