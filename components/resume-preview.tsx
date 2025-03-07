@@ -23,7 +23,10 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
   const getValueOrDefault = (value: string | undefined, defaultValue: string) => value || defaultValue;
   
   return (
-    <div className="h-full w-full p-6 bg-white font-['Times_New_Roman'] text-[12pt] leading-normal text-black">
+    <div 
+      id="resume-preview"
+      className="h-full w-full p-6 bg-white font-['Times_New_Roman'] text-[12pt] leading-normal text-black"
+    >
       {/* Header */}
       <div className="text-center mb-6">
         <h1 className="text-[28pt] font-bold text-black">

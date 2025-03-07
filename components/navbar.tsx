@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { downloadResume } from "@/lib/pdf-utils";
 
 export function Navbar() {
   const { isSignedIn } = useAuth();
@@ -29,6 +30,13 @@ export function Navbar() {
     } else {
       // If not on home page, navigate to home page with hash
       window.location.href = `/#${sectionId}`;
+    }
+  };
+
+  const handleDownload = async () => {
+    const resumeElement = document.getElementById('resume-preview');
+    if (resumeElement) {
+      await downloadResume(resumeElement);
     }
   };
 
@@ -76,7 +84,7 @@ export function Navbar() {
           <ThemeSwitcher />
           {isSignedIn ? (
             <>
-              <Button>
+              <Button onClick={handleDownload}>
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </Button>
