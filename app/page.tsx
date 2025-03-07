@@ -22,6 +22,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -32,6 +34,8 @@ export default function Home() {
   const [hasPaid, setHasPaid] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
 
   // Check if user has paid - this would be replaced with your actual payment verification
   useEffect(() => {
@@ -70,35 +74,53 @@ export default function Home() {
     }
   }, [isSignedIn]);
 
+  // Check for success or canceled payment status
+  useEffect(() => {
+    // Check if payment was successful
+    if (searchParams.get('success') === 'true') {
+      toast.success('Payment successful! Your premium features are now active.');
+    }
+    
+    // Check if payment was canceled
+    if (searchParams.get('canceled') === 'true') {
+      toast.error('Payment was canceled. Please try again when you're ready.');
+    }
+  }, [searchParams]);
+
   // Function to handle subscription checkout
   const handleSubscribe = async (plan: string) => {
     try {
-      // Create a checkout session
-      const response = await fetch('/api/create-checkout-session', {
+      setLoading(true);
+      
+      const response = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          plan,
-        }),
+        body: JSON.stringify({ plan }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
 
       const { sessionId } = await response.json();
       
       // Redirect to Stripe checkout
       const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to initialize');
-
-      const { error } = await stripe.redirectToCheckout({
-        sessionId,
-      });
-
+      if (!stripe) throw new Error('Failed to load Stripe');
+      
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      
       if (error) {
         console.error('Stripe checkout error:', error);
+        toast.error('Failed to open checkout. Please try again.');
       }
     } catch (error) {
-      console.error('Failed to create checkout session:', error);
+      console.error('Error:', error);
+      toast.error('Something went wrong. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
