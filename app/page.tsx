@@ -97,7 +97,7 @@ export default function Home() {
 	// Function to handle subscription checkout
 	const handleSubscribe = async (plan: string) => {
 		try {
-			const response = await fetch("/api/stripe/create-checkout", {
+			const response = await fetch("/api/stripe", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

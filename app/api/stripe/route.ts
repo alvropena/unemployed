@@ -13,15 +13,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const PLANS = {
   monthly: {
-    priceId: 'price_XXXXX', // Replace with your monthly plan price ID from Stripe
+    priceId: process.env.STRIPE_MONTHLY_PRICE_ID || 'price_XXXXX',
     trial_period_days: 14,
   },
   annual: {
-    priceId: 'price_XXXXX', // Replace with your annual plan price ID from Stripe
+    priceId: process.env.STRIPE_ANNUAL_PRICE_ID || 'price_XXXXX',
     trial_period_days: 14,
   },
   lifetime: {
-    priceId: 'price_XXXXX', // Replace with your lifetime plan price ID from Stripe
+    priceId: process.env.STRIPE_LIFETIME_PRICE_ID || 'price_XXXXX',
   },
 };
 
