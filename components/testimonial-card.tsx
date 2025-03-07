@@ -9,7 +9,7 @@ interface TestimonialCardProps {
   
   export default function TestimonialCard({ quote, author, role, avatarUrl }: TestimonialCardProps) {
     return (
-      <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
+      <div className="bg-card p-6 rounded-xl border border-border">
         <div className="flex items-center mb-4">
           <div className="mr-4 rounded-full overflow-hidden h-12 w-12">
             <Image
@@ -21,11 +21,11 @@ interface TestimonialCardProps {
             />
           </div>
           <div>
-            <h4 className="font-semibold text-slate-900">{author}</h4>
-            <p className="text-sm text-slate-500">{role}</p>
+            <h4 className="font-semibold text-foreground">{author}</h4>
+            <p className="text-sm text-muted-foreground">{role}</p>
           </div>
         </div>
-        <p className="text-slate-700 italic">&ldquo;{quote}&rdquo;</p>
+        <p className="text-muted-foreground italic">&ldquo;{quote}&rdquo;</p>
       </div>
     )
   }

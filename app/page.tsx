@@ -1,13 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Link } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
 import PricingCard from "@/components/pricing-card";
 import TestimonialCard from "@/components/testimonial-card";
 import FaqAccordion from "@/components/faq-accordion";
 import Image from "next/image";
+import Link from "next/link";
 import ResumePreview from "@/components/resume-preview";
 import ResumeForm from "@/components/resume-form";
 import { ResumeData } from "@/lib/types";
@@ -82,14 +83,14 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="py-20 px-4 md:px-6 lg:py-32 bg-gradient-to-b from-slate-50 to-white">
+      <section id="hero" className="py-20 px-4 md:px-6 lg:py-32 bg-gradient-to-b from-background to-background/50">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
                 Craft the perfect resume in minutes
               </h1>
-              <p className="text-xl text-slate-600 max-w-2xl">
+              <p className="text-xl text-muted-foreground max-w-2xl">
                 Resume AI uses advanced technology to help you create
                 professional, ATS-friendly resumes that stand out to employers.
               </p>
@@ -107,7 +108,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex-1 relative">
-              <div className="bg-white rounded-xl shadow-2xl overflow-hidden border border-slate-200">
+              <div className="bg-card rounded-xl shadow-2xl overflow-hidden border border-border">
                 <Image
                   src="/placeholder.svg?height=600&width=800"
                   alt="Resume AI interface"
@@ -116,9 +117,9 @@ export default function Home() {
                   height={600}
                 />
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg border border-slate-200">
+              <div className="absolute -bottom-6 -left-6 bg-card p-4 rounded-lg shadow-lg border border-border">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="text-green-500 h-5 w-5" />
+                  <CheckCircle2 className="text-primary h-5 w-5" />
                   <span className="text-sm font-medium">ATS-Optimized</span>
                 </div>
               </div>
@@ -128,13 +129,13 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 md:px-6 bg-white">
+      <section id="features" className="py-20 px-4 md:px-6 bg-background">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why choose Resume AI?
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Our platform offers everything you need to create professional
               resumes that get results.
             </p>
@@ -163,13 +164,13 @@ export default function Home() {
             ].map((feature, index) => (
               <div
                 key={index}
-                className="bg-slate-50 p-8 rounded-xl border border-slate-100"
+                className="bg-card p-8 rounded-xl border border-border"
               >
                 <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-2 text-slate-900">
+                <h3 className="text-xl font-semibold mb-2 text-foreground">
                   {feature.title}
                 </h3>
-                <p className="text-slate-600">{feature.description}</p>
+                <p className="text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -177,13 +178,13 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 px-4 md:px-6 bg-slate-50">
+      <section id="pricing" className="py-20 px-4 md:px-6 bg-muted/50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Simple, transparent pricing
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Choose the plan that works best for your needs.
             </p>
           </div>
@@ -238,13 +239,13 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 px-4 md:px-6 bg-white">
+      <section id="testimonials" className="py-20 px-4 md:px-6 bg-background">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               What our users say
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Join thousands of professionals who&apos;ve landed their dream
               jobs with Resume AI.
             </p>
@@ -276,13 +277,13 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-4 md:px-6 bg-slate-50">
+      <section id="faq" className="py-20 px-4 md:px-6 bg-muted/50">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Frequently asked questions
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Everything you need to know about Resume AI.
             </p>
           </div>
@@ -320,18 +321,18 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 md:px-6 bg-slate-900 text-white">
+      <section className="py-20 px-4 md:px-6 bg-primary text-primary-foreground">
         <div className="container mx-auto max-w-4xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to create your standout resume?
           </h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
             Join thousands of professionals who&apos;ve accelerated their
             careers with Resume AI.
           </p>
           <Button
             size="lg"
-            className="text-base px-8 py-6 bg-white text-slate-900 hover:bg-slate-100"
+            className="text-base px-8 py-6 bg-background text-foreground hover:bg-background/90"
           >
             Get Started Today
           </Button>

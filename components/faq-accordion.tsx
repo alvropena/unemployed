@@ -16,8 +16,8 @@ export default function FaqAccordion({ items }: FaqAccordionProps) {
     <Accordion type="single" collapsible className="w-full">
       {items.map((item, index) => (
         <AccordionItem key={index} value={`item-${index}`}>
-          <AccordionTrigger className="text-left font-medium">{item.question}</AccordionTrigger>
-          <AccordionContent className="text-slate-600">{item.answer}</AccordionContent>
+          <AccordionTrigger className="text-left font-medium text-foreground">{item.question}</AccordionTrigger>
+          <AccordionContent className="text-muted-foreground">{item.answer}</AccordionContent>
         </AccordionItem>
       ))}
     </Accordion>
