@@ -51,30 +51,64 @@ function PaymentStatusHandler() {
 }
 
 export default function Home() {
-	const { isSignedIn, isLoaded } = useAuth();
+	const { isSignedIn, isLoaded, userId } = useAuth();
 	const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
 	const [hasPaid, setHasPaid] = useState(false);
 	const [isLoadingData, setIsLoadingData] = useState(true);
 	const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+	const searchParams = useSearchParams();
 
-	// Check if user has paid - this would be replaced with your actual payment verification
+	// Check subscription status from localStorage
 	useEffect(() => {
-		if (!isSignedIn) return;
+		if (!isSignedIn || !userId) return;
 
-		// Mock implementation - replace with your actual API call to check payment status
-		const checkPaymentStatus = async () => {
-			// Replace this with your actual payment verification logic
-			// For example: const response = await fetch('/api/check-payment')
-			// setHasPaid(response.data.hasPaid)
-
-			// For now, we'll just mock it
-			const isPaid = false; // Set to false to test the unpaid state
-			setHasPaid(isPaid);
-			setShowSubscriptionModal(!isPaid);
+		const checkSubscriptionStatus = () => {
+			try {
+				const subscriptionData = localStorage.getItem(`subscription_${userId}`);
+				if (subscriptionData) {
+					const data = JSON.parse(subscriptionData);
+					const isValid = data.status === "active" && data.userId === userId;
+					setHasPaid(isValid);
+					setShowSubscriptionModal(!isValid);
+				} else {
+					setHasPaid(false);
+					setShowSubscriptionModal(true);
+				}
+			} catch (error) {
+				console.error("Error checking subscription:", error);
+				setHasPaid(false);
+				setShowSubscriptionModal(true);
+			}
 		};
 
-		checkPaymentStatus();
-	}, [isSignedIn]); // Only run when isSignedIn changes
+		checkSubscriptionStatus();
+	}, [isSignedIn, userId]);
+
+	// Handle successful payment
+	useEffect(() => {
+		if (searchParams.get("success") === "true" && userId) {
+			// Store subscription data in localStorage
+			localStorage.setItem(
+				`subscription_${userId}`,
+				JSON.stringify({
+					userId,
+					status: "active",
+					plan: searchParams.get("plan") || "default",
+					updatedAt: new Date().toISOString(),
+				}),
+			);
+
+			toast.success(
+				"Payment successful! Your premium features are now active.",
+			);
+			setHasPaid(true);
+			setShowSubscriptionModal(false);
+		}
+
+		if (searchParams.get("canceled") === "true") {
+			toast.error("Payment was canceled. Please try again when you're ready.");
+		}
+	}, [searchParams, userId]);
 
 	// Load saved resume data when authenticated
 	useEffect(() => {

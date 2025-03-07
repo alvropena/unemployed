@@ -41,17 +41,7 @@ export async function POST(req: Request) {
                 const plan = session.metadata?.plan;
 
                 if (userId && plan) {
-                    // Here you would update your database to mark the user as paid
-                    // For example with Prisma:
-                    // await prisma.user.update({
-                    //   where: { id: userId },
-                    //   data: { 
-                    //     subscriptionStatus: 'active',
-                    //     plan: plan,
-                    //     stripeCustomerId: session.customer as string,
-                    //   }
-                    // });
-
+                    // Log the successful payment - in a real app, you might want to store this in a database
                     console.log(`User ${userId} has completed payment for ${plan} plan`);
                 }
                 break;
@@ -59,8 +49,13 @@ export async function POST(req: Request) {
 
             case "customer.subscription.updated":
             case "customer.subscription.deleted": {
-                // Handle subscription updates
-                // Update user's subscription status in your database
+                const subscription = event.data.object as Stripe.Subscription;
+                const userId = subscription.metadata?.userId;
+
+                if (userId) {
+                    // Log the subscription update - in a real app, you might want to store this in a database
+                    console.log(`Subscription ${subscription.id} ${event.type} for user ${userId}`);
+                }
                 break;
             }
         }

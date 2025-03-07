@@ -14,11 +14,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 const PLANS = {
   monthly: {
     priceId: process.env.STRIPE_MONTHLY_PRICE_ID || 'price_XXXXX',
-    trial_period_days: 14,
   },
   annual: {
     priceId: process.env.STRIPE_ANNUAL_PRICE_ID || 'price_XXXXX',
-    trial_period_days: 14,
   },
   lifetime: {
     priceId: process.env.STRIPE_LIFETIME_PRICE_ID || 'price_XXXXX',
@@ -53,15 +51,12 @@ export async function POST(req: Request) {
         },
       ],
       mode: plan === "lifetime" ? "payment" : "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
       metadata: {
         userId,
         plan,
-      },
-      subscription_data: plan !== "lifetime" && 'trial_period_days' in selectedPlan ? {
-        trial_period_days: selectedPlan.trial_period_days,
-      } : undefined,
+      }
     });
 
     return NextResponse.json({ sessionId: checkoutSession.id });
