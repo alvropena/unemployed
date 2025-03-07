@@ -11,7 +11,7 @@ import ResumePreview from "@/components/resume-preview";
 import ResumeForm from "@/components/resume-form";
 import type { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/default-data";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { loadResumeData } from "@/lib/resumeService";
 import { loadStripe } from "@stripe/stripe-js";
@@ -30,13 +30,32 @@ const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 	? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 	: null;
 
+function PaymentStatusHandler() {
+	const searchParams = useSearchParams();
+
+	useEffect(() => {
+		// Check if payment was successful
+		if (searchParams.get("success") === "true") {
+			toast.success(
+				"Payment successful! Your premium features are now active.",
+			);
+		}
+
+		// Check if payment was canceled
+		if (searchParams.get("canceled") === "true") {
+			toast.error("Payment was canceled. Please try again when you're ready.");
+		}
+	}, [searchParams]);
+
+	return null;
+}
+
 export default function Home() {
 	const { isSignedIn, isLoaded } = useAuth();
 	const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
 	const [hasPaid, setHasPaid] = useState(false);
 	const [isLoadingData, setIsLoadingData] = useState(true);
 	const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
-	const searchParams = useSearchParams();
 
 	// Check if user has paid - this would be replaced with your actual payment verification
 	useEffect(() => {
@@ -74,21 +93,6 @@ export default function Home() {
 			setIsLoadingData(false);
 		}
 	}, [isSignedIn]);
-
-	// Check for success or canceled payment status
-	useEffect(() => {
-		// Check if payment was successful
-		if (searchParams.get("success") === "true") {
-			toast.success(
-				"Payment successful! Your premium features are now active.",
-			);
-		}
-
-		// Check if payment was canceled
-		if (searchParams.get("canceled") === "true") {
-			toast.error("Payment was canceled. Please try again when you're ready.");
-		}
-	}, [searchParams]);
 
 	// Function to handle subscription checkout
 	const handleSubscribe = async (plan: string) => {
@@ -136,6 +140,9 @@ export default function Home() {
 	if (isSignedIn) {
 		return (
 			<>
+				<Suspense fallback={<div>Loading...</div>}>
+					<PaymentStatusHandler />
+				</Suspense>
 				{/* Dark overlay when modal is open - using standard opacity */}
 				{showSubscriptionModal && (
 					<div className="fixed inset-0 bg-black/50 z-40" />
