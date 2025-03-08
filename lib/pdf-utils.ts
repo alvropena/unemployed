@@ -8,7 +8,8 @@ export async function downloadResume(element: HTMLElement) {
     html2canvas: { 
       scale: 2,
       useCORS: true,
-      letterRendering: true
+      letterRendering: true,
+      logging: true,
     },
     jsPDF: { 
       unit: 'in', 
@@ -17,9 +18,17 @@ export async function downloadResume(element: HTMLElement) {
     }
   };
 
-  try {
-    await html2pdf().set(opt).from(element).save();
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-  }
+  return new Promise((resolve, reject) => {
+    html2pdf()
+      .from(element)
+      .set(opt)
+      .save()
+      .then(() => {
+        resolve(true);
+      })
+      .catch((error) => {
+        console.error('PDF generation error:', error);
+        reject(error);
+      });
+  });
 }

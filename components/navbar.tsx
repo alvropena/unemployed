@@ -6,11 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { downloadResume } from "@/lib/pdf-utils";
+import { usePDF } from "@/hooks/use-pdf";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function Navbar() {
   const { isSignedIn } = useAuth();
   const pathname = usePathname();
+  const { downloadPDF, isDownloading } = usePDF();
 
   // Only enable scrolling on the home page
   const isHomePage = pathname === "/";
@@ -35,8 +38,17 @@ export function Navbar() {
 
   const handleDownload = async () => {
     const resumeElement = document.getElementById('resume-preview');
-    if (resumeElement) {
-      await downloadResume(resumeElement);
+    if (!resumeElement) {
+      toast.error("Could not find resume element");
+      return;
+    }
+
+    try {
+      await downloadPDF(resumeElement);
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to download PDF");
     }
   };
 
@@ -84,9 +96,9 @@ export function Navbar() {
           <ThemeSwitcher />
           {isSignedIn ? (
             <>
-              <Button onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" />
-                Download PDF
+              <Button onClick={handleDownload} disabled={isDownloading}>
+                <Download className={`mr-2 h-4 w-4 ${isDownloading ? 'animate-spin' : ''}`} />
+                {isDownloading ? 'Downloading...' : 'Download PDF'}
               </Button>
               <UserButton afterSignOutUrl="/" />
             </>
