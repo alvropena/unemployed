@@ -25,116 +25,141 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
   return (
     <div 
       id="resume-preview"
-      className="h-full w-full p-6 bg-white font-['Times_New_Roman'] text-[12pt] leading-normal text-black"
+      className="h-full w-full p-6 bg-white font-['Times_New_Roman'] text-[11pt] leading-[1.3] text-black"
     >
-      {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-[28pt] font-bold text-black">
+      {/* Header - Name and contact info */}
+      <div className="text-center mb-[8pt]">
+        <h1 className="text-[24pt] font-bold mb-[4pt]">
           {getValueOrDefault(data?.personal?.name, defaultResumeData.personal.name)}
         </h1>
-        <p className="text-[11pt] text-black mt-2">
+        {/* Contact info with pipe separators */}
+        <p className="text-[10pt] text-black">
           {[
             formatPhoneNumber(getValueOrDefault(data?.personal?.phone, defaultResumeData.personal.phone)),
-            getValueOrDefault(data?.personal?.email, defaultResumeData.personal.email),
-            data?.personal?.linkedin && `linkedin.com/in/${data.personal.linkedin.split('/').pop()}` || defaultResumeData.personal.linkedin,
-            data?.personal?.github && `github.com/${data.personal.github.split('/').pop()}` || defaultResumeData.personal.github
+            <a key="email" href={`mailto:${getValueOrDefault(data?.personal?.email, defaultResumeData.personal.email)}`} className="underline">
+              {getValueOrDefault(data?.personal?.email, defaultResumeData.personal.email)}
+            </a>,
+            data?.personal?.linkedin && 
+              <a key="linkedin" href={`https://linkedin.com/in/${data.personal.linkedin.split('/').pop()}`} className="underline">
+                {`linkedin.com/in/${data.personal.linkedin.split('/').pop()}`}
+              </a> || 
+              <a key="linkedin-default" href={defaultResumeData.personal.linkedin} className="underline">
+                {defaultResumeData.personal.linkedin}
+              </a>,
+            data?.personal?.github && 
+              <a key="github" href={`https://github.com/${data.personal.github.split('/').pop()}`} className="underline">
+                {`github.com/${data.personal.github.split('/').pop()}`}
+              </a> || 
+              <a key="github-default" href={defaultResumeData.personal.github} className="underline">
+                {defaultResumeData.personal.github}
+              </a>
           ]
             .filter(Boolean)
-            .join(" | ")}
+            .map((item, index, array) => {
+              if (index === 0) return item;
+              return [" | ", item];
+            })
+            .flat()}
         </p>
       </div>
 
       {/* Education Section */}
-      <div className="mb-6">
-        <h2 className="text-[14pt] font-bold border-b border-black mb-3 uppercase">
+      <div className="mb-[10pt]">
+        <h2 className="text-[14pt] font-bold uppercase border-b border-black pb-[3pt] mb-[6pt] text-left">
           Education
         </h2>
-        {((data?.education?.length ?? 0) > 0 ? data.education : defaultResumeData.education).map((edu, index) => (
-          <div key={index} className="mb-2">
-            <div className="flex justify-between items-baseline">
-              <div className="font-bold">{edu.institution}</div>
-              <div>{edu.location}</div>
-            </div>
-            <div className="flex justify-between items-baseline">
-              <div className="italic">{edu.degree}</div>
-              <div>{edu.date}</div>
-            </div>
-          </div>
-        ))}
+        <ul className="list-none pl-0">
+          {((data?.education?.length ?? 0) > 0 ? data.education : defaultResumeData.education).map((edu, index) => (
+            <li key={index} className="mb-[7pt]">
+              <div className="flex justify-between items-baseline w-full">
+                <div className="font-bold">{edu.institution}</div>
+                <div>{edu.location}</div>
+              </div>
+              <div className="flex justify-between items-baseline w-full">
+                <div className="italic text-[10pt]">{edu.degree}</div>
+                <div className="italic text-[10pt]">{edu.date}</div>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Experience Section */}
-      <div className="mb-6">
-        <h2 className="text-[14pt] font-bold border-b border-black mb-3 uppercase">
+      <div className="mb-[10pt]">
+        <h2 className="text-[14pt] font-bold uppercase border-b border-black pb-[3pt] mb-[6pt] text-left">
           Experience
         </h2>
-        {((data?.experience?.length ?? 0) > 0 ? data.experience : defaultResumeData.experience).map((exp, index) => (
-          <div key={index} className="mb-3">
-            <div className="flex justify-between items-baseline">
-              <div className="font-bold">{exp.title}</div>
-              <div>{exp.date}</div>
-            </div>
-            <div className="flex justify-between items-baseline">
-              <div className="italic">{exp.company}</div>
-              <div>{exp.location}</div>
-            </div>
-            <ul className="list-disc ml-4 mt-1">
-              {exp.responsibilities.map((resp, respIndex) => (
-                <li key={respIndex} className="text-[11pt]">{resp}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <ul className="list-none pl-0">
+          {((data?.experience?.length ?? 0) > 0 ? data.experience : defaultResumeData.experience).map((exp, index) => (
+            <li key={index} className="mb-[7pt]">
+              <div className="flex justify-between items-baseline w-full">
+                <div className="font-bold">{exp.title}</div>
+                <div>{exp.date}</div>
+              </div>
+              <div className="flex justify-between items-baseline w-full">
+                <div className="italic text-[10pt]">{exp.company}</div>
+                <div className="italic text-[10pt]">{exp.location}</div>
+              </div>
+              <ul className="list-disc pl-[15pt] mt-[2pt]">
+                {exp.responsibilities.map((resp, respIndex) => (
+                  <li key={respIndex} className="text-[10pt] mb-[2pt]">{resp}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Projects Section */}
-      <div className="mb-6">
-        <h2 className="text-[14pt] font-bold border-b border-black mb-3 uppercase">
+      <div className="mb-[10pt]">
+        <h2 className="text-[14pt] font-bold uppercase border-b border-black pb-[3pt] mb-[6pt] text-left">
           Projects
         </h2>
-        {((data?.projects?.length ?? 0) > 0 ? data.projects : defaultResumeData.projects).map((project, index) => (
-          <div key={index} className="mb-3">
-            <div className="flex justify-between items-baseline">
-              <div>
-                <span className="font-bold">{project.name}</span>
-                {project.technologies && (
-                  <span className="italic"> | {project.technologies}</span>
-                )}
+        <ul className="list-none pl-0">
+          {((data?.projects?.length ?? 0) > 0 ? data.projects : defaultResumeData.projects).map((project, index) => (
+            <li key={index} className="mb-[7pt]">
+              <div className="flex justify-between items-baseline w-full">
+                <div>
+                  <span className="font-bold">{project.name}</span>
+                  {project.technologies && (
+                    <span className="italic"> | {project.technologies}</span>
+                  )}
+                </div>
+                <div>{project.date}</div>
               </div>
-              <div>{project.date}</div>
-            </div>
-            <ul className="list-disc ml-4 mt-1">
-              {project.details.map((detail, detailIndex) => (
-                <li key={detailIndex} className="text-[11pt]">{detail}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
+              <ul className="list-disc pl-[15pt] mt-[2pt]">
+                {project.details.map((detail, detailIndex) => (
+                  <li key={detailIndex} className="text-[10pt] mb-[2pt]">{detail}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Technical Skills Section */}
       <div>
-        <h2 className="text-[14pt] font-bold border-b border-black mb-3 uppercase">
+        <h2 className="text-[14pt] font-bold uppercase border-b border-black pb-[3pt] mb-[6pt] text-left">
           Technical Skills
         </h2>
-        <div className="space-y-2">
-          <div>
+        <ul className="list-none pl-0 text-[10pt]">
+          <li className="mb-[2pt]">
             <span className="font-bold">Languages:</span>{" "}
             <span>{getValueOrDefault(data?.skills?.languages, defaultResumeData.skills.languages)}</span>
-          </div>
-          <div>
+          </li>
+          <li className="mb-[2pt]">
             <span className="font-bold">Frameworks:</span>{" "}
             <span>{getValueOrDefault(data?.skills?.frameworks, defaultResumeData.skills.frameworks)}</span>
-          </div>
-          <div>
+          </li>
+          <li className="mb-[2pt]">
             <span className="font-bold">Developer Tools:</span>{" "}
             <span>{getValueOrDefault(data?.skills?.tools, defaultResumeData.skills.tools)}</span>
-          </div>
-          <div>
+          </li>
+          <li className="mb-[2pt]">
             <span className="font-bold">Libraries:</span>{" "}
             <span>{getValueOrDefault(data?.skills?.libraries, defaultResumeData.skills.libraries)}</span>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </div>
   );

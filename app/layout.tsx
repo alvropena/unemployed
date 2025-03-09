@@ -21,6 +21,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
+			<head>
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern-font@1.0.1/index.css" />
+			</head>
 			<body className={inter.className}>
 				<ClerkProvider>
 					<ThemeProvider
