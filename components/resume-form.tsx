@@ -5,7 +5,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save } from "lucide-react";
+import { Save, Download } from "lucide-react";
 import type { ResumeData } from "@/lib/types";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -28,6 +28,7 @@ interface ResumeFormProps {
 export default function ResumeForm({ data, setData }: ResumeFormProps) {
 	const [activeTab, setActiveTab] = useState("personal");
 	const [isSaving, setIsSaving] = useState(false);
+	const [isExporting, setIsExporting] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 	const { toast } = useToast();
 
@@ -88,6 +89,158 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
 					"There was an error saving your resume. Your changes have been saved locally.",
 				variant: "destructive",
 			});
+		}
+	};
+
+	const handleExportPDF = () => {
+		setIsExporting(true);
+		
+		try {
+			// Add print-specific styles
+			const style = document.createElement('style');
+			style.textContent = `
+				@import url('https://fonts.cdnfonts.com/css/computer-modern');
+				
+				@page {
+					margin: 0;
+					size: A4;
+				}
+				@media print {
+					body * {
+						visibility: hidden;
+					}
+					#resume-preview, #resume-preview * {
+						visibility: visible;
+					}
+					#resume-preview {
+						position: absolute;
+						left: 50%;
+						transform: translateX(-50%);
+						top: 0;
+						width: 170mm; /* Narrower width for LaTeX-like margins */
+						min-height: 0 !important;
+						height: auto !important;
+						max-height: 297mm !important; /* A4 height */
+						padding: 25mm 0; /* LaTeX-like vertical padding */
+						margin: 0 auto;
+						overflow: visible !important;
+						box-sizing: border-box;
+						font-family: 'Computer Modern', serif !important;
+						font-size: 10pt;
+						line-height: 1.2;
+						color: rgb(0, 0, 0);
+					}
+					/* LaTeX-style typography */
+					#resume-preview h1 {
+						font-family: 'Computer Modern', serif !important;
+						font-size: 17pt;
+						margin: 0 0 8pt 0;
+						text-align: center;
+						font-weight: normal;
+					}
+					#resume-preview h2 {
+						font-family: 'Computer Modern', serif !important;
+						font-size: 12pt;
+						margin: 12pt 0 6pt 0;
+						text-transform: uppercase;
+						border-bottom: 0.8pt solid black;
+						padding-bottom: 3pt;
+						font-weight: normal;
+					}
+					/* Contact info styling */
+					#resume-preview .contact-info {
+						text-align: center;
+						margin: 3pt 0 16pt 0;
+						font-size: 10pt;
+					}
+					#resume-preview .contact-info a {
+						color: black;
+						text-decoration: none;
+					}
+					/* Content styling */
+					#resume-preview p {
+						margin: 0 0 4pt 0;
+					}
+					#resume-preview ul {
+						margin: 4pt 0;
+						padding-left: 12pt;
+					}
+					#resume-preview li {
+						margin: 2pt 0;
+						padding-left: 4pt;
+					}
+					/* Institution/Company lines */
+					#resume-preview .institution,
+					#resume-preview .company {
+						font-weight: bold;
+					}
+					#resume-preview .degree,
+					#resume-preview .position {
+						font-style: italic;
+					}
+					/* Project styling */
+					#resume-preview .project-title {
+						font-weight: bold;
+					}
+					#resume-preview .project-tech {
+						font-style: italic;
+					}
+					/* Skills section */
+					#resume-preview .skills-section {
+						margin: 6pt 0;
+					}
+					#resume-preview .skills-section strong {
+						font-weight: normal;
+					}
+					/* Ensure single page */
+					#resume-preview * {
+						page-break-inside: avoid;
+					}
+					/* Hide UI elements */
+					#resume-preview [role="tablist"],
+					#resume-preview button,
+					#resume-preview [data-state="inactive"] {
+						display: none !important;
+					}
+					#resume-preview [data-state="active"] {
+						display: block !important;
+					}
+					/* Remove headers and footers */
+					@page {
+						margin: 0;
+						size: A4;
+					}
+					@page :first {
+						margin-top: 0;
+					}
+					@page :left {
+						margin-left: 0;
+					}
+					@page :right {
+						margin-right: 0;
+					}
+				}
+			`;
+			document.head.appendChild(style);
+
+			window.print();
+
+			// Clean up
+			document.head.removeChild(style);
+			
+			toast({
+				title: "Ready to save",
+				description: "Use your browser's save as PDF option in the print dialog.",
+			});
+		} catch (error) {
+			console.error('Print error:', error);
+			toast({
+				title: "Export failed",
+				description: "There was an error preparing the resume for export.",
+				variant: "destructive",
+			});
+		} finally {
+			setIsExporting(false);
 		}
 	};
 
@@ -345,54 +498,75 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
 				<>
 					<div className="flex justify-between items-center mb-4">
 						<h2 className="text-xl font-semibold">Resume Information</h2>
-						<Button
-							onClick={handleSaveResume}
-							disabled={isSaving}
-							className="flex items-center gap-2"							
-						>
-							{isSaving ? (
-								<>
-									<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-									Saving...
-								</>
-							) : (
-								<>
-									<Save className="h-4 w-4" />
-									Save Resume
-								</>
-							)}
-						</Button>
+						<div className="flex gap-2">
+							<Button
+								onClick={handleExportPDF}
+								disabled={isExporting}
+								className="flex items-center gap-2"
+							>
+								{isExporting ? (
+									<>
+										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+										Exporting...
+									</>
+								) : (
+									<>
+										<Download className="h-4 w-4" />
+										Download PDF
+									</>
+								)}
+							</Button>
+							<Button
+								onClick={handleSaveResume}
+								disabled={isSaving}
+								className="flex items-center gap-2"							
+							>
+								{isSaving ? (
+									<>
+										<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+										Saving...
+									</>
+								) : (
+									<>
+										<Save className="h-4 w-4" />
+										Save Resume
+									</>
+								)}
+							</Button>
+						</div>
 					</div>
 
-					<Tabs value={activeTab} onValueChange={setActiveTab}>
-						<TabsList className="grid grid-cols-5 mb-4">
-							<TabsTrigger value="personal">Personal</TabsTrigger>
-							<TabsTrigger value="education">Education</TabsTrigger>
-							<TabsTrigger value="experience">Experience</TabsTrigger>
-							<TabsTrigger value="projects">Projects</TabsTrigger>
-							<TabsTrigger value="skills">Skills</TabsTrigger>
-						</TabsList>
+					<div id="resume-preview">
+						<Tabs value={activeTab} onValueChange={setActiveTab}>
+							<TabsList className="grid grid-cols-5 mb-4">
+								<TabsTrigger value="personal">Personal</TabsTrigger>
+								<TabsTrigger value="education">Education</TabsTrigger>
+								<TabsTrigger value="experience">Experience</TabsTrigger>
+								<TabsTrigger value="projects">Projects</TabsTrigger>
+								<TabsTrigger value="skills">Skills</TabsTrigger>
+							</TabsList>
 
-						<TabsContent value="personal" className="space-y-4">
-							<PersonalForm personal={data.personal} updatePersonal={updatePersonal} />
-						</TabsContent>
+							<TabsContent value="personal" className="space-y-4">
+								<PersonalForm personal={data.personal} updatePersonal={updatePersonal} />
+							</TabsContent>
 
-						<TabsContent value="education" className="space-y-4">
-							<EducationForm education={data.education} addEducation={addEducation} updateEducation={updateEducation} removeEducation={removeEducation} />
-						</TabsContent>
+							<TabsContent value="education" className="space-y-4">
+								<EducationForm education={data.education} addEducation={addEducation} updateEducation={updateEducation} removeEducation={removeEducation} />
+							</TabsContent>
 
-						<TabsContent value="experience" className="space-y-4">
-							<ExperienceForm experience={data.experience} addExperience={addExperience} updateExperience={updateExperience} removeExperience={removeExperience} addResponsibility={addResponsibility} updateResponsibility={updateResponsibility} removeResponsibility={removeResponsibility} />
-						</TabsContent>
+							<TabsContent value="experience" className="space-y-4">
+								<ExperienceForm experience={data.experience} addExperience={addExperience} updateExperience={updateExperience} removeExperience={removeExperience} addResponsibility={addResponsibility} updateResponsibility={updateResponsibility} removeResponsibility={removeResponsibility} />
+							</TabsContent>
 
-						<TabsContent value="projects" className="space-y-4">
-							<ProjectsForm projects={data.projects} addProject={addProject} updateProject={updateProject} removeProject={removeProject} addProjectDetail={addProjectDetail} updateProjectDetail={updateProjectDetail} removeProjectDetail={removeProjectDetail} />
-						</TabsContent>
+							<TabsContent value="projects" className="space-y-4">
+								<ProjectsForm projects={data.projects} addProject={addProject} updateProject={updateProject} removeProject={removeProject} addProjectDetail={addProjectDetail} updateProjectDetail={updateProjectDetail} removeProjectDetail={removeProjectDetail} />
+							</TabsContent>
 
-						<TabsContent value="skills" className="space-y-4">
-							<SkillsForm skills={data.skills} updateSkills={updateSkills} />
-						</TabsContent>
-					</Tabs>
+							<TabsContent value="skills" className="space-y-4">
+								<SkillsForm skills={data.skills} updateSkills={updateSkills} />
+							</TabsContent>
+						</Tabs>
+					</div>
 				</>
 			)}
 		</>
