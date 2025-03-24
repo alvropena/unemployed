@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +8,7 @@ import { Plus, Trash2 } from "lucide-react";
 import type { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/default-data";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Select,
 	SelectContent,
@@ -27,7 +30,10 @@ const months = [
 	"October",
 	"November",
 	"December",
-];
+] as const;
+
+type Month = (typeof months)[number];
+type Year = string;
 
 const years = Array.from(
 	{ length: 50 },
@@ -48,10 +54,10 @@ export default function EducationForm({
 	removeEducation,
 }: EducationFormProps) {
 	const formatDate = (
-		startMonth: string,
-		startYear: string,
-		endMonth: string,
-		endYear: string,
+		startMonth: Month,
+		startYear: Year,
+		endMonth: Month,
+		endYear: Year | "Present",
 	) => {
 		const start = `${startMonth} ${startYear}`;
 		const end = endYear === "Present" ? "Present" : `${endMonth} ${endYear}`;
@@ -63,8 +69,7 @@ export default function EducationForm({
 			{education.map((edu, index) => {
 				const [startMonth, startYear, endMonth, endYear] = edu.date
 					.split(" – ")
-					.map((part) => part.split(" "))
-					.flat()
+					.flatMap((part) => part.split(" "))
 					.map((part) => part.trim());
 
 				return (
@@ -132,141 +137,167 @@ export default function EducationForm({
 										}
 									/>
 								</div>
-								<div className="space-y-2">
+								<div className="space-y-4">
 									<Label>Date Range</Label>
-									<div className="grid grid-cols-2 gap-4">
-										<div className="space-y-2">
-											<Label className="text-xs text-muted-foreground">
-												Start Date
-											</Label>
-											<div className="grid grid-cols-2 gap-2">
-												<Select
-													value={startMonth}
-													onValueChange={(value) =>
-														updateEducation(
-															index,
-															"date",
-															formatDate(
-																value,
-																startYear || years[0].toString(),
-																endMonth || "December",
-																endYear || "Present",
-															),
-														)
-													}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Month" />
-													</SelectTrigger>
-													<SelectContent>
-														{months.map((month) => (
-															<SelectItem key={month} value={month}>
-																{month}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												<Select
-													value={startYear}
-													onValueChange={(value) =>
-														updateEducation(
-															index,
-															"date",
-															formatDate(
-																startMonth || "January",
-																value,
-																endMonth || "December",
-																endYear || "Present",
-															),
-														)
-													}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Year" />
-													</SelectTrigger>
-													<SelectContent>
-														{years.map((year) => (
-															<SelectItem key={year} value={year.toString()}>
-																{year}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											</div>
-										</div>
-										<div className="space-y-2">
-											<Label className="text-xs text-muted-foreground">
-												End Date
-											</Label>
-											<div className="grid grid-cols-2 gap-2">
-												<Select
-													value={endMonth}
-													onValueChange={(value) =>
-														updateEducation(
-															index,
-															"date",
-															formatDate(
-																startMonth || "January",
-																startYear || years[0].toString(),
-																value,
-																endYear || "Present",
-															),
-														)
-													}
-													disabled={endYear === "Present"}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Month" />
-													</SelectTrigger>
-													<SelectContent>
-														{months.map((month) => (
-															<SelectItem key={month} value={month}>
-																{month}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-												<Select
-													value={endYear}
-													onValueChange={(value) => {
-														if (value === "Present") {
-															updateEducation(
-																index,
-																"date",
-																formatDate(
-																	startMonth || "January",
-																	startYear || years[0].toString(),
-																	"December",
-																	"Present",
-																),
-															);
-														} else {
-															updateEducation(
-																index,
-																"date",
-																formatDate(
-																	startMonth || "January",
-																	startYear || years[0].toString(),
-																	endMonth || "December",
-																	value,
-																),
-															);
-														}
-													}}
-												>
-													<SelectTrigger>
-														<SelectValue placeholder="Year" />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="Present">Present</SelectItem>
-														{years.map((year) => (
-															<SelectItem key={year} value={year.toString()}>
-																{year}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											</div>
+									<div className="grid grid-cols-4 gap-2">
+										<Select
+											value={startMonth as Month}
+											onValueChange={(value: Month) =>
+												updateEducation(
+													index,
+													"date",
+													formatDate(
+														value,
+														startYear || years[0].toString(),
+														(endMonth as Month) || "December",
+														endYear || "Present",
+													),
+												)
+											}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Month" />
+											</SelectTrigger>
+											<SelectContent>
+												{months.map((month) => (
+													<SelectItem key={month} value={month}>
+														{month}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<Select
+											value={startYear}
+											onValueChange={(value: Year) =>
+												updateEducation(
+													index,
+													"date",
+													formatDate(
+														(startMonth as Month) || "January",
+														value,
+														(endMonth as Month) || "December",
+														endYear || "Present",
+													),
+												)
+											}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Year" />
+											</SelectTrigger>
+											<SelectContent>
+												{years.map((year) => (
+													<SelectItem key={year} value={year.toString()}>
+														{year}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<Select
+											value={endMonth as Month}
+											onValueChange={(value: Month) =>
+												updateEducation(
+													index,
+													"date",
+													formatDate(
+														(startMonth as Month) || "January",
+														startYear || years[0].toString(),
+														value,
+														endYear || "Present",
+													),
+												)
+											}
+											disabled={endYear === "Present"}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Month" />
+											</SelectTrigger>
+											<SelectContent>
+												{months.map((month) => (
+													<SelectItem key={month} value={month}>
+														{month}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<Select
+											value={endYear}
+											onValueChange={(value: Year | "Present") => {
+												if (value === "Present") {
+													updateEducation(
+														index,
+														"date",
+														formatDate(
+															(startMonth as Month) || "January",
+															startYear || years[0].toString(),
+															"December",
+															"Present",
+														),
+													);
+												} else {
+													updateEducation(
+														index,
+														"date",
+														formatDate(
+															(startMonth as Month) || "January",
+															startYear || years[0].toString(),
+															(endMonth as Month) || "December",
+															value,
+														),
+													);
+												}
+											}}
+											disabled={endYear === "Present"}
+										>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Year" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="Present">Present</SelectItem>
+												{years.map((year) => (
+													<SelectItem key={year} value={year.toString()}>
+														{year}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div>
+									<div className="items-top flex space-x-2">
+										<Checkbox
+											id={`current-education-${index}`}
+											checked={endYear === "Present"}
+											onCheckedChange={(checked: boolean) => {
+												if (checked) {
+													updateEducation(
+														index,
+														"date",
+														formatDate(
+															(startMonth as Month) || "January",
+															startYear || years[0].toString(),
+															"December",
+															"Present",
+														),
+													);
+												} else {
+													updateEducation(
+														index,
+														"date",
+														formatDate(
+															(startMonth as Month) || "January",
+															startYear || years[0].toString(),
+															"December",
+															years[0].toString(),
+														),
+													);
+												}
+											}}
+										/>
+										<div className="grid gap-1.5 leading-none">
+											<label
+												htmlFor={`current-education-${index}`}
+												className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+											>
+												I currently study at this institution
+											</label>
 										</div>
 									</div>
 								</div>

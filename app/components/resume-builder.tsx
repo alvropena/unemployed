@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Download, Eye } from "lucide-react";
+import { Edit, Download, Eye, Wand2 } from "lucide-react";
 import ResumeForm from "@/components/resume-form";
 import ResumePreview from "@/components/resume-preview";
 import type { ResumeData } from "@/lib/types";
@@ -40,8 +40,19 @@ export default function ResumeBuilder({
 			}`}
 		>
 			{/* Action Buttons */}
-			<div className="flex flex-col md:flex-row md:justify-end gap-2 my-4">
+			<div className="flex flex-col md:flex-row md:justify-between gap-2 my-4">
 				{/* Mobile: Full width grid, Desktop: Inline buttons */}
+				<div className="grid grid-cols-1 md:flex gap-2 w-full md:w-auto">
+					{/* <Button
+						variant="outline"
+						className="flex items-center justify-center gap-2 w-full md:w-auto"
+						onClick={() => {}}
+						size="sm"
+					>
+						<Wand2 className="h-4 w-4" />
+						Enhance with AI
+					</Button> */}
+				</div>
 				<div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
 					<Button
 						variant="outline"

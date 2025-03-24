@@ -149,7 +149,13 @@ export default function SkillsForm({ skills, updateSkills }: SkillsFormProps) {
 								onKeyDown={(e) => handleKeyDown(category, e)}
 								placeholder={
 									currentSkills.length === 0
-										? "Type and press space or enter to add"
+										? category === "languages"
+											? "JavaScript, TypeScript, Python, Java, C++"
+											: category === "frameworks"
+												? "React, Next.js, Vue, Angular, Django"
+												: category === "tools"
+													? "Git, Docker, Kubernetes, AWS, Azure"
+													: "Redux, TailwindCSS, Material-UI, Bootstrap, jQuery"
 										: ""
 								}
 								className="flex-1 bg-transparent outline-none min-w-[200px] placeholder:text-muted-foreground"
