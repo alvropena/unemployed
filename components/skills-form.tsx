@@ -1,48 +1,186 @@
-import React from "react";
-import { Input } from "@/components/ui/input";
+import { useState, type KeyboardEvent } from "react";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
 import type { ResumeData } from "@/lib/types";
-import { defaultResumeData } from "@/lib/default-data";
 
 interface SkillsFormProps {
-  skills: ResumeData["skills"];
-  updateSkills: (category: string, value: string) => void;
+	skills: ResumeData["skills"];
+	updateSkills: (category: string, value: string) => void;
 }
 
+const SUGGESTED_SKILLS = {
+	languages: [
+		"JavaScript",
+		"TypeScript",
+		"Python",
+		"Java",
+		"C++",
+		"Go",
+		"Rust",
+		"PHP",
+		"Ruby",
+		"Swift",
+	],
+	frameworks: [
+		"React",
+		"Next.js",
+		"Vue",
+		"Angular",
+		"Django",
+		"Flask",
+		"Express",
+		"Spring",
+		"Laravel",
+	],
+	tools: [
+		"Git",
+		"Docker",
+		"Kubernetes",
+		"AWS",
+		"Azure",
+		"GCP",
+		"Linux",
+		"Nginx",
+		"Jenkins",
+	],
+	libraries: [
+		"Redux",
+		"TailwindCSS",
+		"Material-UI",
+		"Bootstrap",
+		"jQuery",
+		"pandas",
+		"NumPy",
+		"React Query",
+	],
+};
+
 export default function SkillsForm({ skills, updateSkills }: SkillsFormProps) {
-  return (
-    <div className="grid gap-4">
-      <div>
-        <label className="block text-sm font-medium mb-1">Languages</label>
-        <Input
-          value={skills.languages || ""}
-          onChange={(e) => updateSkills("languages", e.target.value)}
-          placeholder={defaultResumeData.skills.languages}
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Frameworks</label>
-        <Input
-          value={skills.frameworks || ""}
-          onChange={(e) => updateSkills("frameworks", e.target.value)}
-          placeholder={defaultResumeData.skills.frameworks}
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Developer Tools</label>
-        <Input
-          value={skills.tools || ""}
-          onChange={(e) => updateSkills("tools", e.target.value)}
-          placeholder={defaultResumeData.skills.tools}
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Libraries</label>
-        <Input
-          value={skills.libraries || ""}
-          onChange={(e) => updateSkills("libraries", e.target.value)}
-          placeholder={defaultResumeData.skills.libraries}
-        />
-      </div>
-    </div>
-  );
+	const [inputValues, setInputValues] = useState({
+		languages: "",
+		frameworks: "",
+		tools: "",
+		libraries: "",
+	});
+
+	const handleKeyDown = (
+		category: string,
+		e: KeyboardEvent<HTMLInputElement>,
+	) => {
+		if (e.key === " " || e.key === "Enter") {
+			e.preventDefault();
+			const value = inputValues[category as keyof typeof inputValues].trim();
+			if (value) {
+				const currentSkills = (skills[category as keyof typeof skills] || "")
+					.split(",")
+					.filter(Boolean);
+				if (!currentSkills.includes(value)) {
+					const newSkills = [...currentSkills, value].join(",");
+					updateSkills(category, newSkills);
+				}
+				setInputValues((prev) => ({ ...prev, [category]: "" }));
+			}
+		}
+	};
+
+	const handleSuggestionClick = (category: string, skill: string) => {
+		const currentSkills = (skills[category as keyof typeof skills] || "")
+			.split(",")
+			.filter(Boolean);
+		if (!currentSkills.includes(skill)) {
+			const newSkills = [...currentSkills, skill].join(",");
+			updateSkills(category, newSkills);
+		}
+	};
+
+	const removeSkill = (category: string, skillToRemove: string) => {
+		const currentSkills = (skills[category as keyof typeof skills] || "")
+			.split(",")
+			.filter(Boolean);
+		const newSkills = currentSkills
+			.filter((skill) => skill !== skillToRemove)
+			.join(",");
+		updateSkills(category, newSkills);
+	};
+
+	const renderSkillSection = (category: string, label: string) => {
+		const currentSkills = (skills[category as keyof typeof skills] || "")
+			.split(",")
+			.filter(Boolean);
+		const suggestions = SUGGESTED_SKILLS[
+			category as keyof typeof SUGGESTED_SKILLS
+		].filter((skill) => !currentSkills.includes(skill));
+
+		const inputId = `skill-${category}`;
+
+		return (
+			<div className="space-y-3">
+				<div>
+					<label htmlFor={inputId} className="text-sm font-medium">
+						{label}
+					</label>
+					<div className="mt-1.5">
+						<div className="flex flex-wrap items-center gap-1.5 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+							{currentSkills.map((skill) => (
+								<Badge
+									key={skill}
+									variant="secondary"
+									className="px-2 py-0.5 text-xs flex items-center gap-1 bg-muted/50"
+								>
+									{skill}
+									<button
+										type="button"
+										onClick={() => removeSkill(category, skill)}
+										className="inline-flex items-center justify-center hover:bg-destructive/10 rounded-sm"
+									>
+										<X className="h-3 w-3 hover:text-destructive transition-colors" />
+									</button>
+								</Badge>
+							))}
+							<input
+								id={inputId}
+								value={inputValues[category as keyof typeof inputValues]}
+								onChange={(e) =>
+									setInputValues((prev) => ({
+										...prev,
+										[category]: e.target.value,
+									}))
+								}
+								onKeyDown={(e) => handleKeyDown(category, e)}
+								placeholder={
+									currentSkills.length === 0
+										? "Type and press space or enter to add"
+										: ""
+								}
+								className="flex-1 bg-transparent outline-none min-w-[200px] placeholder:text-muted-foreground"
+							/>
+						</div>
+					</div>
+
+					{/* Suggestions */}
+					<div className="flex flex-wrap gap-1.5 mt-2">
+						{suggestions.map((skill) => (
+							<Badge
+								key={skill}
+								variant="outline"
+								className="px-2 py-0.5 text-xs cursor-pointer hover:bg-accent transition-colors"
+								onClick={() => handleSuggestionClick(category, skill)}
+							>
+								{skill}
+							</Badge>
+						))}
+					</div>
+				</div>
+			</div>
+		);
+	};
+
+	return (
+		<div className="grid gap-6">
+			{renderSkillSection("languages", "Languages")}
+			{renderSkillSection("frameworks", "Frameworks")}
+			{renderSkillSection("tools", "Developer Tools")}
+			{renderSkillSection("libraries", "Libraries")}
+		</div>
+	);
 }

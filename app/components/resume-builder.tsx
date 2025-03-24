@@ -35,43 +35,46 @@ export default function ResumeBuilder({
 
 	return (
 		<main
-			className={`container mx-auto h-[calc(100vh-2rem)] p-4 relative ${
+			className={`container mx-auto min-h-[calc(100vh-2rem)] px-4 md:px-8 py-2 relative ${
 				showSubscriptionModal ? "pointer-events-none opacity-80" : ""
 			}`}
 		>
 			{/* Action Buttons */}
-			<div className="grid grid-cols-2 gap-4 mb-6">
-				<Button
-					variant="outline"
-					className="flex items-center justify-center gap-2 w-full"
-					onClick={() => setShowEditor(!showEditor)}
-					size="sm"
-				>
-					{showEditor ? (
-						<Eye className="h-4 w-4" />
-					) : (
-						<Edit className="h-4 w-4" />
-					)}
-					{showEditor ? "Preview Resume" : "Edit Resume"}
-				</Button>
-				<Button
-					variant="default"
-					className="flex items-center justify-center gap-2 w-full"
-					onClick={handleExportPDF}
-					disabled={isExporting}
-					size="sm"
-				>
-					<Download className="h-4 w-4" />
-					{isExporting ? "Exporting..." : "Download PDF"}
-				</Button>
+			<div className="flex flex-col md:flex-row md:justify-end gap-2 my-4">
+				{/* Mobile: Full width grid, Desktop: Inline buttons */}
+				<div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
+					<Button
+						variant="outline"
+						className="flex items-center justify-center gap-2 w-full md:w-auto"
+						onClick={() => setShowEditor(!showEditor)}
+						size="sm"
+					>
+						{showEditor ? (
+							<Eye className="h-4 w-4" />
+						) : (
+							<Edit className="h-4 w-4" />
+						)}
+						{showEditor ? "Preview Resume" : "Edit Resume"}
+					</Button>
+					<Button
+						variant="default"
+						className="flex items-center justify-center gap-2 w-full md:w-auto"
+						onClick={handleExportPDF}
+						disabled={isExporting}
+						size="sm"
+					>
+						<Download className="h-4 w-4" />
+						{isExporting ? "Exporting..." : "Download PDF"}
+					</Button>
+				</div>
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100%-4rem)]">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-5rem)]">
 				{/* Editor - Hidden on mobile by default */}
 				<Card
 					className={`h-full overflow-auto ${showEditor ? "block" : "hidden lg:block"}`}
 				>
-					<CardContent className="p-6">
+					<CardContent className="px-4 py-2">
 						<ResumeForm data={data} setData={setData} />
 					</CardContent>
 				</Card>
@@ -80,7 +83,7 @@ export default function ResumeBuilder({
 				<Card
 					className={`h-full overflow-auto ${!showEditor ? "block" : "hidden lg:block"}`}
 				>
-					<CardContent className="p-6">
+					<CardContent className="px-4 py-2">
 						<ResumePreview data={data} />
 					</CardContent>
 				</Card>

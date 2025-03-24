@@ -154,21 +154,23 @@ export default function Home() {
 					<Dialog
 						open={showSubscriptionModal && !hasPaid}
 						onOpenChange={(open) => {
-							// Only allow closing if user has paid
-							if (hasPaid) {
+							if (!open) {
 								setShowSubscriptionModal(false);
-							} else {
-								setShowSubscriptionModal(open);
 							}
 						}}
 					>
 						<DialogContent
-							className="h-[90vh] md:h-auto w-full md:max-w-5xl overflow-y-auto"
-							onInteractOutside={(e) => e.preventDefault()}
-							onEscapeKeyDown={(e) => e.preventDefault()}
-							forceMount
+							className="max-h-[90vh] w-full md:max-w-4xl overflow-y-auto"
+							onInteractOutside={() => {
+								// Allow closing on outside click
+								setShowSubscriptionModal(false);
+							}}
+							onEscapeKeyDown={() => {
+								// Allow closing on escape key
+								setShowSubscriptionModal(false);
+							}}
 						>
-							<DialogHeader className="sticky top-0 bg-background z-10 pb-4 border-b">
+							<DialogHeader className="bg-background z-10 pb-4">
 								<DialogTitle className="text-xl md:text-2xl font-bold text-center">
 									Choose a Subscription Plan
 								</DialogTitle>
