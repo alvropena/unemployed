@@ -1,14 +1,17 @@
 export function exportResumeToPDF() {
-  try {
-    // Add print-specific styles
-    const style = document.createElement('style');
-    style.textContent = `
+	try {
+		// Add print-specific styles
+		const style = document.createElement("style");
+		style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
       
       @page {
         margin: 0.75in 0.75in 0.75in 0.75in;
         size: A4;
-        /* Remove header and footer content */
+        /* Remove header and footer */
+        margin-top: 0.75in !important;
+        margin-bottom: 0.75in !important;
+        marks: none;
       }
       @media print {
         body * {
@@ -77,37 +80,37 @@ export function exportResumeToPDF() {
         }
       }
     `;
-    document.head.appendChild(style);
+		document.head.appendChild(style);
 
-    // Set data attribute for header
-    const resumePreview = document.getElementById('resume-preview');
-    if (resumePreview) {
-      // Scale content to fit on one page if needed
-      const contentHeight = resumePreview.scrollHeight;
-      const maxHeight = 11.69 * 96 - 96; // A4 height in pixels (96 DPI) minus margins
-      
-      if (contentHeight > maxHeight) {
-        const scale = maxHeight / contentHeight;
-        document.documentElement.style.setProperty('--scale', scale.toString());
-        resumePreview.style.transform = `translateX(-50%) scale(${scale})`;
-        resumePreview.style.transformOrigin = 'top center';
-      }
-    }
+		// Set data attribute for header
+		const resumePreview = document.getElementById("resume-preview");
+		if (resumePreview) {
+			// Scale content to fit on one page if needed
+			const contentHeight = resumePreview.scrollHeight;
+			const maxHeight = 11.69 * 96 - 96; // A4 height in pixels (96 DPI) minus margins
 
-    // Use window.print() for PDF generation
-    window.print();
+			if (contentHeight > maxHeight) {
+				const scale = maxHeight / contentHeight;
+				document.documentElement.style.setProperty("--scale", scale.toString());
+				resumePreview.style.transform = `translateX(-50%) scale(${scale})`;
+				resumePreview.style.transformOrigin = "top center";
+			}
+		}
 
-    // Clean up
-    document.head.removeChild(style);
-    if (resumePreview) {
-      resumePreview.style.transform = '';
-      resumePreview.style.transformOrigin = '';
-    }
-    document.documentElement.style.removeProperty('--scale');
-    
-    return true;
-  } catch (error) {
-    console.error('Error exporting PDF:', error);
-    return false;
-  }
-} 
+		// Use window.print() for PDF generation
+		window.print();
+
+		// Clean up
+		document.head.removeChild(style);
+		if (resumePreview) {
+			resumePreview.style.transform = "";
+			resumePreview.style.transformOrigin = "";
+		}
+		document.documentElement.style.removeProperty("--scale");
+
+		return true;
+	} catch (error) {
+		console.error("Error exporting PDF:", error);
+		return false;
+	}
+}
