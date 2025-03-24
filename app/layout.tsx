@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,10 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/computer-modern-font@1.0.1/index.css" />
+				<link
+					rel="stylesheet"
+					href="https://cdn.jsdelivr.net/npm/computer-modern-font@1.0.1/index.css"
+				/>
 			</head>
 			<body className={inter.className}>
 				<ClerkProvider>
@@ -34,6 +38,7 @@ export default function RootLayout({
 					>
 						<Navbar />
 						{children}
+						<Analytics />
 						<Toaster />
 					</ThemeProvider>
 				</ClerkProvider>
