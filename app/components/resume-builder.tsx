@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Download, Eye, Wand2 } from "lucide-react";
+import { Edit, Download, Eye } from "lucide-react";
 import ResumeForm from "@/components/resume-form";
 import ResumePreview from "@/components/resume-preview";
 import type { ResumeData } from "@/lib/types";
