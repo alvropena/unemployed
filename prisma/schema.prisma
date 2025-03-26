@@ -47,14 +47,85 @@ model Resume {
   linkedin      String?
   github        String?
   
-  // Education, Experience, and Projects as JSON arrays
-  education     Json[]    @default([])
-  experience    Json[]    @default([])
-  projects      Json[]    @default([])
-  
-  // Skills as a JSON object
-  skills        Json      @default("{\"languages\":[],\"frameworks\":[],\"developer_tools\":[],\"libraries\":[]}")
+  // Relations
+  education     Education[]
+  experience    Experience[]
+  projects      Project[]
+  skills        Skill[]
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Education {
+  id           String   @id @default(cuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  institution  String
+  degree       String
+  location     String
+  startDate    DateTime
+  endDate      DateTime?
+  current      Boolean  @default(false)
+  description  String?
+  gpa          Float?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([resumeId])
+}
+
+model Experience {
+  id           String   @id @default(cuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  company      String
+  position     String
+  location     String
+  startDate    DateTime
+  endDate      DateTime?
+  current      Boolean  @default(false)
+  description  String[]
+  technologies String[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([resumeId])
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name         String
+  description  String[]
+  technologies String[]
+  link         String?
+  github       String?
+  startDate    DateTime?
+  endDate      DateTime?
+  current      Boolean  @default(false)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([resumeId])
+}
+
+model Skill {
+  id           String   @id @default(cuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name         String
+  category     String   // languages, frameworks, developer_tools, libraries
+  proficiency  Int?     // Optional: 1-5 or similar scale
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([resumeId, name]) // Prevent duplicate skills for the same resume
+  @@index([resumeId])
+  @@index([category])
 }

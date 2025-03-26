@@ -7,22 +7,22 @@ if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-02-24.acacia",
   typescript: true,
 });
 
 const PLANS = {
   monthly: {
-    priceId: process.env.STRIPE_MONTHLY_PRICE_ID!,
+    priceId: process.env.STRIPE_MONTHLY_PRICE_ID as string,
     name: "Monthly Plan",
   },
   annual: {
-    priceId: process.env.STRIPE_ANNUAL_PRICE_ID!,
+    priceId: process.env.STRIPE_ANNUAL_PRICE_ID as string,
     name: "Annual Plan",
   },
   lifetime: {
-    priceId: process.env.STRIPE_LIFETIME_PRICE_ID!,
+    priceId: process.env.STRIPE_LIFETIME_PRICE_ID as string,
     name: "Lifetime Plan",
   },
 };
@@ -32,13 +32,13 @@ export async function POST(req: Request) {
     const session = await auth();
     const userId = session.userId;
     const userEmail = session.sessionClaims?.email as string;
-    
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const { plan } = await req.json();
-    
+
     if (!plan || !PLANS[plan as keyof typeof PLANS]) {
       return new NextResponse("Invalid plan selected", { status: 400 });
     }

@@ -5,8 +5,8 @@ export const defaultResumeData: ResumeData = {
     name: "Jake Ryan",
     phone: "123-456-7890",
     email: "jake@su.edu",
-    linkedin: "jake",
-    github: "jake",
+    linkedin: "linkedin.com/in/jake",
+    github: "github.com/jakeryan",
   },
   education: [
     {

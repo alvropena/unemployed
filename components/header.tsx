@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
-export function Navbar() {
+export function Header() {
 	const { isSignedIn } = useAuth();
 	const pathname = usePathname();
 

@@ -1,11 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Download, Eye } from "lucide-react";
+import { Save, Download } from "lucide-react";
 import ResumeForm from "@/components/resume-form";
 import ResumePreview from "@/components/resume-preview";
 import type { ResumeData } from "@/lib/types";
 import { useState } from "react";
 import { exportResumeToPDF } from "@/lib/pdf-export";
+import { saveResumeData } from "@/lib/resume-service";
+import { useToast } from "@/components/ui/use-toast";
 import type { Dispatch, SetStateAction } from "react";
 
 interface ResumeBuilderProps {
@@ -19,8 +21,9 @@ export default function ResumeBuilder({
 	setData,
 	showSubscriptionModal,
 }: ResumeBuilderProps) {
-	const [showEditor, setShowEditor] = useState(false);
 	const [isExporting, setIsExporting] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+	const { toast } = useToast();
 
 	const handleExportPDF = () => {
 		setIsExporting(true);
@@ -30,6 +33,34 @@ export default function ResumeBuilder({
 			console.error("Error exporting PDF:", error);
 		} finally {
 			setIsExporting(false);
+		}
+	};
+
+	const handleSaveChanges = async () => {
+		setIsSaving(true);
+		try {
+			const success = await saveResumeData(data);
+			if (success) {
+				toast({
+					title: "Success",
+					description: "Your resume has been saved successfully.",
+				});
+			} else {
+				toast({
+					title: "Error",
+					description: "Failed to save your resume. Please try again.",
+					variant: "destructive",
+				});
+			}
+		} catch (error) {
+			console.error("Error saving resume:", error);
+			toast({
+				title: "Error",
+				description: "An unexpected error occurred. Please try again.",
+				variant: "destructive",
+			});
+		} finally {
+			setIsSaving(false);
 		}
 	};
 
@@ -55,17 +86,14 @@ export default function ResumeBuilder({
 				</div>
 				<div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
 					<Button
-						variant="outline"
+						variant="default"
 						className="flex items-center justify-center gap-2 w-full md:w-auto"
-						onClick={() => setShowEditor(!showEditor)}
+						onClick={handleSaveChanges}
+						disabled={isSaving}
 						size="sm"
 					>
-						{showEditor ? (
-							<Eye className="h-4 w-4" />
-						) : (
-							<Edit className="h-4 w-4" />
-						)}
-						{showEditor ? "Preview Resume" : "Edit Resume"}
+						<Save className="h-4 w-4" />
+						{isSaving ? "Saving..." : "Save Changes"}
 					</Button>
 					<Button
 						variant="default"
@@ -81,19 +109,15 @@ export default function ResumeBuilder({
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-5rem)]">
-				{/* Editor - Hidden on mobile by default */}
-				<Card
-					className={`h-full overflow-auto ${showEditor ? "block" : "hidden lg:block"}`}
-				>
+				{/* Editor */}
+				<Card className="h-full overflow-auto">
 					<CardContent className="px-4 py-2">
 						<ResumeForm data={data} setData={setData} />
 					</CardContent>
 				</Card>
 
 				{/* Preview */}
-				<Card
-					className={`h-full overflow-auto ${!showEditor ? "block" : "hidden lg:block"}`}
-				>
+				<Card className="h-full overflow-auto">
 					<CardContent className="px-4 py-2">
 						<ResumePreview data={data} />
 					</CardContent>

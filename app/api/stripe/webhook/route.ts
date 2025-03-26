@@ -7,7 +7,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: "2025-02-24.acacia",
     typescript: true,
 });
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
                 const session = event.data.object as Stripe.Checkout.Session;
                 const userId = session.metadata?.userId;
                 const plan = session.metadata?.plan;
-                
+
                 if (userId && plan) {
                     // Create or update user record
                     await prisma.user.upsert({
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
                             email: session.customer_details?.email || "unknown",
                         },
                     });
-                    
+
                     // Create or update subscription with active status
                     await prisma.subscription.upsert({
                         where: { userId },
@@ -72,21 +72,21 @@ export async function POST(req: Request) {
                             updatedAt: new Date(),
                         },
                     });
-                    
+
                     console.log(`User ${userId} subscription activated for ${plan} plan`);
                 }
                 break;
             }
-            
+
             case "customer.subscription.updated": {
                 const subscription = event.data.object as Stripe.Subscription;
                 const stripeCustomerId = subscription.customer as string;
-                
+
                 // Find user by Stripe customer ID
                 const userSubscription = await prisma.subscription.findFirst({
                     where: { stripeCustomerId },
                 });
-                
+
                 if (userSubscription) {
                     await prisma.subscription.update({
                         where: { id: userSubscription.id },
@@ -95,20 +95,20 @@ export async function POST(req: Request) {
                             updatedAt: new Date(),
                         },
                     });
-                    
+
                     console.log(`Subscription updated for customer ${stripeCustomerId}: ${subscription.status}`);
                 }
                 break;
             }
-            
+
             case "customer.subscription.deleted": {
                 const subscription = event.data.object as Stripe.Subscription;
                 const stripeCustomerId = subscription.customer as string;
-                
+
                 const userSubscription = await prisma.subscription.findFirst({
                     where: { stripeCustomerId },
                 });
-                
+
                 if (userSubscription) {
                     await prisma.subscription.update({
                         where: { id: userSubscription.id },
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
                             updatedAt: new Date(),
                         },
                     });
-                    
+
                     console.log(`Subscription canceled for customer ${stripeCustomerId}`);
                 }
                 break;

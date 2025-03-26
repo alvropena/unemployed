@@ -55,7 +55,17 @@ const SUGGESTED_SKILLS = {
 	],
 };
 
-export default function SkillsForm({ skills, updateSkills }: SkillsFormProps) {
+const defaultSkills: ResumeData["skills"] = {
+	languages: "",
+	frameworks: "",
+	tools: "",
+	libraries: "",
+};
+
+export default function SkillsForm({
+	skills = defaultSkills,
+	updateSkills,
+}: SkillsFormProps) {
 	const [inputValues, setInputValues] = useState({
 		languages: "",
 		frameworks: "",
@@ -73,9 +83,10 @@ export default function SkillsForm({ skills, updateSkills }: SkillsFormProps) {
 			if (value) {
 				const currentSkills = (skills[category as keyof typeof skills] || "")
 					.split(",")
-					.filter(Boolean);
+					.filter(Boolean)
+					.map((s) => s.trim());
 				if (!currentSkills.includes(value)) {
-					const newSkills = [...currentSkills, value].join(",");
+					const newSkills = [...currentSkills, value].join(", ");
 					updateSkills(category, newSkills);
 				}
 				setInputValues((prev) => ({ ...prev, [category]: "" }));
@@ -86,9 +97,10 @@ export default function SkillsForm({ skills, updateSkills }: SkillsFormProps) {
 	const handleSuggestionClick = (category: string, skill: string) => {
 		const currentSkills = (skills[category as keyof typeof skills] || "")
 			.split(",")
-			.filter(Boolean);
+			.filter(Boolean)
+			.map((s) => s.trim());
 		if (!currentSkills.includes(skill)) {
-			const newSkills = [...currentSkills, skill].join(",");
+			const newSkills = [...currentSkills, skill].join(", ");
 			updateSkills(category, newSkills);
 		}
 	};
@@ -96,17 +108,19 @@ export default function SkillsForm({ skills, updateSkills }: SkillsFormProps) {
 	const removeSkill = (category: string, skillToRemove: string) => {
 		const currentSkills = (skills[category as keyof typeof skills] || "")
 			.split(",")
-			.filter(Boolean);
+			.filter(Boolean)
+			.map((s) => s.trim());
 		const newSkills = currentSkills
 			.filter((skill) => skill !== skillToRemove)
-			.join(",");
+			.join(", ");
 		updateSkills(category, newSkills);
 	};
 
 	const renderSkillSection = (category: string, label: string) => {
 		const currentSkills = (skills[category as keyof typeof skills] || "")
 			.split(",")
-			.filter(Boolean);
+			.filter(Boolean)
+			.map((s) => s.trim());
 		const suggestions = SUGGESTED_SKILLS[
 			category as keyof typeof SUGGESTED_SKILLS
 		].filter((skill) => !currentSkills.includes(skill));

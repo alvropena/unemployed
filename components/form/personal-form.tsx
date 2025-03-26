@@ -67,10 +67,7 @@ export default function PersonalForm({
 								`https://linkedin.com/in/${e.target.value}`,
 							)
 						}
-						placeholder={defaultResumeData.personal.linkedin.replace(
-							"https://linkedin.com/in/",
-							"",
-						)}
+						placeholder="jake"
 						className="rounded-l-none"
 					/>
 				</div>
@@ -89,10 +86,7 @@ export default function PersonalForm({
 						onChange={(e) =>
 							updatePersonal("github", `https://github.com/${e.target.value}`)
 						}
-						placeholder={defaultResumeData.personal.github.replace(
-							"https://github.com/",
-							"",
-						)}
+						placeholder="jake"
 						className="rounded-l-none"
 					/>
 				</div>

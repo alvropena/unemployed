@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@prisma/client";
@@ -26,10 +27,10 @@ interface Project {
 }
 
 interface Skills {
-  languages: string[];
-  frameworks: string[];
-  developer_tools: string[];
-  libraries: string[];
+  languages: string;
+  frameworks: string;
+  tools: string;
+  libraries: string;
 }
 
 // Type guards
@@ -88,10 +89,10 @@ function safeParseProjects(data: unknown): Project[] {
 // Helper function to parse skills
 function parseSkills(data: unknown): Skills {
   const defaultSkills: Skills = {
-    languages: [],
-    frameworks: [],
-    developer_tools: [],
-    libraries: []
+    languages: "",
+    frameworks: "",
+    tools: "",
+    libraries: ""
   };
 
   if (typeof data !== 'object' || data === null) {
@@ -101,10 +102,10 @@ function parseSkills(data: unknown): Skills {
   try {
     const parsed = typeof data === 'string' ? JSON.parse(data) : data;
     return {
-      languages: Array.isArray(parsed.languages) ? parsed.languages : [],
-      frameworks: Array.isArray(parsed.frameworks) ? parsed.frameworks : [],
-      developer_tools: Array.isArray(parsed.developer_tools) ? parsed.developer_tools : [],
-      libraries: Array.isArray(parsed.libraries) ? parsed.libraries : []
+      languages: typeof parsed.languages === 'string' ? parsed.languages : defaultSkills.languages,
+      frameworks: typeof parsed.frameworks === 'string' ? parsed.frameworks : defaultSkills.frameworks,
+      tools: typeof parsed.tools === 'string' ? parsed.tools : defaultSkills.tools,
+      libraries: typeof parsed.libraries === 'string' ? parsed.libraries : defaultSkills.libraries
     };
   } catch {
     return defaultSkills;
@@ -126,7 +127,7 @@ export async function GET() {
     });
 
     if (!resume) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         data: {
           personal: {
             name: "",
@@ -141,10 +142,10 @@ export async function GET() {
           experience: [],
           projects: [],
           skills: {
-            languages: [],
-            frameworks: [],
-            developer_tools: [],
-            libraries: []
+            languages: "",
+            frameworks: "",
+            tools: "",
+            libraries: ""
           }
         }
       });
@@ -207,10 +208,10 @@ export async function POST(request: NextRequest) {
     const experience = safeParseExperience(resumeData.experience);
     const projects = safeParseProjects(resumeData.projects);
     const skills = {
-      languages: Array.isArray(resumeData.skills?.languages) ? resumeData.skills.languages : [],
-      frameworks: Array.isArray(resumeData.skills?.frameworks) ? resumeData.skills.frameworks : [],
-      developer_tools: Array.isArray(resumeData.skills?.developer_tools) ? resumeData.skills.developer_tools : [],
-      libraries: Array.isArray(resumeData.skills?.libraries) ? resumeData.skills.libraries : []
+      languages: typeof resumeData.skills?.languages === 'string' ? resumeData.skills.languages : "",
+      frameworks: typeof resumeData.skills?.frameworks === 'string' ? resumeData.skills.frameworks : "",
+      tools: typeof resumeData.skills?.tools === 'string' ? resumeData.skills.tools : "",
+      libraries: typeof resumeData.skills?.libraries === 'string' ? resumeData.skills.libraries : ""
     };
 
     // Save resume data

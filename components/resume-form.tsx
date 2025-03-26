@@ -7,11 +7,11 @@ import type { ResumeData } from "@/lib/types";
 import { useResumeData } from "@/hooks/use-resume-data";
 import { useFormHandlers } from "@/hooks/use-form-handlers";
 import ResumeFormActions from "./resume-form-actions";
-import SkillsForm from "./skills-form";
-import PersonalForm from "./personal-form";
-import ProjectsForm from "./projects-form";
-import EducationForm from "./education-form";
-import ExperienceForm from "./experience-form";
+import SkillsForm from "./form/skills-form";
+import PersonalForm from "./form/personal-form";
+import ProjectsForm from "./form/projects-form";
+import EducationForm from "./form/education-form";
+import ExperienceForm from "./form/experience-form";
 
 interface ResumeFormProps {
 	data: ResumeData;
@@ -22,6 +22,7 @@ type TabType = "personal" | "education" | "experience" | "projects" | "skills";
 
 const ALL_TABS: TabType[] = [
 	"personal",
+
 	"education",
 	"experience",
 	"projects",
