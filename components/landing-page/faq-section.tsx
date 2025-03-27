@@ -2,9 +2,9 @@ import FaqAccordion from "@/components/landing-page/faq-accordion";
 
 const faqItems = [
 	{
-		question: "Is Resume AI really worth the cost?",
+		question: "Is Unemployed really worth the cost?",
 		answer:
-			"Absolutely. Our users report a 3x increase in interview callbacks after using Resume AI. The investment pays for itself when you land your dream job faster.",
+			"Absolutely. Our users report a 3x increase in interview callbacks after using Unemployed. The investment pays for itself when you land your dream job faster.",
 	},
 	{
 		question: "Can I cancel my subscription anytime?",
@@ -22,9 +22,9 @@ const faqItems = [
 			"We offer a 14-day money-back guarantee if you&apos;re not satisfied with our service. Simply contact our support team within 14 days of your purchase.",
 	},
 	{
-		question: "Can I use Resume AI on my mobile device?",
+		question: "Can I use Unemployed on my mobile device?",
 		answer:
-			"Yes, Resume AI is fully responsive and works on desktop, tablet, and mobile devices.",
+			"Yes, Unemployed is fully responsive and works on desktop, tablet, and mobile devices.",
 	},
 ];
 
@@ -37,7 +37,7 @@ export default function FaqSection() {
 						Frequently asked questions
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-						Everything you need to know about Resume AI.
+						Everything you need to know about Unemployed.
 					</p>
 				</div>
 

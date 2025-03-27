@@ -1,4 +1,4 @@
-# Resume AI
+# Unemployed
 
 A professional resume builder application with AI-powered suggestions, authentication, and subscription plans.
 
@@ -30,8 +30,8 @@ A professional resume builder application with AI-powered suggestions, authentic
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/resume-ai.git
-   cd resume-ai
+   git clone https://github.com/alvropena/unemployed.git
+   cd unemployed
    ```
 
 2. Install dependencies:

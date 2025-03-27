@@ -10,7 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Resume AI - Professional Resume Builder",
+	title: "Unemployed - AI Job Search Assistant",
 	description:
 		"Create professional resumes in minutes with our AI-powered resume generator.",
 };

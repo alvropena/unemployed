@@ -9,7 +9,7 @@ export default function CtaSection() {
 				</h2>
 				<p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
 					Join thousands of professionals who&apos;ve accelerated their careers
-					with Resume AI.
+					with Unemployed.
 				</p>
 				<Button
 					size="lg"

@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container mx-auto max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-foreground">Resume AI</h3>
+            <h3 className="text-xl font-bold text-foreground">Unemployed</h3>
             <p className="text-sm text-muted-foreground">
               Creating professional resumes with AI technology since 2023.
             </p>
@@ -137,11 +137,11 @@ export default function Footer() {
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            © 2023 Resume AI. All rights reserved.
+            © 2023 Latino Excellence LLC. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link
-              href="https://github.com/alvropena/resume-ai.git"
+              href="https://github.com/alvropena/unemployed.git"
               className="text-muted-foreground hover:text-foreground transition-colors"
               target="_blank"
               rel="noopener noreferrer"

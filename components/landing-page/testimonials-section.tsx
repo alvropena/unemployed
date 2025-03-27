@@ -10,20 +10,20 @@ export default function TestimonialsSection() {
 					</h2>
 					<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
 						Join thousands of professionals who&apos;ve landed their dream jobs
-						with Resume AI.
+						with Unemployed.
 					</p>
 				</div>
 
 				<div className="grid md:grid-cols-3 gap-8">
 					<TestimonialCard
-						quote="Resume AI helped me land interviews at 3 top tech companies. The AI suggestions were spot-on!"
+						quote="Unemployed helped me land interviews at 3 top tech companies. The AI suggestions were spot-on!"
 						author="Sarah J."
 						jobTitle="Software Engineer"
 						avatarUrl="/placeholder.svg?height=100&width=100"
 					/>
 
 					<TestimonialCard
-						quote="I was struggling with my resume for weeks. Resume AI helped me create a professional resume in just 30 minutes."
+						quote="I was struggling with my resume for weeks. Unemployed helped me create a professional resume in just 30 minutes."
 						author="Michael T."
 						jobTitle="Marketing Manager"
 						avatarUrl="/placeholder.svg?height=100&width=100"

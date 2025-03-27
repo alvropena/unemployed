@@ -15,7 +15,7 @@ export default function HeroSection() {
 							Craft the perfect resume in minutes
 						</h1>
 						<p className="text-xl text-muted-foreground max-w-2xl">
-							Resume AI uses advanced technology to help you create
+							Unemployed uses advanced technology to help you create
 							professional, ATS-friendly resumes that stand out to employers.
 						</p>
 						<div className="pt-4 flex flex-col sm:flex-row gap-4">
@@ -35,7 +35,7 @@ export default function HeroSection() {
 						<div className="bg-card rounded-xl shadow-2xl overflow-hidden border border-border">
 							<Image
 								src="/placeholder.svg?height=600&width=800"
-								alt="Resume AI interface"
+								alt="Unemployed interface"
 								className="w-full h-auto"
 								width={800}
 								height={600}
