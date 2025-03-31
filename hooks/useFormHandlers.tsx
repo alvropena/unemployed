@@ -7,7 +7,7 @@ export function useFormHandlers(
 ) {
   const { toast } = useToast();
 
-  const updatePersonal = (field: string, value: string) => {
+  const updatePersonal = (field: string, value: string | null) => {
     setData((prev) => ({
       ...prev,
       personal: {
@@ -17,7 +17,7 @@ export function useFormHandlers(
     }));
   };
 
-  const updateEducation = (index: number, field: string, value: string | Date | boolean) => {
+  const updateEducation = (index: number, field: string, value: string | Date | boolean | null) => {
     setData((prev) => {
       const newEducation = [...prev.education];
       newEducation[index] = { ...newEducation[index], [field]: value };

@@ -6,8 +6,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ResumeData } from "@/types/types";
 import { defaultResumeData } from "@/lib/defaultData";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface EducationFormProps {
+  education: ResumeData["education"];
   updateEducation: (index: number, field: string, value: string | Date | boolean | null) => void;
 }
 
@@ -15,29 +17,39 @@ interface EducationState {
   institution: string;
   location: string;
   degree: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  current: boolean;
 }
 
 export default function EducationForm({
+  education,
   updateEducation,
 }: EducationFormProps) {
   // Education Block States
   const [education1, setEducation1] = React.useState<EducationState>({
-    institution: "",
-    location: "",
-    degree: "",
+    institution: education[0]?.institution || "",
+    location: education[0]?.location || "",
+    degree: education[0]?.degree || "",
+    startDate: education[0]?.startDate || null,
+    endDate: education[0]?.endDate || null,
+    current: education[0]?.current || false,
   });
 
   const [education2, setEducation2] = React.useState<EducationState>({
-    institution: "",
-    location: "",
-    degree: "",
+    institution: education[1]?.institution || "",
+    location: education[1]?.location || "",
+    degree: education[1]?.degree || "",
+    startDate: education[1]?.startDate || null,
+    endDate: education[1]?.endDate || null,
+    current: education[1]?.current || false,
   });
 
   // Handlers for state updates
   const handleChange = React.useCallback((
     index: number,
-    field: string,
-    value: string,
+    field: keyof EducationState,
+    value: string | Date | boolean | null,
     setter: React.Dispatch<React.SetStateAction<EducationState>>,
   ) => {
     setter(prev => ({ ...prev, [field]: value }));
@@ -49,6 +61,9 @@ export default function EducationForm({
       {/* First Education Block */}
       <Card>
         <CardContent className="pt-6">
+          <div className="mb-6">
+            <h3 className="font-medium">Education #1</h3>
+          </div>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="institution1">Institution</Label>
@@ -77,6 +92,14 @@ export default function EducationForm({
                 placeholder={defaultResumeData.education[0].degree}
               />
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="current1"
+                checked={education1.current}
+                onCheckedChange={(checked) => handleChange(0, "current", checked as boolean, setEducation1)}
+              />
+              <Label htmlFor="current1">Currently Studying</Label>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -84,6 +107,9 @@ export default function EducationForm({
       {/* Second Education Block */}
       <Card>
         <CardContent className="pt-6">
+          <div className="mb-6">
+            <h3 className="font-medium">Education #2</h3>
+          </div>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="institution2">Institution</Label>
@@ -111,6 +137,14 @@ export default function EducationForm({
                 onChange={(e) => handleChange(1, "degree", e.target.value, setEducation2)}
                 placeholder={defaultResumeData.education[1].degree}
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="current2"
+                checked={education2.current}
+                onCheckedChange={(checked) => handleChange(1, "current", checked as boolean, setEducation2)}
+              />
+              <Label htmlFor="current2">Currently Studying</Label>
             </div>
           </div>
         </CardContent>

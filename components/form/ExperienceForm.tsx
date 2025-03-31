@@ -7,18 +7,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ResumeData } from "@/types/types";
 import { defaultResumeData } from "@/lib/defaultData";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ExperienceFormProps {
 	experience: ResumeData["experience"];
 	updateExperience: (
 		index: number,
 		field: string,
-		value: string | string[],
-	) => void;
-	updateResponsibility: (
-		expIndex: number,
-		respIndex: number,
-		value: string,
+		value: string | Date | boolean | null,
 	) => void;
 }
 
@@ -26,20 +22,31 @@ interface ExperienceState {
 	position: string;
 	company: string;
 	location: string;
-	description: string[];
+	startDate: Date | null;
+	endDate: Date | null;
+	current: boolean;
+	responsibilityOne: string | null;
+	responsibilityTwo: string | null;
+	responsibilityThree: string | null;
+	responsibilityFour: string | null;
 }
 
 export default function ExperienceForm({
 	experience,
 	updateExperience,
-	updateResponsibility,
 }: ExperienceFormProps) {
 	// Experience 1 State
 	const [experience1, setExperience1] = React.useState<ExperienceState>({
 		position: experience[0]?.position || "",
 		company: experience[0]?.company || "",
 		location: experience[0]?.location || "",
-		description: experience[0]?.description || ["", "", ""],
+		startDate: experience[0]?.startDate || null,
+		endDate: experience[0]?.endDate || null,
+		current: experience[0]?.current || false,
+		responsibilityOne: experience[0]?.responsibilityOne || "",
+		responsibilityTwo: experience[0]?.responsibilityTwo || "",
+		responsibilityThree: experience[0]?.responsibilityThree || "",
+		responsibilityFour: experience[0]?.responsibilityFour || "",
 	});
 
 	// Experience 2 State
@@ -47,7 +54,13 @@ export default function ExperienceForm({
 		position: experience[1]?.position || "",
 		company: experience[1]?.company || "",
 		location: experience[1]?.location || "",
-		description: experience[1]?.description || ["", "", ""],
+		startDate: experience[1]?.startDate || null,
+		endDate: experience[1]?.endDate || null,
+		current: experience[1]?.current || false,
+		responsibilityOne: experience[1]?.responsibilityOne || "",
+		responsibilityTwo: experience[1]?.responsibilityTwo || "",
+		responsibilityThree: experience[1]?.responsibilityThree || "",
+		responsibilityFour: experience[1]?.responsibilityFour || "",
 	});
 
 	// Experience 3 State
@@ -55,34 +68,25 @@ export default function ExperienceForm({
 		position: experience[2]?.position || "",
 		company: experience[2]?.company || "",
 		location: experience[2]?.location || "",
-		description: experience[2]?.description || ["", "", ""],
+		startDate: experience[2]?.startDate || null,
+		endDate: experience[2]?.endDate || null,
+		current: experience[2]?.current || false,
+		responsibilityOne: experience[2]?.responsibilityOne || "",
+		responsibilityTwo: experience[2]?.responsibilityTwo || "",
+		responsibilityThree: experience[2]?.responsibilityThree || "",
+		responsibilityFour: experience[2]?.responsibilityFour || "",
 	});
 
 	// Handler for updating experience fields
 	const handleExperienceChange = React.useCallback((
 		index: number,
-		field: string,
-		value: string,
+		field: keyof ExperienceState,
+		value: string | Date | boolean | null,
 		setter: React.Dispatch<React.SetStateAction<ExperienceState>>,
 	) => {
 		setter(prev => ({ ...prev, [field]: value }));
 		updateExperience(index, field, value);
 	}, [updateExperience]);
-
-	// Handler for updating responsibilities
-	const handleResponsibilityChange = React.useCallback((
-		expIndex: number,
-		respIndex: number,
-		value: string,
-		setter: React.Dispatch<React.SetStateAction<ExperienceState>>,
-	) => {
-		setter(prev => {
-			const newDescription = [...prev.description];
-			newDescription[respIndex] = value;
-			return { ...prev, description: newDescription };
-		});
-		updateResponsibility(expIndex, respIndex, value);
-	}, [updateResponsibility]);
 
 	return (
 		<div className="space-y-4">
@@ -99,7 +103,7 @@ export default function ExperienceForm({
 								id="title1"
 								value={experience1.position}
 								onChange={(e) => handleExperienceChange(0, "position", e.target.value, setExperience1)}
-								placeholder="Software Engineer"
+								placeholder={defaultResumeData.experience[0].position}
 							/>
 						</div>
 						<div className="space-y-2">
@@ -108,7 +112,7 @@ export default function ExperienceForm({
 								id="company1"
 								value={experience1.company}
 								onChange={(e) => handleExperienceChange(0, "company", e.target.value, setExperience1)}
-								placeholder="Google"
+								placeholder={defaultResumeData.experience[0].company}
 							/>
 						</div>
 						<div className="space-y-2">
@@ -117,28 +121,42 @@ export default function ExperienceForm({
 								id="location1"
 								value={experience1.location}
 								onChange={(e) => handleExperienceChange(0, "location", e.target.value, setExperience1)}
-								placeholder="Mountain View, CA"
+								placeholder={defaultResumeData.experience[0].location}
 							/>
+						</div>
+						<div className="flex items-center space-x-2">
+							<Checkbox
+								id="current1"
+								checked={experience1.current}
+								onCheckedChange={(checked) => handleExperienceChange(0, "current", checked as boolean, setExperience1)}
+							/>
+							<Label htmlFor="current1">Current Position</Label>
 						</div>
 						<div>
 							<Label>Responsibilities</Label>
 							<div className="space-y-2">
 								<Textarea
-									value={experience1.description[0]}
-									onChange={(e) => handleResponsibilityChange(0, 0, e.target.value, setExperience1)}
-									placeholder={defaultResumeData.experience[0].description[0]}
+									value={experience1.responsibilityOne || ""}
+									onChange={(e) => handleExperienceChange(0, "responsibilityOne", e.target.value, setExperience1)}
+									placeholder={defaultResumeData.experience[0].responsibilityOne || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={experience1.description[1]}
-									onChange={(e) => handleResponsibilityChange(0, 1, e.target.value, setExperience1)}
-									placeholder={defaultResumeData.experience[0].description[1]}
+									value={experience1.responsibilityTwo || ""}
+									onChange={(e) => handleExperienceChange(0, "responsibilityTwo", e.target.value, setExperience1)}
+									placeholder={defaultResumeData.experience[0].responsibilityTwo || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={experience1.description[2]}
-									onChange={(e) => handleResponsibilityChange(0, 2, e.target.value, setExperience1)}
-									placeholder={defaultResumeData.experience[0].description[2]}
+									value={experience1.responsibilityThree || ""}
+									onChange={(e) => handleExperienceChange(0, "responsibilityThree", e.target.value, setExperience1)}
+									placeholder={defaultResumeData.experience[0].responsibilityThree || ""}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={experience1.responsibilityFour || ""}
+									onChange={(e) => handleExperienceChange(0, "responsibilityFour", e.target.value, setExperience1)}
+									placeholder={defaultResumeData.experience[0].responsibilityFour || ""}
 									className="min-h-[80px]"
 								/>
 							</div>
@@ -160,7 +178,7 @@ export default function ExperienceForm({
 								id="title2"
 								value={experience2.position}
 								onChange={(e) => handleExperienceChange(1, "position", e.target.value, setExperience2)}
-								placeholder="Software Engineer"
+								placeholder={defaultResumeData.experience[1].position}
 							/>
 						</div>
 						<div className="space-y-2">
@@ -169,7 +187,7 @@ export default function ExperienceForm({
 								id="company2"
 								value={experience2.company}
 								onChange={(e) => handleExperienceChange(1, "company", e.target.value, setExperience2)}
-								placeholder="Google"
+								placeholder={defaultResumeData.experience[1].company}
 							/>
 						</div>
 						<div className="space-y-2">
@@ -178,28 +196,42 @@ export default function ExperienceForm({
 								id="location2"
 								value={experience2.location}
 								onChange={(e) => handleExperienceChange(1, "location", e.target.value, setExperience2)}
-								placeholder="Mountain View, CA"
+								placeholder={defaultResumeData.experience[1].location}
 							/>
+						</div>
+						<div className="flex items-center space-x-2">
+							<Checkbox
+								id="current2"
+								checked={experience2.current}
+								onCheckedChange={(checked) => handleExperienceChange(1, "current", checked as boolean, setExperience2)}
+							/>
+							<Label htmlFor="current2">Current Position</Label>
 						</div>
 						<div>
 							<Label>Responsibilities</Label>
 							<div className="space-y-2">
 								<Textarea
-									value={experience2.description[0]}
-									onChange={(e) => handleResponsibilityChange(1, 0, e.target.value, setExperience2)}
-									placeholder={defaultResumeData.experience[1].description[0]}
+									value={experience2.responsibilityOne || ""}
+									onChange={(e) => handleExperienceChange(1, "responsibilityOne", e.target.value, setExperience2)}
+									placeholder={defaultResumeData.experience[1].responsibilityOne || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={experience2.description[1]}
-									onChange={(e) => handleResponsibilityChange(1, 1, e.target.value, setExperience2)}
-									placeholder={defaultResumeData.experience[1].description[1]}
+									value={experience2.responsibilityTwo || ""}
+									onChange={(e) => handleExperienceChange(1, "responsibilityTwo", e.target.value, setExperience2)}
+									placeholder={defaultResumeData.experience[1].responsibilityTwo || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={experience2.description[2]}
-									onChange={(e) => handleResponsibilityChange(1, 2, e.target.value, setExperience2)}
-									placeholder={defaultResumeData.experience[1].description[2]}
+									value={experience2.responsibilityThree || ""}
+									onChange={(e) => handleExperienceChange(1, "responsibilityThree", e.target.value, setExperience2)}
+									placeholder={defaultResumeData.experience[1].responsibilityThree || ""}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={experience2.responsibilityFour || ""}
+									onChange={(e) => handleExperienceChange(1, "responsibilityFour", e.target.value, setExperience2)}
+									placeholder={defaultResumeData.experience[1].responsibilityFour || ""}
 									className="min-h-[80px]"
 								/>
 							</div>
@@ -221,7 +253,7 @@ export default function ExperienceForm({
 								id="title3"
 								value={experience3.position}
 								onChange={(e) => handleExperienceChange(2, "position", e.target.value, setExperience3)}
-								placeholder="Software Engineer"
+								placeholder={defaultResumeData.experience[2].position}
 							/>
 						</div>
 						<div className="space-y-2">
@@ -230,7 +262,7 @@ export default function ExperienceForm({
 								id="company3"
 								value={experience3.company}
 								onChange={(e) => handleExperienceChange(2, "company", e.target.value, setExperience3)}
-								placeholder="Google"
+								placeholder={defaultResumeData.experience[2].company}
 							/>
 						</div>
 						<div className="space-y-2">
@@ -239,28 +271,42 @@ export default function ExperienceForm({
 								id="location3"
 								value={experience3.location}
 								onChange={(e) => handleExperienceChange(2, "location", e.target.value, setExperience3)}
-								placeholder="Mountain View, CA"
+								placeholder={defaultResumeData.experience[2].location}
 							/>
+						</div>
+						<div className="flex items-center space-x-2">
+							<Checkbox
+								id="current3"
+								checked={experience3.current}
+								onCheckedChange={(checked) => handleExperienceChange(2, "current", checked as boolean, setExperience3)}
+							/>
+							<Label htmlFor="current3">Current Position</Label>
 						</div>
 						<div>
 							<Label>Responsibilities</Label>
 							<div className="space-y-2">
 								<Textarea
-									value={experience3.description[0]}
-									onChange={(e) => handleResponsibilityChange(2, 0, e.target.value, setExperience3)}
-									placeholder={defaultResumeData.experience[2].description[0]}
+									value={experience3.responsibilityOne || ""}
+									onChange={(e) => handleExperienceChange(2, "responsibilityOne", e.target.value, setExperience3)}
+									placeholder={defaultResumeData.experience[2].responsibilityOne || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={experience3.description[1]}
-									onChange={(e) => handleResponsibilityChange(2, 1, e.target.value, setExperience3)}
-									placeholder={defaultResumeData.experience[2].description[1]}
+									value={experience3.responsibilityTwo || ""}
+									onChange={(e) => handleExperienceChange(2, "responsibilityTwo", e.target.value, setExperience3)}
+									placeholder={defaultResumeData.experience[2].responsibilityTwo || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={experience3.description[2]}
-									onChange={(e) => handleResponsibilityChange(2, 2, e.target.value, setExperience3)}
-									placeholder={defaultResumeData.experience[2].description[2]}
+									value={experience3.responsibilityThree || ""}
+									onChange={(e) => handleExperienceChange(2, "responsibilityThree", e.target.value, setExperience3)}
+									placeholder={defaultResumeData.experience[2].responsibilityThree || ""}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={experience3.responsibilityFour || ""}
+									onChange={(e) => handleExperienceChange(2, "responsibilityFour", e.target.value, setExperience3)}
+									placeholder={defaultResumeData.experience[2].responsibilityFour || ""}
 									className="min-h-[80px]"
 								/>
 							</div>
