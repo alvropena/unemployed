@@ -33,11 +33,10 @@ export const defaultResumeData: ResumeData = {
       location: "College Station, TX",
       startDate: new Date("2020-06-01"),
       current: true,
-      description: [
-        "Developed a REST API using FastAPI and PostgreSQL to store data from learning management systems",
-        "Developed a full-stack web application using Flask, React, PostgreSQL and Docker to analyze GitHub data",
-        "Explored ways to visualize GitHub collaboration in a classroom setting",
-      ],
+      responsibilityOne: "Developed a REST API using FastAPI and PostgreSQL to store data from learning management systems",
+      responsibilityTwo: "Developed a full-stack web application using Flask, React, PostgreSQL and Docker to analyze GitHub data",
+      responsibilityThree: "Explored ways to visualize GitHub collaboration in a classroom setting",
+      responsibilityFour: null,
     },
     {
       company: "Southwestern University",
@@ -45,11 +44,10 @@ export const defaultResumeData: ResumeData = {
       location: "Georgetown, TX",
       startDate: new Date("2018-09-01"),
       current: true,
-      description: [
-        "Communicate with managers to set up campus computers used on campus",
-        "Assess and troubleshoot computer problems brought by students, faculty and staff",
-        "Maintain upkeep of computers, classroom equipment, and 200 printers across campus",
-      ],
+      responsibilityOne: "Communicate with managers to set up campus computers used on campus",
+      responsibilityTwo: "Assess and troubleshoot computer problems brought by students, faculty and staff",
+      responsibilityThree: "Maintain upkeep of computers, classroom equipment, and 200 printers across campus",
+      responsibilityFour: null,
     },
     {
       company: "Southwestern University",
@@ -58,14 +56,10 @@ export const defaultResumeData: ResumeData = {
       startDate: new Date("2019-05-01"),
       endDate: new Date("2019-07-01"),
       current: false,
-      description: [
-        "Explored methods to generate video game dungeons based off of The Legend of Zelda",
-        "Developed a game in Java to test the generated dungeons",
-        "Contributed 50K+ lines of code to an established codebase via Git",
-        "Conducted a human subject study to determine which video game dungeon generation technique is enjoyable",
-        "Wrote an 8-page paper and gave multiple presentations on-campus",
-        "Presented virtually to the World Conference on Computational Intelligence",
-      ],
+      responsibilityOne: "Explored methods to generate video game dungeons based off of The Legend of Zelda",
+      responsibilityTwo: "Developed a game in Java to test the generated dungeons",
+      responsibilityThree: "Contributed 50K+ lines of code to an established codebase via Git",
+      responsibilityFour: "Conducted a human subject study to determine which video game dungeon generation technique is enjoyable",
     },
   ],
   projects: [
@@ -73,14 +67,20 @@ export const defaultResumeData: ResumeData = {
       name: "Gitlytics",
       startDate: new Date("2020-06-01"),
       current: true,
-      description: ["", "", "", ""]
+      responsibilityOne: "Developed a full-stack application to analyze GitHub collaboration patterns",
+      responsibilityTwo: "Implemented data visualization using React and D3.js",
+      responsibilityThree: "Created a RESTful API using FastAPI and PostgreSQL",
+      responsibilityFour: "Deployed the application using Docker and Google Cloud Platform",
     },
     {
       name: "Simple Paintball",
       startDate: new Date("2018-05-01"),
       endDate: new Date("2020-05-01"),
       current: false,
-      description: ["", "", "", ""]
+      responsibilityOne: "Developed a 2D multiplayer paintball game using Java and JavaFX",
+      responsibilityTwo: "Implemented real-time networking using WebSocket",
+      responsibilityThree: "Created a custom physics engine for projectile movement",
+      responsibilityFour: "Added AI opponents with pathfinding algorithms",
     },
   ],
   skills: [

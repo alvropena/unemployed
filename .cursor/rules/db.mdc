@@ -1,10 +1,124 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: true
 ---
+# Database Schema Documentation
 
-# Your rule content
+## Overview
+This document describes the database schema for the resume builder application. The schema is built using Prisma and PostgreSQL.
 
-- You can @ files here
-- You can use markdown but dont have to
+## Models
+
+### User
+- Primary model for user authentication
+- Contains basic user information
+- Fields:
+  - `id`: Unique identifier (TEXT)
+  - `email`: User's email address (TEXT, unique)
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+### Subscription
+- Manages user subscription status
+- Fields:
+  - `id`: Unique identifier
+  - `userId`: Reference to User (unique)
+  - `status`: Subscription status (active, canceled, etc.)
+  - `plan`: Subscription type (monthly, annual, lifetime)
+  - `stripeCustomerId`: Stripe customer ID (optional)
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+### Personal
+- Main resume information
+- Fields:
+  - `id`: Unique identifier
+  - `userId`: Reference to User
+  - `name`: Full name
+  - `email`: Contact email
+  - `phone`: Contact phone
+  - `linkedin`: LinkedIn profile URL
+  - `github`: GitHub profile URL
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+### Education
+- Educational background entries
+- Fields:
+  - `id`: Unique identifier
+  - `resumeId`: Reference to Resume
+  - `institution`: School/University name
+  - `degree`: Degree obtained
+  - `location`: Institution location
+  - `startDate`: Start date
+  - `endDate`: End date (optional)
+  - `current`: Whether currently studying
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+### Experience
+- Work experience entries
+- Fields:
+  - `id`: Unique identifier
+  - `resumeId`: Reference to Resume
+  - `company`: Company name
+  - `position`: Job title
+  - `location`: Work location
+  - `startDate`: Start date
+  - `endDate`: End date (optional)
+  - `current`: Whether currently employed
+  - `responsibilityOne`: First responsibility (optional)
+  - `responsibilityTwo`: Second responsibility (optional)
+  - `responsibilityThree`: Third responsibility (optional)
+  - `responsibilityFour`: Fourth responsibility (optional)
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+### Project
+- Project portfolio entries
+- Fields:
+  - `id`: Unique identifier
+  - `resumeId`: Reference to Resume
+  - `name`: Project name
+  - `startDate`: Start date (optional)
+  - `endDate`: End date (optional)
+  - `current`: Whether currently working on
+  - `responsibilityOne`: First responsibility (optional)
+  - `responsibilityTwo`: Second responsibility (optional)
+  - `responsibilityThree`: Third responsibility (optional)
+  - `responsibilityFour`: Fourth responsibility (optional)
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+### Skill
+- Technical skills and competencies
+- Fields:
+  - `id`: Unique identifier
+  - `resumeId`: Reference to Resume
+  - `name`: Skill name
+  - `category`: Skill category (languages, frameworks, developer_tools, libraries)
+  - `createdAt`: Timestamp of creation
+  - `updatedAt`: Timestamp of last update
+
+## Relationships
+- User has one Subscription (1:1)
+- User has one Resume (1:1)
+- Resume has many Education entries (1:N)
+- Resume has many Experience entries (1:N)
+- Resume has many Project entries (1:N)
+- Resume has many Skill entries (1:N)
+
+## Indexes
+- User: email (unique)
+- Subscription: userId
+- Resume: userId
+- Education: resumeId
+- Experience: resumeId
+- Project: resumeId
+- Skill: resumeId, category
+- Skill: resumeId + name (unique)
+
+## Cascade Deletes
+- When a Resume is deleted, all related Education, Experience, Project, and Skill entries are automatically deleted
+- User and Subscription deletions are restricted to prevent accidental data loss

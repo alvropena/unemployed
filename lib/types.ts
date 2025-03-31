@@ -14,7 +14,6 @@ export interface ResumeData {
     startDate: Date
     endDate?: Date | null
     current: boolean
-    description?: string | null
   }>
   experience: Array<{
     id?: string
@@ -24,7 +23,10 @@ export interface ResumeData {
     startDate: Date
     endDate?: Date | null
     current: boolean
-    description: string[]
+    responsibilityOne?: string | null
+    responsibilityTwo?: string | null
+    responsibilityThree?: string | null
+    responsibilityFour?: string | null
   }>
   projects: Array<{
     id?: string
@@ -32,7 +34,10 @@ export interface ResumeData {
     startDate?: Date | null
     endDate?: Date | null
     current: boolean
-    description: string[]
+    responsibilityOne?: string | null
+    responsibilityTwo?: string | null
+    responsibilityThree?: string | null
+    responsibilityFour?: string | null
   }>
   skills: Array<{
     id?: string
