@@ -36,34 +36,10 @@ export const loadResumeData = async (): Promise<ResumeData | null> => {
     }
 
     const { data } = await response.json();
+    console.log('Resume data loaded from API:', data);
     return data;
   } catch (error) {
     console.error('Error loading resume data:', error);
     return null;
   }
 };
-
-// Fallback to localStorage for offline support
-const STORAGE_KEY = "resume_data_offline";
-
-// Save resume data to localStorage as a backup
-export const saveResumeDataLocally = (data: ResumeData): void => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }
-};
-
-// Load resume data from localStorage as a backup
-export const loadResumeDataLocally = (): ResumeData | null => {
-  if (typeof window !== "undefined") {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        return JSON.parse(savedData) as ResumeData;
-      } catch (error) {
-        console.error("Error parsing saved resume data:", error);
-      }
-    }
-  }
-  return null;
-}; 

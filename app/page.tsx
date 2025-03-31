@@ -7,7 +7,7 @@ import { defaultResumeData } from "@/lib/default-data";
 import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { loadResumeData } from "@/lib/resume-service";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import SubscriptionHandler from "@/components/paywall/subscription-handler";
 
@@ -45,7 +45,6 @@ export default function Home() {
 	const [resumeData, setResumeData] = useState<ResumeData>(defaultResumeData);
 	const [hasPaid, setHasPaid] = useState(false);
 	const [isLoadingData, setIsLoadingData] = useState(true);
-	const router = useRouter();
 
 	// Load saved resume data when authenticated
 	useEffect(() => {
@@ -64,13 +63,6 @@ export default function Home() {
 			setIsLoadingData(false);
 		}
 	}, [isSignedIn]);
-
-	// Redirect to paywall if user hasn't paid
-	useEffect(() => {
-		if (isSignedIn && !isLoadingData && !hasPaid) {
-			router.push("/paywall");
-		}
-	}, [isSignedIn, isLoadingData, hasPaid, router]);
 
 	// If not loaded yet, show loading
 	if (!isLoaded || isLoadingData) {
@@ -93,12 +85,6 @@ export default function Home() {
 					}
 				>
 					<PaymentStatusHandler />
-					<SubscriptionHandler
-						userId={userId}
-						isSignedIn={isSignedIn}
-						setHasPaid={setHasPaid}
-						setShowSubscriptionModal={() => router.push("/paywall")}
-					/>
 
 					<ResumeBuilder
 						data={resumeData}

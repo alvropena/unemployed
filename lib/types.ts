@@ -1,35 +1,43 @@
 export interface ResumeData {
   personal: {
     name: string
-    phone: string
     email: string
+    phone: string
     linkedin: string
     github: string
   }
   education: Array<{
+    id?: string
     institution: string
-    location: string
     degree: string
-    date: string
+    location: string
+    startDate: Date
+    endDate?: Date | null
+    current: boolean
+    description?: string | null
   }>
   experience: Array<{
-    title: string
+    id?: string
     company: string
+    position: string
     location: string
-    date: string
-    responsibilities: string[]
+    startDate: Date
+    endDate?: Date | null
+    current: boolean
+    description: string[]
   }>
   projects: Array<{
+    id?: string
     name: string
-    technologies: string
-    date: string
-    details: string[]
+    startDate?: Date | null
+    endDate?: Date | null
+    current: boolean
+    description: string[]
   }>
-  skills: {
-    languages: string
-    frameworks: string
-    tools: string
-    libraries: string
-  }
+  skills: Array<{
+    id?: string
+    name: string
+    category: 'languages' | 'frameworks' | 'developer_tools' | 'libraries'
+  }>
 }
 

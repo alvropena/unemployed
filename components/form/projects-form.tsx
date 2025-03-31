@@ -1,199 +1,174 @@
+"use client";
+
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Trash2 } from "lucide-react";
 import type { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/default-data";
 import { Label } from "@/components/ui/label";
-import { DateRangeSelect } from "@/components/ui/date-range-select";
 
 interface ProjectsFormProps {
 	projects: ResumeData["projects"];
-	addProject: () => void;
 	updateProject: (
 		index: number,
 		field: string,
-		value: string | string[],
+		value: string | Date | boolean | null,
 	) => void;
-	removeProject: (index: number) => void;
-	addProjectDetail: (projIndex: number) => void;
 	updateProjectDetail: (
 		projIndex: number,
 		detailIndex: number,
 		value: string,
 	) => void;
-	removeProjectDetail: (projIndex: number, detailIndex: number) => void;
 }
 
-const ProjectInput = React.memo(
-	({
-		id,
-		value,
-		onChange,
-		placeholder,
-	}: {
-		id: string;
-		value: string;
-		onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-		placeholder: string;
-	}) => (
-		<Input
-			id={id}
-			value={value}
-			onChange={onChange}
-			placeholder={placeholder}
-		/>
-	),
-);
-
-ProjectInput.displayName = "ProjectInput";
+interface ProjectState {
+	name: string;
+	description: string[];
+}
 
 export default function ProjectsForm({
 	projects,
-	addProject,
 	updateProject,
-	removeProject,
-	addProjectDetail,
 	updateProjectDetail,
-	removeProjectDetail,
 }: ProjectsFormProps) {
+	// Project 1 State
+	const [project1, setProject1] = React.useState<ProjectState>({
+		name: projects[0]?.name || "",
+		description: projects[0]?.description || ["", "", "", ""],
+	});
+
+	// Project 2 State
+	const [project2, setProject2] = React.useState<ProjectState>({
+		name: projects[1]?.name || "",
+		description: projects[1]?.description || ["", "", "", ""],
+	});
+
+	// Handler for updating project fields
+	const handleProjectChange = React.useCallback((
+		index: number,
+		field: string,
+		value: string,
+		setter: React.Dispatch<React.SetStateAction<ProjectState>>,
+	) => {
+		setter(prev => ({ ...prev, [field]: value }));
+		updateProject(index, field, value);
+	}, [updateProject]);
+
+	// Handler for updating project details
+	const handleProjectDetailChange = React.useCallback((
+		projIndex: number,
+		detailIndex: number,
+		value: string,
+		setter: React.Dispatch<React.SetStateAction<ProjectState>>,
+	) => {
+		setter(prev => {
+			const newDescription = [...prev.description];
+			newDescription[detailIndex] = value;
+			return { ...prev, description: newDescription };
+		});
+		updateProjectDetail(projIndex, detailIndex, value);
+	}, [updateProjectDetail]);
+
 	return (
-		<>
-			{projects.map((project, index) => {
-				const [startMonth, startYear, endMonth, endYear] = project.date
-					.split(" – ")
-					.flatMap((part) => part.split(" "))
-					.map((part) => part.trim());
-
-				const handleDateChange = (
-					startMonth: string,
-					startYear: string,
-					endMonth: string,
-					endYear: string,
-				) => {
-					const formattedDate = `${startMonth} ${startYear} – ${endYear === "Present" ? "Present" : `${endMonth} ${endYear}`}`;
-					updateProject(index, "date", formattedDate);
-				};
-
-				return (
-					<Card
-						key={`${project.name}-${project.date}`
-							.toLowerCase()
-							.replace(/\s+/g, "-")}
-						className="mb-4"
-					>
-						<CardContent className="pt-4">
-							<div className="flex justify-between items-center mb-2">
-								<h3 className="font-medium">Project #{index + 1}</h3>
-								<Button
-									variant="destructive"
-									size="sm"
-									onClick={() => removeProject(index)}
-								>
-									<Trash2 className="h-4 w-4" />
-								</Button>
-							</div>
-							<div className="grid gap-4">
-								<div>
-									<Label htmlFor={`project-name-${index}`}>Project Name</Label>
-									<ProjectInput
-										id={`project-name-${index}`}
-										value={project.name}
-										onChange={(e) =>
-											updateProject(index, "name", e.target.value)
-										}
-										placeholder={
-											defaultResumeData.projects[
-												index % defaultResumeData.projects.length
-											].name
-										}
-									/>
-								</div>
-								<div>
-									<Label htmlFor={`project-tech-${index}`}>Technologies</Label>
-									<ProjectInput
-										id={`project-tech-${index}`}
-										value={project.technologies}
-										onChange={(e) =>
-											updateProject(index, "technologies", e.target.value)
-										}
-										placeholder={
-											defaultResumeData.projects[
-												index % defaultResumeData.projects.length
-											].technologies
-										}
-									/>
-								</div>
-								<DateRangeSelect
-									startMonth={startMonth}
-									startYear={startYear}
-									endMonth={endMonth}
-									endYear={endYear}
-									onDateChange={handleDateChange}
-									checkboxLabel="This is an ongoing project"
-									id={`project-${index}`}
+		<div className="space-y-4">
+			{/* First Project */}
+			<Card>
+				<CardContent className="pt-6">
+					<div className="mb-6">
+						<h3 className="font-medium">Project #1</h3>
+					</div>
+					<div className="space-y-4">
+						<div className="space-y-2">
+							<Label htmlFor="project-name1">Project Name</Label>
+							<Input
+								id="project-name1"
+								value={project1.name}
+								onChange={(e) => handleProjectChange(0, "name", e.target.value, setProject1)}
+								placeholder={defaultResumeData.projects[0].name}
+							/>
+						</div>
+						<div>
+							<Label>Responsibilities</Label>
+							<div className="space-y-2">
+								<Textarea
+									value={project1.description[0]}
+									onChange={(e) => handleProjectDetailChange(0, 0, e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].description[0]}
+									className="min-h-[80px]"
 								/>
-								<div>
-									<Label>Details</Label>
-									{project.details.map((detail, detailIndex) => (
-										<div
-											key={`${project.name}-detail-${detailIndex}`}
-											className="flex gap-2 mb-2"
-										>
-											<Textarea
-												value={detail}
-												onChange={(e) =>
-													updateProjectDetail(
-														index,
-														detailIndex,
-														e.target.value,
-													)
-												}
-												placeholder={
-													defaultResumeData.projects[
-														index % defaultResumeData.projects.length
-													].details[
-														detailIndex %
-															defaultResumeData.projects[
-																index % defaultResumeData.projects.length
-															].details.length
-													]
-												}
-												className="min-h-[80px]"
-											/>
-											<Button
-												variant="destructive"
-												size="icon"
-												onClick={() => removeProjectDetail(index, detailIndex)}
-												disabled={project.details.length <= 1}
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
-										</div>
-									))}
-									<Button
-										onClick={() => addProjectDetail(index)}
-										variant="outline"
-										size="sm"
-										className="mt-1"
-									>
-										<Plus className="h-4 w-4 mr-2" /> Add Detail
-									</Button>
-								</div>
+								<Textarea
+									value={project1.description[1]}
+									onChange={(e) => handleProjectDetailChange(0, 1, e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].description[1]}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={project1.description[2]}
+									onChange={(e) => handleProjectDetailChange(0, 2, e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].description[2]}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={project1.description[3]}
+									onChange={(e) => handleProjectDetailChange(0, 3, e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].description[3]}
+									className="min-h-[80px]"
+								/>
 							</div>
-						</CardContent>
-					</Card>
-				);
-			})}
-			<Button
-				onClick={addProject}
-				className="w-full"
-				disabled={projects.length >= 2}
-			>
-				<Plus className="h-4 w-4 mr-2" /> Add Project
-			</Button>
-		</>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Second Project */}
+			<Card>
+				<CardContent className="pt-6">
+					<div className="mb-6">
+						<h3 className="font-medium">Project #2</h3>
+					</div>
+					<div className="space-y-4">
+						<div className="space-y-2">
+							<Label htmlFor="project-name2">Project Name</Label>
+							<Input
+								id="project-name2"
+								value={project2.name}
+								onChange={(e) => handleProjectChange(1, "name", e.target.value, setProject2)}
+								placeholder={defaultResumeData.projects[1].name}
+							/>
+						</div>
+						<div>
+							<Label>Responsibilities</Label>
+							<div className="space-y-2">
+								<Textarea
+									value={project2.description[0]}
+									onChange={(e) => handleProjectDetailChange(1, 0, e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].description[0]}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={project2.description[1]}
+									onChange={(e) => handleProjectDetailChange(1, 1, e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].description[1]}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={project2.description[2]}
+									onChange={(e) => handleProjectDetailChange(1, 2, e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].description[2]}
+									className="min-h-[80px]"
+								/>
+								<Textarea
+									value={project2.description[3]}
+									onChange={(e) => handleProjectDetailChange(1, 3, e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].description[3]}
+									className="min-h-[80px]"
+								/>
+							</div>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+		</div>
 	);
 }

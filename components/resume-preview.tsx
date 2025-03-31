@@ -19,6 +19,19 @@ const formatPhoneNumber = (phoneNumber: string) => {
 	return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}-${cleaned.slice(10)}`;
 };
 
+// Helper function to format dates
+const formatDate = (date: Date | null | undefined) => {
+	if (!date) return "Present";
+	const month = date.toLocaleString('default', { month: 'short' });
+	const year = date.getFullYear();
+	return `${month} ${year}`;
+};
+
+// Helper function to format date range
+const formatDateRange = (startDate: Date, endDate?: Date | null) => {
+	return `${formatDate(startDate)} – ${formatDate(endDate)}`;
+};
+
 export default function ResumePreview({ data }: ResumePreviewProps) {
 	// Helper function to get value or default
 	const getValueOrDefault = (value: string | undefined, defaultValue: string) =>
@@ -27,7 +40,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 	return (
 		<div
 			id="resume-preview"
-			className="h-full w-full p-6 bg-white font-['Times_New_Roman'] text-[11pt] leading-[1.3] text-black"
+			className="h-fit w-full p-6 bg-white font-['Times_New_Roman'] text-[11pt] leading-[1.3] text-black"
 		>
 			{/* Header - Name and contact info */}
 			<div className="text-center mb-[8pt]">
@@ -110,7 +123,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 						: defaultResumeData.education
 					).map((edu) => (
 						<li
-							key={`${edu.institution}-${edu.degree}-${edu.date}`}
+							key={`${edu.institution}-${edu.degree}-${edu.startDate}`}
 							className="mb-[7pt]"
 						>
 							<div className="flex justify-between items-baseline w-full">
@@ -119,8 +132,11 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 							</div>
 							<div className="flex justify-between items-baseline w-full">
 								<div className="italic text-[10pt]">{edu.degree}</div>
-								<div className="italic text-[10pt]">{edu.date}</div>
+								<div className="italic text-[10pt]">{formatDateRange(edu.startDate, edu.endDate)}</div>
 							</div>
+							{edu.description && (
+								<div className="text-[10pt] mt-[2pt]">{edu.description}</div>
+							)}
 						</li>
 					))}
 				</ul>
@@ -137,24 +153,24 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 						: defaultResumeData.experience
 					).map((exp) => (
 						<li
-							key={`${exp.company}-${exp.title}-${exp.date}`}
+							key={`${exp.company}-${exp.position}-${exp.startDate}`}
 							className="mb-[7pt]"
 						>
 							<div className="flex justify-between items-baseline w-full">
-								<div className="font-bold">{exp.title}</div>
-								<div>{exp.date}</div>
+								<div className="font-bold">{exp.position}</div>
+								<div>{formatDateRange(exp.startDate, exp.endDate)}</div>
 							</div>
 							<div className="flex justify-between items-baseline w-full">
 								<div className="italic text-[10pt]">{exp.company}</div>
 								<div className="italic text-[10pt]">{exp.location}</div>
 							</div>
 							<ul className="list-disc pl-[15pt] mt-[2pt]">
-								{exp.responsibilities.map((resp, index) => (
+								{exp.description.map((desc, index) => (
 									<li
-										key={`${exp.company}-${exp.title}-resp-${index}`}
+										key={`${exp.company}-${exp.position}-desc-${index}`}
 										className="text-[10pt] mb-[2pt]"
 									>
-										{resp}
+										{desc}
 									</li>
 								))}
 							</ul>
@@ -173,23 +189,21 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 						? data.projects
 						: defaultResumeData.projects
 					).map((project) => (
-						<li key={`${project.name}-${project.date}`} className="mb-[7pt]">
+						<li 
+							key={`${project.name}-${project.startDate}`} 
+							className="mb-[7pt]"
+						>
 							<div className="flex justify-between items-baseline w-full">
-								<div>
-									<span className="font-bold">{project.name}</span>
-									{project.technologies && (
-										<span className="italic"> | {project.technologies}</span>
-									)}
-								</div>
-								<div>{project.date}</div>
+								<div className="font-bold">{project.name}</div>
+								<div>{formatDateRange(project.startDate!, project.endDate)}</div>
 							</div>
 							<ul className="list-disc pl-[15pt] mt-[2pt]">
-								{project.details.map((detail, index) => (
+								{(project.description || []).map((desc, index) => (
 									<li
-										key={`${project.name}-detail-${index}`}
+										key={`${project.name}-desc-${index}`}
 										className="text-[10pt] mb-[2pt]"
 									>
-										{detail}
+										{desc}
 									</li>
 								))}
 							</ul>
@@ -204,42 +218,22 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
 					Technical Skills
 				</h2>
 				<ul className="list-none pl-0 text-[10pt]">
-					<li className="mb-[2pt]">
-						<span className="font-bold">Languages:</span>{" "}
-						<span>
-							{getValueOrDefault(
-								data?.skills?.languages,
-								defaultResumeData.skills.languages,
-							)}
-						</span>
-					</li>
-					<li className="mb-[2pt]">
-						<span className="font-bold">Frameworks:</span>{" "}
-						<span>
-							{getValueOrDefault(
-								data?.skills?.frameworks,
-								defaultResumeData.skills.frameworks,
-							)}
-						</span>
-					</li>
-					<li className="mb-[2pt]">
-						<span className="font-bold">Developer Tools:</span>{" "}
-						<span>
-							{getValueOrDefault(
-								data?.skills?.tools,
-								defaultResumeData.skills.tools,
-							)}
-						</span>
-					</li>
-					<li className="mb-[2pt]">
-						<span className="font-bold">Libraries:</span>{" "}
-						<span>
-							{getValueOrDefault(
-								data?.skills?.libraries,
-								defaultResumeData.skills.libraries,
-							)}
-						</span>
-					</li>
+					{["languages", "frameworks", "developer_tools", "libraries"].map((category) => (
+						<li key={category} className="mb-[2pt]">
+							<span className="font-bold capitalize">
+								{category.replace("_", " ")}:
+							</span>{" "}
+							<span>
+								{((data?.skills?.length ?? 0) > 0
+									? data.skills
+									: defaultResumeData.skills
+								)
+									.filter((skill) => skill.category === category)
+									.map((skill) => skill.name)
+									.join(", ")}
+							</span>
+						</li>
+					))}
 				</ul>
 			</div>
 		</div>
