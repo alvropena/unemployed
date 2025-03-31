@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { loadResumeData, saveResumeData } from "@/lib/resumeUtils";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 
 export function useResumeData(
   setData: React.Dispatch<React.SetStateAction<ResumeData>>,

@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useFormHandlers } from "@/hooks/useFormHandlers";
 
@@ -26,7 +26,6 @@ type TabType = "personal" | "education" | "experience" | "projects" | "skills";
 
 const ALL_TABS: TabType[] = [
   "personal",
-
   "education",
   "experience",
   "projects",
@@ -38,21 +37,9 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
   const { isLoading } = useResumeData(setData, data);
   const {
     updatePersonal,
-    addEducation,
     updateEducation,
-    removeEducation,
-    addExperience,
     updateExperience,
-    removeExperience,
-    addResponsibility,
-    updateResponsibility,
-    removeResponsibility,
-    addProject,
     updateProject,
-    removeProject,
-    addProjectDetail,
-    updateProjectDetail,
-    removeProjectDetail,
     updateSkills,
   } = useFormHandlers(setData);
   const [isSaving, setIsSaving] = useState(false);
@@ -162,38 +149,29 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
               <TabsContent value="education" className="space-y-4">
                 <EducationForm
                   education={data.education}
-                  addEducation={addEducation}
                   updateEducation={updateEducation}
-                  removeEducation={removeEducation}
                 />
               </TabsContent>
 
               <TabsContent value="experience" className="space-y-4">
                 <ExperienceForm
                   experience={data.experience}
-                  addExperience={addExperience}
                   updateExperience={updateExperience}
-                  removeExperience={removeExperience}
-                  addResponsibility={addResponsibility}
-                  updateResponsibility={updateResponsibility}
-                  removeResponsibility={removeResponsibility}
                 />
               </TabsContent>
 
               <TabsContent value="projects" className="space-y-4">
                 <ProjectsForm
                   projects={data.projects}
-                  addProject={addProject}
                   updateProject={updateProject}
-                  removeProject={removeProject}
-                  addProjectDetail={addProjectDetail}
-                  updateProjectDetail={updateProjectDetail}
-                  removeProjectDetail={removeProjectDetail}
                 />
               </TabsContent>
 
               <TabsContent value="skills" className="space-y-4">
-                <SkillsForm skills={data.skills} updateSkills={updateSkills} />
+                <SkillsForm 
+                  skills={data.skills} 
+                  updateSkills={(index, category, value) => updateSkills(index, category, value)} 
+                />
               </TabsContent>
             </Tabs>
           </div>

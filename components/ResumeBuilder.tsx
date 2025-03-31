@@ -1,6 +1,6 @@
 import ResumeForm from "@/components/ResumeForm";
 import ResumePreview from "@/components/ResumePreview";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 import type { Dispatch, SetStateAction } from "react";
 
 interface ResumeBuilderProps {

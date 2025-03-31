@@ -1,7 +1,7 @@
 import { useState, type KeyboardEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 
 interface SkillsFormProps {
 	skills: ResumeData["skills"];

@@ -1,4 +1,4 @@
-import type { ResumeData } from "@/lib/types"
+import type { ResumeData } from "@/types/types"
 
 export const defaultResumeData: ResumeData = {
   personal: {

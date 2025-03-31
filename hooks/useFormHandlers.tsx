@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/useToast";
 import { defaultResumeData } from "@/lib/defaultData";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 
 export function useFormHandlers(
   setData: React.Dispatch<React.SetStateAction<ResumeData>>

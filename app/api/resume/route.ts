@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 import { prisma } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";

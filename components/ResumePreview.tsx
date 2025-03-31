@@ -1,4 +1,4 @@
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 import { defaultResumeData } from "@/lib/defaultData";
 // Load Computer Modern-like font
 // Since we can't directly use Computer Modern, we'll use a similar serif font

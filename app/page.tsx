@@ -2,7 +2,7 @@
 
 import { Loader } from "lucide-react";
 import Footer from "@/components/Footer";
-import type { ResumeData } from "@/lib/types";
+import type { ResumeData } from "@/types/types";
 import { defaultResumeData } from "@/lib/defaultData";
 import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";

@@ -1,4 +1,4 @@
-import { ResumeData } from "@/lib/types";
+import { ResumeData } from "@/types/types";
 
 // Save resume data to the server
 export const saveResumeData = async (data: ResumeData): Promise<boolean> => {
