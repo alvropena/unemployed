@@ -13,7 +13,7 @@ interface FormFieldProps {
   id: string;
   label: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string | null) => void;
   placeholder?: string;
   prefix?: string;
   replacePrefix?: string;
@@ -105,63 +105,43 @@ export default function PersonalForm({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => handleChange("name", e.target.value, setName)}
-          placeholder={defaultResumeData.personal.name || ""}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="phone">Phone</Label>
-        <Input
-          id="phone"
-          value={phone}
-          onChange={(e) => handleChange("phone", e.target.value, setPhone)}
-          placeholder={defaultResumeData.personal.phone || ""}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          value={email}
-          onChange={(e) => handleChange("email", e.target.value, setEmail)}
-          placeholder={defaultResumeData.personal.email || ""}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="linkedin">LinkedIn</Label>
-        <div className="relative flex">
-          <div className="flex items-center bg-muted border border-r-0 rounded-l-md px-3 text-muted-foreground text-sm">
-            linkedin.com/in/
-          </div>
-          <Input
-            id="linkedin"
-            value={linkedin}
-            onChange={(e) => handleChange("linkedin", e.target.value, setLinkedin)}
-            placeholder={getLinkedinPlaceholder()}
-            className="rounded-l-none"
-          />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="github">GitHub</Label>
-        <div className="relative flex">
-          <div className="flex items-center bg-muted border border-r-0 rounded-l-md px-3 text-muted-foreground text-sm">
-            github.com/
-          </div>
-          <Input
-            id="github"
-            value={github}
-            onChange={(e) => handleChange("github", e.target.value, setGithub)}
-            placeholder={getGithubPlaceholder()}
-            className="rounded-l-none"
-          />
-        </div>
-      </div>
+      <FormField
+        id="name"
+        label="Name"
+        value={name}
+        onChange={(value) => handleChange("name", value || "", setName)}
+        placeholder={defaultResumeData.personal.name || ""}
+      />
+      <FormField
+        id="phone"
+        label="Phone"
+        value={phone}
+        onChange={(value) => handleChange("phone", value || "", setPhone)}
+        placeholder={defaultResumeData.personal.phone || ""}
+      />
+      <FormField
+        id="email"
+        label="Email"
+        value={email}
+        onChange={(value) => handleChange("email", value || "", setEmail)}
+        placeholder={defaultResumeData.personal.email || ""}
+      />
+      <FormField
+        id="linkedin"
+        label="LinkedIn"
+        value={linkedin}
+        onChange={(value) => handleChange("linkedin", value || "", setLinkedin)}
+        placeholder={getLinkedinPlaceholder()}
+        prefix="linkedin.com/in/"
+      />
+      <FormField
+        id="github"
+        label="GitHub"
+        value={github}
+        onChange={(value) => handleChange("github", value || "", setGithub)}
+        placeholder={getGithubPlaceholder()}
+        prefix="github.com/"
+      />
     </div>
   );
 }
