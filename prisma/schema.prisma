@@ -36,12 +36,6 @@ model Personal {
   linkedin      String?
   github        String?
   
-  // Relations
-  education     Education[]
-  experience    Experience[]
-  projects      Project[]
-  skills        Skill[]
-  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -50,8 +44,8 @@ model Personal {
 
 model Education {
   id           String   @id @default(cuid())
-  resumeId     String
-  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   institution  String
   degree       String
   location     String
@@ -62,13 +56,13 @@ model Education {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@index([resumeId])
+  @@index([userId])
 }
 
 model Experience {
   id           String   @id @default(cuid())
-  resumeId     String
-  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   company      String
   position     String
   location     String
@@ -83,13 +77,13 @@ model Experience {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@index([resumeId])
+  @@index([userId])
 }
 
 model Project {
   id           String   @id @default(cuid())
-  resumeId     String
-  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
   startDate    DateTime?
   endDate      DateTime?
@@ -102,20 +96,33 @@ model Project {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@index([resumeId])
+  @@index([userId])
 }
 
 model Skill {
   id           String   @id @default(cuid())
-  resumeId     String
-  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  name         String
-  category     String   // languages, frameworks, developer_tools, libraries
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  languages    String?
+  frameworks   String?
+  developerTools String?
+  libraries    String?
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@unique([resumeId, name]) // Prevent duplicate skills for the same resume
-  @@index([resumeId])
-  @@index([category])
+  @@index([userId])
+}
+
+model User {
+  id           String    @id
+  email        String    @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  education    Education[]
+  experience   Experience[]
+  projects     Project[]
+  skills       Skill[]
+  personal     Personal?
+  subscription Subscription?
 }

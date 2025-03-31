@@ -6,7 +6,7 @@ import type { ResumeData } from "@/lib/types";
 import { defaultResumeData } from "@/lib/defaultData";
 import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { loadResumeData } from "@/lib/resumeService";
+import { loadResumeData } from "@/lib/resumeUtils";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import SubscriptionHandler from "@/components/paywall/SubscriptionHandler";

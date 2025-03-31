@@ -15,7 +15,7 @@ import ExperienceForm from "./form/ExperienceForm";
 import { Button } from "./ui/button";
 import { Save } from "lucide-react";
 import { useToast } from "./ui/useToast";
-import { saveResumeData } from "@/lib/resumeService";
+import { saveResumeData } from "@/lib/resumeUtils";
 
 interface ResumeFormProps {
   data: ResumeData;

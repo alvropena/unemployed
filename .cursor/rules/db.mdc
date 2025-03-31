@@ -122,3 +122,28 @@ This document describes the database schema for the resume builder application. 
 ## Cascade Deletes
 - When a Resume is deleted, all related Education, Experience, Project, and Skill entries are automatically deleted
 - User and Subscription deletions are restricted to prevent accidental data loss
+
+## Data Management Utilities
+
+### resumeUtils.ts
+- Handles data persistence and retrieval operations
+- Key functions:
+  - `saveResumeData`: Saves resume data to the server via POST request to `/api/resume`
+  - `loadResumeData`: Retrieves resume data from the server via GET request to `/api/resume`
+- Provides type-safe data handling using the defined schema types
+- Includes error handling and logging for data operations
+
+### defaultData.ts
+- Provides a template/placeholder data structure for the resume
+- Serves as:
+  - Initial data for new users
+  - Example of proper data formatting
+  - Guidance for users on how to structure their resume
+- Contains realistic sample data including:
+  - Personal information
+  - Education history
+  - Work experience (with four structured responsibilities)
+  - Projects (with four structured responsibilities)
+  - Skills (categorized by type)
+- Follows the database schema structure exactly
+- Used as a reference for expected data format and content 

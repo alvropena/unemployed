@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { loadResumeData, saveResumeData } from "@/lib/resumeService";
-import { defaultResumeData } from "@/lib/defaultData";
+import { loadResumeData, saveResumeData } from "@/lib/resumeUtils";
 import type { ResumeData } from "@/lib/types";
 
 export function useResumeData(
@@ -13,54 +12,45 @@ export function useResumeData(
     const fetchResumeData = async () => {
       setIsLoading(true);
       const savedData = await loadResumeData();
-      if (savedData) {
-        // Ensure there's at least one education entry
-        const education = savedData.education && savedData.education.length > 0
-          ? savedData.education
-          : [{
-              institution: "",
-              degree: "",
-              location: "",
-              startDate: new Date(),
-              endDate: null,
-              current: false,
-              description: null
-            }];
-
+      
+      if (savedData?.personal) {
+        // If we have user data, use it with proper schema structure
         setData({
-          ...savedData,
-          education,
-          // Initialize other sections if they're empty
-          experience: savedData.experience && savedData.experience.length > 0
-            ? savedData.experience
-            : [{
-                company: "",
-                position: "",
-                location: "",
-                startDate: new Date(),
-                endDate: null,
-                current: false,
-                description: [""]
-              }],
-          projects: savedData.projects && savedData.projects.length > 0
-            ? savedData.projects
-            : [{
-                name: "",
-                startDate: new Date(),
-                endDate: null,
-                current: false
-              }],
-          skills: savedData.skills || [],
-          personal: savedData.personal || {
+          personal: savedData.personal,
+          education: savedData.education || [{
+            institution: "",
+            degree: "",
+            location: "",
+            startDate: new Date(),
+            endDate: null,
+            current: false
+          }],
+          experience: savedData.experience || [{
+            company: "",
+            position: "",
+            location: "",
+            startDate: new Date(),
+            endDate: null,
+            current: false,
+            responsibilityOne: null,
+            responsibilityTwo: null,
+            responsibilityThree: null,
+            responsibilityFour: null
+          }],
+          projects: savedData.projects || [{
             name: "",
-            phone: "",
-            email: "",
-            linkedin: "",
-            github: "",
-          }
+            startDate: new Date(),
+            endDate: null,
+            current: false,
+            responsibilityOne: null,
+            responsibilityTwo: null,
+            responsibilityThree: null,
+            responsibilityFour: null
+          }],
+          skills: savedData.skills || []
         });
       } else {
-        // Initialize with empty data but keep one entry for each section
+        // Initialize with empty data following the schema structure
         setData({
           personal: {
             name: "",
@@ -75,8 +65,7 @@ export function useResumeData(
             location: "",
             startDate: new Date(),
             endDate: null,
-            current: false,
-            description: null
+            current: false
           }],
           experience: [{
             company: "",
@@ -85,13 +74,20 @@ export function useResumeData(
             startDate: new Date(),
             endDate: null,
             current: false,
-            description: [""]
+            responsibilityOne: null,
+            responsibilityTwo: null,
+            responsibilityThree: null,
+            responsibilityFour: null
           }],
           projects: [{
             name: "",
             startDate: new Date(),
             endDate: null,
-            current: false
+            current: false,
+            responsibilityOne: null,
+            responsibilityTwo: null,
+            responsibilityThree: null,
+            responsibilityFour: null
           }],
           skills: []
         });

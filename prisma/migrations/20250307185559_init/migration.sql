@@ -22,7 +22,7 @@ CREATE TABLE "Subscription" (
 );
 
 -- CreateTable
-CREATE TABLE "Resume" (
+CREATE TABLE "Personal" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "name" TEXT,
@@ -33,13 +33,13 @@ CREATE TABLE "Resume" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Resume_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Personal_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Education" (
     "id" TEXT NOT NULL,
-    "resumeId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "institution" TEXT NOT NULL,
     "degree" TEXT NOT NULL,
     "location" TEXT NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE "Education" (
 -- CreateTable
 CREATE TABLE "Experience" (
     "id" TEXT NOT NULL,
-    "resumeId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "company" TEXT NOT NULL,
     "position" TEXT NOT NULL,
     "location" TEXT NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE "Experience" (
 -- CreateTable
 CREATE TABLE "Project" (
     "id" TEXT NOT NULL,
-    "resumeId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "startDate" TIMESTAMP(3),
     "endDate" TIMESTAMP(3),
@@ -93,9 +93,11 @@ CREATE TABLE "Project" (
 -- CreateTable
 CREATE TABLE "Skill" (
     "id" TEXT NOT NULL,
-    "resumeId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "languages" TEXT,
+    "frameworks" TEXT,
+    "developerTools" TEXT,
+    "libraries" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -109,40 +111,35 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE INDEX "Subscription_userId_idx" ON "Subscription"("userId");
 
 -- CreateIndex
-CREATE INDEX "Resume_userId_idx" ON "Resume"("userId");
+CREATE INDEX "Personal_userId_idx" ON "Personal"("userId");
 
 -- CreateIndex
-CREATE INDEX "Education_resumeId_idx" ON "Education"("resumeId");
+CREATE INDEX "Education_userId_idx" ON "Education"("userId");
 
 -- CreateIndex
-CREATE INDEX "Experience_resumeId_idx" ON "Experience"("resumeId");
+CREATE INDEX "Experience_userId_idx" ON "Experience"("userId");
 
 -- CreateIndex
-CREATE INDEX "Project_resumeId_idx" ON "Project"("resumeId");
+CREATE INDEX "Project_userId_idx" ON "Project"("userId");
 
 -- CreateIndex
-CREATE INDEX "Skill_resumeId_idx" ON "Skill"("resumeId");
-
--- CreateIndex
-CREATE INDEX "Skill_category_idx" ON "Skill"("category");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Skill_resumeId_name_key" ON "Skill"("resumeId", "name");
+CREATE INDEX "Skill_userId_idx" ON "Skill"("userId");
 
 -- AddForeignKey
 ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Resume" ADD CONSTRAINT "Resume_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Personal" ADD CONSTRAINT "Personal_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Education" ADD CONSTRAINT "Education_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Education" ADD CONSTRAINT "Education_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Experience" ADD CONSTRAINT "Experience_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Experience" ADD CONSTRAINT "Experience_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Project" ADD CONSTRAINT "Project_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Project" ADD CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Skill" ADD CONSTRAINT "Skill_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "Resume"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Skill" ADD CONSTRAINT "Skill_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
