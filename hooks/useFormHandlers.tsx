@@ -1,5 +1,5 @@
-import { useToast } from "@/components/ui/use-toast";
-import { defaultResumeData } from "@/lib/default-data";
+import { useToast } from "@/components/ui/useToast";
+import { defaultResumeData } from "@/lib/defaultData";
 import type { ResumeData } from "@/lib/types";
 
 export function useFormHandlers(

@@ -1,5 +1,5 @@
 import type { ResumeData } from "@/lib/types";
-import { defaultResumeData } from "@/lib/default-data";
+import { defaultResumeData } from "@/lib/defaultData";
 // Load Computer Modern-like font
 // Since we can't directly use Computer Modern, we'll use a similar serif font
 // and add specific styling to match the LaTeX output

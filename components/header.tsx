@@ -4,9 +4,9 @@ import Link from "next/link";
 import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { Download } from "lucide-react";
-import { exportResumeToPDF } from "@/lib/pdf-export";
+import { exportResumeToPDF } from "@/lib/pdfExport";
 import { useState } from "react";
 
 export function Header() {

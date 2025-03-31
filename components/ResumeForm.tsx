@@ -4,18 +4,18 @@ import type React from "react";
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ResumeData } from "@/lib/types";
-import { useResumeData } from "@/hooks/use-resume-data";
-import { useFormHandlers } from "@/hooks/use-form-handlers";
+import { useResumeData } from "@/hooks/useResumeData";
+import { useFormHandlers } from "@/hooks/useFormHandlers";
 
-import SkillsForm from "./form/skills-form";
-import PersonalForm from "./form/personal-form";
-import ProjectsForm from "./form/projects-form";
-import EducationForm from "./form/education-form";
-import ExperienceForm from "./form/experience-form";
+import SkillsForm from "./form/SkillsForm";
+import PersonalForm from "./form/PersonalForm";
+import ProjectsForm from "./form/ProjectsForm";
+import EducationForm from "./form/EducationForm";
+import ExperienceForm from "./form/ExperienceForm";
 import { Button } from "./ui/button";
 import { Save } from "lucide-react";
-import { useToast } from "./ui/use-toast";
-import { saveResumeData } from "@/lib/resume-service";
+import { useToast } from "./ui/useToast";
+import { saveResumeData } from "@/lib/resumeService";
 
 interface ResumeFormProps {
   data: ResumeData;

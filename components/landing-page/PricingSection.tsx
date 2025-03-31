@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PricingCard from "@/components/paywall/pricing-card";
+import PricingCard from "@/components/paywall/PricingCard";
 
 interface Price {
 	id: string;

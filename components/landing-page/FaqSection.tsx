@@ -1,4 +1,4 @@
-import FaqAccordion from "@/components/landing-page/faq-accordion";
+import FaqAccordion from "@/components/landing-page/FaqAccordion";
 
 const faqItems = [
 	{

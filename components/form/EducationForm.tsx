@@ -4,7 +4,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ResumeData } from "@/lib/types";
-import { defaultResumeData } from "@/lib/default-data";
+import { defaultResumeData } from "@/lib/defaultData";
 import { Label } from "@/components/ui/label";
 
 interface EducationFormProps {

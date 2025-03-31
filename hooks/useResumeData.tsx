@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { loadResumeData, saveResumeData } from "@/lib/resume-service";
-import { defaultResumeData } from "@/lib/default-data";
+import { loadResumeData, saveResumeData } from "@/lib/resumeService";
+import { defaultResumeData } from "@/lib/defaultData";
 import type { ResumeData } from "@/lib/types";
 
 export function useResumeData(

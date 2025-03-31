@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { ResumeData } from "@/lib/types";
-import { defaultResumeData } from "@/lib/default-data";
+import { defaultResumeData } from "@/lib/defaultData";
 
 interface PersonalFormProps {
   personal: ResumeData["personal"];

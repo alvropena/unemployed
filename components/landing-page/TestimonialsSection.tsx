@@ -1,4 +1,4 @@
-import TestimonialCard from "@/components/landing-page/testimonial-card";
+import TestimonialCard from "@/components/landing-page/TestimonialCard";
 
 export default function TestimonialsSection() {
 	return (

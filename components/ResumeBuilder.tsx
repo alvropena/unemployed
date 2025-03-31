@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import ResumeForm from "@/components/resume-form";
-import ResumePreview from "@/components/resume-preview";
+import ResumeForm from "@/components/ResumeForm";
+import ResumePreview from "@/components/ResumePreview";
 import type { ResumeData } from "@/lib/types";
 import type { Dispatch, SetStateAction } from "react";
 

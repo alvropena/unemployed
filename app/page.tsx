@@ -1,24 +1,24 @@
 "use client";
 
 import { Loader } from "lucide-react";
-import Footer from "@/components/footer";
+import Footer from "@/components/Footer";
 import type { ResumeData } from "@/lib/types";
-import { defaultResumeData } from "@/lib/default-data";
+import { defaultResumeData } from "@/lib/defaultData";
 import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { loadResumeData } from "@/lib/resume-service";
+import { loadResumeData } from "@/lib/resumeService";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import SubscriptionHandler from "@/components/paywall/subscription-handler";
+import SubscriptionHandler from "@/components/paywall/SubscriptionHandler";
 
 // Import components
-import HeroSection from "@/components/landing-page/hero-section";
-import FeaturesSection from "@/components/landing-page/features-section";
-import PricingSection from "@/components/landing-page/pricing-section";
-import TestimonialsSection from "@/components/landing-page/testimonials-section";
-import FaqSection from "@/components/landing-page/faq-section";
-import CtaSection from "@/components/landing-page/cta-section";
-import ResumeBuilder from "@/components/resume-builder";
+import HeroSection from "@/components/landing-page/HeroSection";
+import FeaturesSection from "@/components/landing-page/FeaturesSection";
+import PricingSection from "@/components/landing-page/PricingSection";
+import TestimonialsSection from "@/components/landing-page/TestimonialsSection";
+import FaqSection from "@/components/landing-page/FaqSection";
+import CtaSection from "@/components/landing-page/CtaSection";
+import ResumeBuilder from "@/components/ResumeBuilder";
 
 function PaymentStatusHandler() {
 	const searchParams = useSearchParams();

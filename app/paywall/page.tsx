@@ -2,7 +2,7 @@
 
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "sonner";
-import PricingSection from "@/components/landing-page/pricing-section";
+import PricingSection from "@/components/landing-page/PricingSection";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
