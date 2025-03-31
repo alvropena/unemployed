@@ -1,74 +1,64 @@
 # Unemployed
 
-A professional resume builder application with AI-powered suggestions, authentication, and subscription plans.
+A professional resume builder application for software engineers.
 
-## Features
-
-- **Landing Page**: Showcase features and pricing plans
-- **Authentication**: Secure user authentication with Clerk
-- **Resume Builder**: Create and edit professional resumes
-- **PDF Export**: Download resumes as PDF
-- **Subscription Plans**: Free, Pro, and Enterprise plans with Stripe integration
-- **Dashboard**: Manage your resumes and subscription
-
-## Tech Stack
-
-- **Frontend**: Next.js, React, Tailwind CSS, shadcn/ui
-- **Authentication**: Clerk
-- **Payments**: Stripe
-- **PDF Generation**: html2pdf.js
-
-## Getting Started
+## Local Database Setup
 
 ### Prerequisites
+- PostgreSQL installed on your machine
+- Node.js and npm/yarn installed
+- Prisma CLI (`npm install -g prisma`)
 
-- Node.js 18+ and npm
-- Clerk account for authentication
-- Stripe account for payments
+### Steps
 
-### Installation
-
-1. Clone the repository:
+1. **Create a Local Database**
    ```bash
-   git clone https://github.com/alvropena/unemployed.git
-   cd unemployed
+   # Connect to PostgreSQL
+   psql postgres
+   
+   # Create a new database
+   CREATE DATABASE unemployed_db;
+   
+   # Exit psql
+   \q
    ```
 
-2. Install dependencies:
-   ```bash
-   npm install
+2. **Set Up Environment Variables**
+   Create a `.env` file in your project root:
+   ```env
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/unemployed_db"
    ```
 
-3. Copy the example environment variables:
+3. **Install Project Dependencies**
    ```bash
-   cp .env.local.example .env.local
+   npm install @prisma/client prisma
+   # or using yarn
+   yarn add @prisma/client prisma
    ```
 
-4. Update the `.env.local` file with your Clerk and Stripe credentials.
-
-5. Run the development server:
+4. **Initialize and Apply Database Schema**
    ```bash
-   npm run dev
+   # Generate Prisma Client
+   npx prisma generate
+   
+   # Run migrations to create tables
+   npx prisma migrate dev --name init
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. **Verify Setup**
+   ```bash
+   # Open Prisma Studio to view/edit data
+   npx prisma studio
+   ```
+### Database Schema
 
-## Environment Variables
+The application uses the following main models:
+- Resume (stores personal information and links to other models)
+- Education (educational background)
+- Experience (work experience)
+- Project (personal or professional projects)
+- Skill (technical skills with categories)
+- Subscription (user subscription status)
 
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Your Clerk publishable key
-- `CLERK_SECRET_KEY`: Your Clerk secret key
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Your Stripe publishable key
-- `STRIPE_SECRET_KEY`: Your Stripe secret key
-- `STRIPE_WEBHOOK_SECRET`: Your Stripe webhook secret
-- `NEXT_PUBLIC_APP_URL`: Your application URL (default: http://localhost:3000)
+For detailed schema information, see `prisma/schema.prisma`.
 
-## Project Structure
-
-- `/app`: Next.js app router pages and API routes
-- `/components`: Reusable React components
-- `/lib`: Utility functions and types
-- `/public`: Static assets
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
