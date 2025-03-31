@@ -47,7 +47,12 @@ export function useResumeData(
             responsibilityThree: null,
             responsibilityFour: null
           }],
-          skills: savedData.skills || []
+          skills: savedData.skills || [{
+            languages: null,
+            frameworks: null,
+            developerTools: null,
+            libraries: null
+          }]
         });
       } else {
         // Initialize with empty data following the schema structure
@@ -89,7 +94,12 @@ export function useResumeData(
             responsibilityThree: null,
             responsibilityFour: null
           }],
-          skills: []
+          skills: [{
+            languages: null,
+            frameworks: null,
+            developerTools: null,
+            libraries: null
+          }]
         });
       }
       setIsLoading(false);
