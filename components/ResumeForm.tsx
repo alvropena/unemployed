@@ -7,7 +7,7 @@ import type { ResumeData } from "@/lib/types";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useFormHandlers } from "@/hooks/useFormHandlers";
 
-import SkillsForm from "./form/SkillsForm";
+import SkillsForm from "./form/skills-form";
 import PersonalForm from "./form/PersonalForm";
 import ProjectsForm from "./form/ProjectsForm";
 import EducationForm from "./form/EducationForm";
@@ -55,8 +55,8 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
     removeProjectDetail,
     updateSkills,
   } = useFormHandlers(setData);
-	const [isSaving, setIsSaving] = useState(false);
-	const { toast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   // Get the current window of 3 tabs based on active tab
   const visibleTabs = useMemo(() => {
@@ -71,32 +71,32 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
   }, [activeTab]);
 
   const handleSaveChanges = async () => {
-		setIsSaving(true);
-		try {
-			const success = await saveResumeData(data);
-			if (success) {
-				toast({
-					title: "Success",
-					description: "Your resume has been saved successfully.",
-				});
-			} else {
-				toast({
-					title: "Error",
-					description: "Failed to save your resume. Please try again.",
-					variant: "destructive",
-				});
-			}
-		} catch (error) {
-			console.error("Error saving resume:", error);
-			toast({
-				title: "Error",
-				description: "An unexpected error occurred. Please try again.",
-				variant: "destructive",
-			});
-		} finally {
-			setIsSaving(false);
-		}
-	};
+    setIsSaving(true);
+    try {
+      const success = await saveResumeData(data);
+      if (success) {
+        toast({
+          title: "Success",
+          description: "Your resume has been saved successfully.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to save your resume. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>

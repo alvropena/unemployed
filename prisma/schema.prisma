@@ -25,7 +25,7 @@ model Subscription {
   @@index([userId])
 }
 
-model Resume {
+model Personal {
   id            String    @id @default(cuid())
   userId        String    // This will store Clerk's user ID
   
@@ -51,14 +51,13 @@ model Resume {
 model Education {
   id           String   @id @default(cuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   institution  String
   degree       String
   location     String
   startDate    DateTime
   endDate      DateTime?
   current      Boolean  @default(false)
-  description  String?
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -69,14 +68,17 @@ model Education {
 model Experience {
   id           String   @id @default(cuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   company      String
   position     String
   location     String
   startDate    DateTime
   endDate      DateTime?
   current      Boolean  @default(false)
-  description  String[]
+  responsibilityOne   String?
+  responsibilityTwo   String?
+  responsibilityThree String?
+  responsibilityFour  String?
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -87,12 +89,15 @@ model Experience {
 model Project {
   id           String   @id @default(cuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   name         String
   startDate    DateTime?
   endDate      DateTime?
   current      Boolean  @default(false)
-  description  String[]
+  responsibilityOne   String?
+  responsibilityTwo   String?
+  responsibilityThree String?
+  responsibilityFour  String?
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -103,7 +108,7 @@ model Project {
 model Skill {
   id           String   @id @default(cuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Personal   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   name         String
   category     String   // languages, frameworks, developer_tools, libraries
   
