@@ -2,65 +2,19 @@ import { useState, type KeyboardEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import type { ResumeData } from "@/types/types";
+import { SUGGESTED_SKILLS } from "@/constants/suggestedSkills";
 
 interface SkillsFormProps {
 	skills: ResumeData["skills"];
-	updateSkills: (category: string, value: string) => void;
+	updateSkills: (index: number, category: "languages" | "frameworks" | "developerTools" | "libraries", value: string | null) => void;
 }
 
-const SUGGESTED_SKILLS = {
-	languages: [
-		"JavaScript",
-		"TypeScript",
-		"Python",
-		"Java",
-		"C++",
-		"Go",
-		"Rust",
-		"PHP",
-		"Ruby",
-		"Swift",
-	],
-	frameworks: [
-		"React",
-		"Next.js",
-		"Vue",
-		"Angular",
-		"Django",
-		"Flask",
-		"Express",
-		"Spring",
-		"Laravel",
-	],
-	tools: [
-		"Git",
-		"Docker",
-		"Kubernetes",
-		"AWS",
-		"Azure",
-		"GCP",
-		"Linux",
-		"Nginx",
-		"Jenkins",
-	],
-	libraries: [
-		"Redux",
-		"TailwindCSS",
-		"Material-UI",
-		"Bootstrap",
-		"jQuery",
-		"pandas",
-		"NumPy",
-		"React Query",
-	],
-};
-
-const defaultSkills: ResumeData["skills"] = {
-	languages: "",
-	frameworks: "",
-	tools: "",
-	libraries: "",
-};
+const defaultSkills: ResumeData["skills"] = [{
+	languages: null,
+	frameworks: null,
+	developerTools: null,
+	libraries: null,
+}];
 
 export default function SkillsForm({
 	skills = defaultSkills,
@@ -69,61 +23,59 @@ export default function SkillsForm({
 	const [inputValues, setInputValues] = useState({
 		languages: "",
 		frameworks: "",
-		tools: "",
+		developerTools: "",
 		libraries: "",
 	});
 
 	const handleKeyDown = (
-		category: string,
+		category: keyof typeof SUGGESTED_SKILLS,
 		e: KeyboardEvent<HTMLInputElement>,
 	) => {
 		if (e.key === " " || e.key === "Enter") {
 			e.preventDefault();
-			const value = inputValues[category as keyof typeof inputValues].trim();
+			const value = inputValues[category].trim();
 			if (value) {
-				const currentSkills = (skills[category as keyof typeof skills] || "")
+				const currentSkills = (skills[0][category] || "")
 					.split(",")
 					.filter(Boolean)
-					.map((s) => s.trim());
+					.map((s: string) => s.trim());
 				if (!currentSkills.includes(value)) {
 					const newSkills = [...currentSkills, value].join(", ");
-					updateSkills(category, newSkills);
+					updateSkills(0, category, newSkills);
 				}
 				setInputValues((prev) => ({ ...prev, [category]: "" }));
 			}
 		}
 	};
 
-	const handleSuggestionClick = (category: string, skill: string) => {
-		const currentSkills = (skills[category as keyof typeof skills] || "")
+	const handleSuggestionClick = (category: keyof typeof SUGGESTED_SKILLS, skill: string) => {
+		const currentSkills = (skills[0][category] || "")
 			.split(",")
 			.filter(Boolean)
-			.map((s) => s.trim());
+			.map((s: string) => s.trim());
 		if (!currentSkills.includes(skill)) {
 			const newSkills = [...currentSkills, skill].join(", ");
-			updateSkills(category, newSkills);
+			updateSkills(0, category, newSkills);
 		}
 	};
 
-	const removeSkill = (category: string, skillToRemove: string) => {
-		const currentSkills = (skills[category as keyof typeof skills] || "")
+	const removeSkill = (category: keyof typeof SUGGESTED_SKILLS, skillToRemove: string) => {
+		const currentSkills = (skills[0][category] || "")
 			.split(",")
 			.filter(Boolean)
-			.map((s) => s.trim());
+			.map((s: string) => s.trim());
 		const newSkills = currentSkills
-			.filter((skill) => skill !== skillToRemove)
+			.filter((skill: string) => skill !== skillToRemove)
 			.join(", ");
-		updateSkills(category, newSkills);
+		updateSkills(0, category, newSkills);
 	};
 
-	const renderSkillSection = (category: string, label: string) => {
-		const currentSkills = (skills[category as keyof typeof skills] || "")
+	const renderSkillSection = (category: keyof typeof SUGGESTED_SKILLS, label: string) => {
+		const currentSkills = (skills[0][category] || "")
 			.split(",")
 			.filter(Boolean)
-			.map((s) => s.trim());
-		const suggestions = SUGGESTED_SKILLS[
-			category as keyof typeof SUGGESTED_SKILLS
-		].filter((skill) => !currentSkills.includes(skill));
+			.map((s: string) => s.trim());
+		const suggestions = SUGGESTED_SKILLS[category].filter((skill) => !currentSkills.includes(skill));
 
 		const inputId = `skill-${category}`;
 
@@ -135,7 +87,7 @@ export default function SkillsForm({
 					</label>
 					<div className="mt-1.5">
 						<div className="flex flex-wrap items-center gap-1.5 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-							{currentSkills.map((skill) => (
+							{currentSkills.map((skill: string) => (
 								<Badge
 									key={skill}
 									variant="secondary"
@@ -153,7 +105,7 @@ export default function SkillsForm({
 							))}
 							<input
 								id={inputId}
-								value={inputValues[category as keyof typeof inputValues]}
+								value={inputValues[category]}
 								onChange={(e) =>
 									setInputValues((prev) => ({
 										...prev,
@@ -167,7 +119,7 @@ export default function SkillsForm({
 											? "JavaScript, TypeScript, Python, Java, C++"
 											: category === "frameworks"
 												? "React, Next.js, Vue, Angular, Django"
-												: category === "tools"
+												: category === "developerTools"
 													? "Git, Docker, Kubernetes, AWS, Azure"
 													: "Redux, TailwindCSS, Material-UI, Bootstrap, jQuery"
 										: ""
@@ -199,7 +151,7 @@ export default function SkillsForm({
 		<div className="grid gap-6">
 			{renderSkillSection("languages", "Languages")}
 			{renderSkillSection("frameworks", "Frameworks")}
-			{renderSkillSection("tools", "Developer Tools")}
+			{renderSkillSection("developerTools", "Developer Tools")}
 			{renderSkillSection("libraries", "Libraries")}
 		</div>
 	);

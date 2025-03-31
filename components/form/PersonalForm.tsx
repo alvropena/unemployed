@@ -6,7 +6,7 @@ import { defaultResumeData } from "@/lib/defaultData";
 
 interface PersonalFormProps {
   personal: ResumeData["personal"];
-  updatePersonal: (field: string, value: string) => void;
+  updatePersonal: (field: string, value: string | null) => void;
 }
 
 interface FormFieldProps {
@@ -48,7 +48,7 @@ const FormField = ({
                   : e.target.value
               )
             }
-            placeholder={placeholder}
+            placeholder={placeholder || ""}
             className="rounded-l-none"
           />
         </div>
@@ -57,7 +57,7 @@ const FormField = ({
           id={id}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder={placeholder || ""}
         />
       )}
     </div>
@@ -90,7 +90,17 @@ export default function PersonalForm({
     setter: (value: string) => void
   ) => {
     setter(value);
-    updatePersonal(field, value);
+    updatePersonal(field, value || null);
+  };
+
+  const getLinkedinPlaceholder = () => {
+    const defaultLinkedin = defaultResumeData.personal.linkedin;
+    return defaultLinkedin ? defaultLinkedin.replace("linkedin.com/in/", "") : "";
+  };
+
+  const getGithubPlaceholder = () => {
+    const defaultGithub = defaultResumeData.personal.github;
+    return defaultGithub ? defaultGithub.replace("github.com/", "") : "";
   };
 
   return (
@@ -101,7 +111,7 @@ export default function PersonalForm({
           id="name"
           value={name}
           onChange={(e) => handleChange("name", e.target.value, setName)}
-          placeholder={defaultResumeData.personal.name}
+          placeholder={defaultResumeData.personal.name || ""}
         />
       </div>
       <div className="space-y-2">
@@ -110,7 +120,7 @@ export default function PersonalForm({
           id="phone"
           value={phone}
           onChange={(e) => handleChange("phone", e.target.value, setPhone)}
-          placeholder={defaultResumeData.personal.phone}
+          placeholder={defaultResumeData.personal.phone || ""}
         />
       </div>
       <div className="space-y-2">
@@ -119,7 +129,7 @@ export default function PersonalForm({
           id="email"
           value={email}
           onChange={(e) => handleChange("email", e.target.value, setEmail)}
-          placeholder={defaultResumeData.personal.email}
+          placeholder={defaultResumeData.personal.email || ""}
         />
       </div>
       <div className="space-y-2">
@@ -132,7 +142,7 @@ export default function PersonalForm({
             id="linkedin"
             value={linkedin}
             onChange={(e) => handleChange("linkedin", e.target.value, setLinkedin)}
-            placeholder={defaultResumeData.personal.linkedin.replace("linkedin.com/in/", "")}
+            placeholder={getLinkedinPlaceholder()}
             className="rounded-l-none"
           />
         </div>
@@ -147,7 +157,7 @@ export default function PersonalForm({
             id="github"
             value={github}
             onChange={(e) => handleChange("github", e.target.value, setGithub)}
-            placeholder={defaultResumeData.personal.github.replace("github.com/", "")}
+            placeholder={getGithubPlaceholder()}
             className="rounded-l-none"
           />
         </div>

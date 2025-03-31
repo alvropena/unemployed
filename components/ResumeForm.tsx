@@ -7,7 +7,7 @@ import type { ResumeData } from "@/types/types";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useFormHandlers } from "@/hooks/useFormHandlers";
 
-import SkillsForm from "./form/skills-form";
+import SkillsForm from "./form/SkillsForm";
 import PersonalForm from "./form/PersonalForm";
 import ProjectsForm from "./form/ProjectsForm";
 import EducationForm from "./form/EducationForm";

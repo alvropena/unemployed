@@ -15,60 +15,57 @@ interface ProjectsFormProps {
 		field: string,
 		value: string | Date | boolean | null,
 	) => void;
-	updateProjectDetail: (
-		projIndex: number,
-		detailIndex: number,
-		value: string,
-	) => void;
 }
 
 interface ProjectState {
 	name: string;
-	description: string[];
+	startDate: Date | null;
+	endDate: Date | null;
+	current: boolean;
+	responsibilityOne: string | null;
+	responsibilityTwo: string | null;
+	responsibilityThree: string | null;
+	responsibilityFour: string | null;
 }
 
 export default function ProjectsForm({
 	projects,
 	updateProject,
-	updateProjectDetail,
 }: ProjectsFormProps) {
 	// Project 1 State
 	const [project1, setProject1] = React.useState<ProjectState>({
 		name: projects[0]?.name || "",
-		description: projects[0]?.description || ["", "", "", ""],
+		startDate: projects[0]?.startDate || null,
+		endDate: projects[0]?.endDate || null,
+		current: projects[0]?.current || false,
+		responsibilityOne: projects[0]?.responsibilityOne || "",
+		responsibilityTwo: projects[0]?.responsibilityTwo || "",
+		responsibilityThree: projects[0]?.responsibilityThree || "",
+		responsibilityFour: projects[0]?.responsibilityFour || "",
 	});
 
 	// Project 2 State
 	const [project2, setProject2] = React.useState<ProjectState>({
 		name: projects[1]?.name || "",
-		description: projects[1]?.description || ["", "", "", ""],
+		startDate: projects[1]?.startDate || null,
+		endDate: projects[1]?.endDate || null,
+		current: projects[1]?.current || false,
+		responsibilityOne: projects[1]?.responsibilityOne || "",
+		responsibilityTwo: projects[1]?.responsibilityTwo || "",
+		responsibilityThree: projects[1]?.responsibilityThree || "",
+		responsibilityFour: projects[1]?.responsibilityFour || "",
 	});
 
 	// Handler for updating project fields
 	const handleProjectChange = React.useCallback((
 		index: number,
-		field: string,
-		value: string,
+		field: keyof ProjectState,
+		value: string | Date | boolean | null,
 		setter: React.Dispatch<React.SetStateAction<ProjectState>>,
 	) => {
 		setter(prev => ({ ...prev, [field]: value }));
 		updateProject(index, field, value);
 	}, [updateProject]);
-
-	// Handler for updating project details
-	const handleProjectDetailChange = React.useCallback((
-		projIndex: number,
-		detailIndex: number,
-		value: string,
-		setter: React.Dispatch<React.SetStateAction<ProjectState>>,
-	) => {
-		setter(prev => {
-			const newDescription = [...prev.description];
-			newDescription[detailIndex] = value;
-			return { ...prev, description: newDescription };
-		});
-		updateProjectDetail(projIndex, detailIndex, value);
-	}, [updateProjectDetail]);
 
 	return (
 		<div className="space-y-4">
@@ -92,27 +89,27 @@ export default function ProjectsForm({
 							<Label>Responsibilities</Label>
 							<div className="space-y-2">
 								<Textarea
-									value={project1.description[0]}
-									onChange={(e) => handleProjectDetailChange(0, 0, e.target.value, setProject1)}
-									placeholder={defaultResumeData.projects[0].description[0]}
+									value={project1.responsibilityOne || ""}
+									onChange={(e) => handleProjectChange(0, "responsibilityOne", e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].responsibilityOne || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={project1.description[1]}
-									onChange={(e) => handleProjectDetailChange(0, 1, e.target.value, setProject1)}
-									placeholder={defaultResumeData.projects[0].description[1]}
+									value={project1.responsibilityTwo || ""}
+									onChange={(e) => handleProjectChange(0, "responsibilityTwo", e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].responsibilityTwo || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={project1.description[2]}
-									onChange={(e) => handleProjectDetailChange(0, 2, e.target.value, setProject1)}
-									placeholder={defaultResumeData.projects[0].description[2]}
+									value={project1.responsibilityThree || ""}
+									onChange={(e) => handleProjectChange(0, "responsibilityThree", e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].responsibilityThree || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={project1.description[3]}
-									onChange={(e) => handleProjectDetailChange(0, 3, e.target.value, setProject1)}
-									placeholder={defaultResumeData.projects[0].description[3]}
+									value={project1.responsibilityFour || ""}
+									onChange={(e) => handleProjectChange(0, "responsibilityFour", e.target.value, setProject1)}
+									placeholder={defaultResumeData.projects[0].responsibilityFour || ""}
 									className="min-h-[80px]"
 								/>
 							</div>
@@ -141,27 +138,27 @@ export default function ProjectsForm({
 							<Label>Responsibilities</Label>
 							<div className="space-y-2">
 								<Textarea
-									value={project2.description[0]}
-									onChange={(e) => handleProjectDetailChange(1, 0, e.target.value, setProject2)}
-									placeholder={defaultResumeData.projects[1].description[0]}
+									value={project2.responsibilityOne || ""}
+									onChange={(e) => handleProjectChange(1, "responsibilityOne", e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].responsibilityOne || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={project2.description[1]}
-									onChange={(e) => handleProjectDetailChange(1, 1, e.target.value, setProject2)}
-									placeholder={defaultResumeData.projects[1].description[1]}
+									value={project2.responsibilityTwo || ""}
+									onChange={(e) => handleProjectChange(1, "responsibilityTwo", e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].responsibilityTwo || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={project2.description[2]}
-									onChange={(e) => handleProjectDetailChange(1, 2, e.target.value, setProject2)}
-									placeholder={defaultResumeData.projects[1].description[2]}
+									value={project2.responsibilityThree || ""}
+									onChange={(e) => handleProjectChange(1, "responsibilityThree", e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].responsibilityThree || ""}
 									className="min-h-[80px]"
 								/>
 								<Textarea
-									value={project2.description[3]}
-									onChange={(e) => handleProjectDetailChange(1, 3, e.target.value, setProject2)}
-									placeholder={defaultResumeData.projects[1].description[3]}
+									value={project2.responsibilityFour || ""}
+									onChange={(e) => handleProjectChange(1, "responsibilityFour", e.target.value, setProject2)}
+									placeholder={defaultResumeData.projects[1].responsibilityFour || ""}
 									className="min-h-[80px]"
 								/>
 							</div>

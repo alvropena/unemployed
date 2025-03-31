@@ -1,0 +1,48 @@
+export type SkillCategory = "languages" | "frameworks" | "developerTools" | "libraries";
+
+export const SUGGESTED_SKILLS: Record<SkillCategory, string[]> = {
+	languages: [
+		"JavaScript",
+		"TypeScript",
+		"Python",
+		"Java",
+		"C++",
+		"Go",
+		"Rust",
+		"PHP",
+		"Ruby",
+		"Swift",
+	],
+	frameworks: [
+		"React",
+		"Next.js",
+		"Vue",
+		"Angular",
+		"Django",
+		"Flask",
+		"Express",
+		"Spring",
+		"Laravel",
+	],
+	developerTools: [
+		"Git",
+		"Docker",
+		"Kubernetes",
+		"AWS",
+		"Azure",
+		"GCP",
+		"Linux",
+		"Nginx",
+		"Jenkins",
+	],
+	libraries: [
+		"Redux",
+		"TailwindCSS",
+		"Material-UI",
+		"Bootstrap",
+		"jQuery",
+		"pandas",
+		"NumPy",
+		"React Query",
+	],
+};
