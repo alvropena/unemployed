@@ -50,19 +50,11 @@ export default function ResumePreview({ data, isSaving }: ResumePreviewProps) {
             <h2 className="text-lg font-semibold mb-3">Education</h2>
             {data.education.map((edu, index) => (
               <div key={index} className="mb-4">
-                <div className="flex justify-between">
-                  <div>
-                    <h3 className="font-medium">{edu.institution}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {edu.degree}
-                    </p>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {edu.startDate.toLocaleDateString()} -{" "}
-                    {edu.current
-                      ? "Present"
-                      : edu.endDate?.toLocaleDateString()}
-                  </div>
+                <div>
+                  <h3 className="font-medium">{edu.institution}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {edu.degree}
+                  </p>
                 </div>
                 <p className="text-sm text-muted-foreground">{edu.location}</p>
               </div>
@@ -76,19 +68,11 @@ export default function ResumePreview({ data, isSaving }: ResumePreviewProps) {
             <h2 className="text-lg font-semibold mb-3">Experience</h2>
             {data.experience.map((exp, index) => (
               <div key={index} className="mb-4">
-                <div className="flex justify-between">
-                  <div>
-                    <h3 className="font-medium">{exp.position}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {exp.company}
-                    </p>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {exp.startDate.toLocaleDateString()} -{" "}
-                    {exp.current
-                      ? "Present"
-                      : exp.endDate?.toLocaleDateString()}
-                  </div>
+                <div>
+                  <h3 className="font-medium">{exp.position}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {exp.company}
+                  </p>
                 </div>
                 <p className="text-sm text-muted-foreground">{exp.location}</p>
                 <ul className="list-disc list-inside mt-2 text-sm">
@@ -110,15 +94,7 @@ export default function ResumePreview({ data, isSaving }: ResumePreviewProps) {
             <h2 className="text-lg font-semibold mb-3">Projects</h2>
             {data.projects.map((project, index) => (
               <div key={index} className="mb-4">
-                <div className="flex justify-between">
-                  <h3 className="font-medium">{project.name}</h3>
-                  <div className="text-sm text-muted-foreground">
-                    {project.startDate?.toLocaleDateString()} -{" "}
-                    {project.current
-                      ? "Present"
-                      : project.endDate?.toLocaleDateString()}
-                  </div>
-                </div>
+                <h3 className="font-medium">{project.name}</h3>
                 <ul className="list-disc list-inside mt-2 text-sm">
                   {project.responsibilityOne && (
                     <li>{project.responsibilityOne}</li>

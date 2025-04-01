@@ -22,16 +22,12 @@ export function useResumeData(
               institution: "",
               degree: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false
             },
             {
               institution: "",
               degree: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false
             }
           ],
@@ -40,8 +36,6 @@ export function useResumeData(
               company: "",
               position: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -52,8 +46,6 @@ export function useResumeData(
               company: "",
               position: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -64,8 +56,6 @@ export function useResumeData(
           projects: savedData.projects?.length ? savedData.projects : [
             {
               name: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -74,8 +64,6 @@ export function useResumeData(
             },
             {
               name: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -105,16 +93,12 @@ export function useResumeData(
               institution: "",
               degree: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false
             },
             {
               institution: "",
               degree: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false
             }
           ],
@@ -123,8 +107,6 @@ export function useResumeData(
               company: "",
               position: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -135,8 +117,6 @@ export function useResumeData(
               company: "",
               position: "",
               location: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -147,8 +127,6 @@ export function useResumeData(
           projects: [
             {
               name: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,
@@ -157,8 +135,6 @@ export function useResumeData(
             },
             {
               name: "",
-              startDate: new Date(),
-              endDate: null,
               current: false,
               responsibilityOne: null,
               responsibilityTwo: null,

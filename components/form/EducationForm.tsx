@@ -19,8 +19,6 @@ interface EducationState {
   institution: string;
   location: string;
   degree: string;
-  startDate: Date | null;
-  endDate: Date | null;
   current: boolean;
 }
 
@@ -30,12 +28,15 @@ export default function EducationForm({
   onContinue,
 }: EducationFormProps) {
   const institution1Ref = useRef<HTMLInputElement>(null);
-  const [currentEducation, setCurrentEducation] = useState(0); // Track which education is shown (0 or 1)
+  const institution2Ref = useRef<HTMLInputElement>(null);
+  const [currentEducation, setCurrentEducation] = useState(0);
 
   useEffect(() => {
-    // Focus the first institution input when component mounts or when switching to first education
+    // Focus the appropriate institution input when component mounts or when switching education blocks
     if (currentEducation === 0) {
       institution1Ref.current?.focus();
+    } else {
+      institution2Ref.current?.focus();
     }
   }, [currentEducation]);
 
@@ -44,8 +45,6 @@ export default function EducationForm({
     institution: education[0]?.institution || "",
     location: education[0]?.location || "",
     degree: education[0]?.degree || "",
-    startDate: education[0]?.startDate || new Date(),
-    endDate: education[0]?.endDate || null,
     current: education[0]?.current || false,
   });
 
@@ -53,8 +52,6 @@ export default function EducationForm({
     institution: education[1]?.institution || "",
     location: education[1]?.location || "",
     degree: education[1]?.degree || "",
-    startDate: education[1]?.startDate || new Date(),
-    endDate: education[1]?.endDate || null,
     current: education[1]?.current || false,
   });
 
@@ -146,6 +143,7 @@ export default function EducationForm({
                 <div className="space-y-2">
                   <Label htmlFor="institution2">Institution</Label>
                   <Input
+                    ref={institution2Ref}
                     id="institution2"
                     value={education2.institution}
                     onChange={(e) => handleChange(1, "institution", e.target.value, setEducation2)}

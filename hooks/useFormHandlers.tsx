@@ -3,7 +3,8 @@ import { defaultResumeData } from "@/lib/defaultData";
 import type { ResumeData } from "@/types/types";
 
 export function useFormHandlers(
-  setData: React.Dispatch<React.SetStateAction<ResumeData>>
+  setData: React.Dispatch<React.SetStateAction<ResumeData>>,
+  setIsSaving: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   const { toast } = useToast();
 
@@ -17,7 +18,7 @@ export function useFormHandlers(
     }));
   };
 
-  const updateEducation = (index: number, field: string, value: string | Date | boolean | null) => {
+  const updateEducation = (index: number, field: string, value: string | boolean | Date | null) => {
     setData((prev) => {
       const newEducation = [...prev.education];
       newEducation[index] = { ...newEducation[index], [field]: value };
@@ -28,7 +29,7 @@ export function useFormHandlers(
   const updateExperience = (
     index: number,
     field: string,
-    value: string | Date | boolean | null
+    value: string | boolean | Date | null
   ) => {
     setData((prev) => {
       const newExperience = [...prev.experience];
@@ -40,7 +41,7 @@ export function useFormHandlers(
   const updateProject = (
     index: number,
     field: string,
-    value: string | Date | boolean | null
+    value: string | boolean | Date | null
   ) => {
     setData((prev) => {
       const newProjects = [...prev.projects];
@@ -57,11 +58,38 @@ export function useFormHandlers(
     });
   };
 
+  const saveChanges = async (data: ResumeData) => {
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/resume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save changes");
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || "Failed to save changes");
+      }
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return {
     updatePersonal,
     updateEducation,
     updateExperience,
     updateProject,
-    updateSkills
+    updateSkills,
+    saveChanges
   };
 }

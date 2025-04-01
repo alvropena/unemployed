@@ -1,7 +1,6 @@
 "use client";
 
 import { loadStripe } from "@stripe/stripe-js";
-import { toast } from "sonner";
 import PricingSection from "@/components/landing-page/PricingSection";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -53,11 +52,9 @@ export default function PaywallPage() {
 
 			if (error) {
 				console.error("Stripe checkout error:", error);
-				toast.error("Failed to open checkout. Please try again.");
 			}
 		} catch (error) {
 			console.error("Error:", error);
-			toast.error("Something went wrong. Please try again later.");
 		}
 	};
 

@@ -3,13 +3,14 @@ import ResumePreview from "@/components/ResumePreview";
 import type { ResumeData } from "@/types/types";
 import type { Dispatch, SetStateAction } from "react";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useFormHandlers } from "@/hooks/useFormHandlers";
 
 interface ResumeBuilderProps {
   data: ResumeData;
@@ -26,24 +27,35 @@ export default function ResumeBuilder({
 }: ResumeBuilderProps) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedData, setLastSavedData] = useState<ResumeData | null>(null);
 
-  // Simulate save status changes for demo
+  const { saveChanges } = useFormHandlers(setData, setIsSaving);
+
+  // Debounced save effect
   useEffect(() => {
-    const handleSave = async () => {
-      setSaveStatus('saving');
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setSaveStatus('saved');
-        setLastSaved(new Date());
-      } catch (error) {
-        setSaveStatus('error');
-      }
-    };
+    // Only save if data has actually changed
+    if (JSON.stringify(data) === JSON.stringify(lastSavedData)) {
+      return;
+    }
 
-    const timer = setTimeout(handleSave, 500);
+    const timer = setTimeout(async () => {
+      if (data) {
+        setSaveStatus('saving');
+        try {
+          await saveChanges(data);
+          setSaveStatus('saved');
+          setLastSaved(new Date());
+          setLastSavedData(data);
+        } catch (error) {
+          console.error('Error saving:', error);
+          setSaveStatus('error');
+        }
+      }
+    }, 1000); // 1 second debounce
+
     return () => clearTimeout(timer);
-  }, [data]);
+  }, [data, saveChanges, lastSavedData]);
 
   const statusConfig = {
     saving: {

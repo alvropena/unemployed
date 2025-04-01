@@ -8,7 +8,6 @@ import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { loadResumeData } from "@/lib/resumeUtils";
 import { useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import SubscriptionHandler from "@/components/paywall/SubscriptionHandler";
 
 // Import components
@@ -22,21 +21,6 @@ import ResumeBuilder from "@/components/ResumeBuilder";
 
 function PaymentStatusHandler() {
 	const searchParams = useSearchParams();
-
-	useEffect(() => {
-		// Check if payment was successful
-		if (searchParams.get("success") === "true") {
-			toast.success(
-				"Payment successful! Your premium features are now active.",
-			);
-		}
-
-		// Check if payment was canceled
-		if (searchParams.get("canceled") === "true") {
-			toast.error("Payment was canceled. Please try again when you're ready.");
-		}
-	}, [searchParams]);
-
 	return null;
 }
 

@@ -11,8 +11,6 @@ export interface ResumeData {
     institution: string
     degree: string
     location: string
-    startDate: Date
-    endDate: Date | null
     current: boolean
   }[]
   experience: {
@@ -20,8 +18,6 @@ export interface ResumeData {
     company: string
     position: string
     location: string
-    startDate: Date
-    endDate: Date | null
     current: boolean
     responsibilityOne: string | null
     responsibilityTwo: string | null
@@ -31,8 +27,6 @@ export interface ResumeData {
   projects: {
     id?: string
     name: string
-    startDate: Date | null
-    endDate: Date | null
     current: boolean
     responsibilityOne: string | null
     responsibilityTwo: string | null

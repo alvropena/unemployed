@@ -25,8 +25,6 @@ interface ExperienceState {
 	position: string;
 	company: string;
 	location: string;
-	startDate: Date | null;
-	endDate: Date | null;
 	current: boolean;
 	responsibilityOne: string | null;
 	responsibilityTwo: string | null;
@@ -40,23 +38,19 @@ export default function ExperienceForm({
 	onContinue,
 	onBack,
 }: ExperienceFormProps) {
-	const company1Ref = useRef<HTMLInputElement>(null);
+	const title1Ref = useRef<HTMLInputElement>(null);
 	const [currentExperience, setCurrentExperience] = useState(0); // Track which experience is shown (0, 1, or 2)
 
 	useEffect(() => {
-		// Focus the first company input when component mounts or when switching to first experience
-		if (currentExperience === 0) {
-			company1Ref.current?.focus();
-		}
-	}, [currentExperience]);
+		// Focus the title input when component mounts
+		title1Ref.current?.focus();
+	}, []); // Empty dependency array means this runs once when component mounts
 
 	// Experience 1 State
 	const [experience1, setExperience1] = React.useState<ExperienceState>({
 		position: experience[0]?.position || "",
 		company: experience[0]?.company || "",
 		location: experience[0]?.location || "",
-		startDate: experience[0]?.startDate || null,
-		endDate: experience[0]?.endDate || null,
 		current: experience[0]?.current || false,
 		responsibilityOne: experience[0]?.responsibilityOne || "",
 		responsibilityTwo: experience[0]?.responsibilityTwo || "",
@@ -69,8 +63,6 @@ export default function ExperienceForm({
 		position: experience[1]?.position || "",
 		company: experience[1]?.company || "",
 		location: experience[1]?.location || "",
-		startDate: experience[1]?.startDate || null,
-		endDate: experience[1]?.endDate || null,
 		current: experience[1]?.current || false,
 		responsibilityOne: experience[1]?.responsibilityOne || "",
 		responsibilityTwo: experience[1]?.responsibilityTwo || "",
@@ -83,8 +75,6 @@ export default function ExperienceForm({
 		position: experience[2]?.position || "",
 		company: experience[2]?.company || "",
 		location: experience[2]?.location || "",
-		startDate: experience[2]?.startDate || null,
-		endDate: experience[2]?.endDate || null,
 		current: experience[2]?.current || false,
 		responsibilityOne: experience[2]?.responsibilityOne || "",
 		responsibilityTwo: experience[2]?.responsibilityTwo || "",
@@ -137,6 +127,7 @@ export default function ExperienceForm({
 								<div className="space-y-2">
 									<Label htmlFor="title1">Title</Label>
 									<Input
+										ref={title1Ref}
 										id="title1"
 										value={experience1.position}
 										onChange={(e) => handleExperienceChange(0, "position", e.target.value, setExperience1)}
@@ -146,7 +137,6 @@ export default function ExperienceForm({
 								<div className="space-y-2">
 									<Label htmlFor="company1">Company</Label>
 									<Input
-										ref={company1Ref}
 										id="company1"
 										value={experience1.company}
 										onChange={(e) => handleExperienceChange(0, "company", e.target.value, setExperience1)}

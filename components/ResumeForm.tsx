@@ -13,7 +13,6 @@ import PersonalForm from "./form/PersonalForm";
 import ProjectsForm from "./form/ProjectsForm";
 import EducationForm from "./form/EducationForm";
 import ExperienceForm from "./form/ExperienceForm";
-import { useToast } from "./ui/useToast";
 
 interface ResumeFormProps {
   data: ResumeData;
@@ -40,8 +39,7 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
     updateExperience,
     updateProject,
     updateSkills,
-  } = useFormHandlers(setData);
-  const { toast } = useToast();
+  } = useFormHandlers(setData, setIsSaving);
 
   // Debounce the data changes for 1 second
   const debouncedData = useDebounce(data, 1000);
@@ -52,22 +50,9 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
       if (!isLoading) {
         setIsSaving(true);
         try {
-          const success = await saveResumeData(debouncedData);
-          if (success) {
-            toast({
-              title: "Changes saved",
-              description: "Your resume has been automatically saved.",
-              duration: 2000,
-            });
-          }
+          await saveResumeData(debouncedData);
         } catch (error) {
           console.error("Error saving resume:", error);
-          toast({
-            title: "Error saving",
-            description: "There was an error saving your resume. Please try again.",
-            variant: "destructive",
-            duration: 3000,
-          });
         } finally {
           setIsSaving(false);
         }
@@ -75,7 +60,7 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
     };
 
     saveData();
-  }, [debouncedData, isLoading, toast]);
+  }, [debouncedData, isLoading]);
 
   // Get the current window of 3 tabs based on active tab
   const visibleTabs = useMemo(() => {
