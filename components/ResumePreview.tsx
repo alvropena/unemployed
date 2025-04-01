@@ -27,7 +27,7 @@ export default function ResumePreview({ data, isSaving }: ResumePreviewProps) {
                 rel="noopener noreferrer"
                 className="hover:underline"
               >
-                LinkedIn
+                linkedin.com/in/{data.personal.linkedin.split('/in/')[1] || data.personal.linkedin}
               </a>
             )}
             {data?.personal?.github && <span>•</span>}
@@ -38,7 +38,7 @@ export default function ResumePreview({ data, isSaving }: ResumePreviewProps) {
                 rel="noopener noreferrer"
                 className="hover:underline"
               >
-                GitHub
+                github.com/{data.personal.github.split('github.com/')[1] || data.personal.github}
               </a>
             )}
           </div>
@@ -118,7 +118,7 @@ export default function ResumePreview({ data, isSaving }: ResumePreviewProps) {
         {data?.skills && data.skills.length > 0 && (
           <div>
             <h2 className="text-lg font-semibold mb-3">Skills</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="space-y-3">
               {data.skills[0].languages && (
                 <div>
                   <h3 className="font-medium mb-1">Languages</h3>

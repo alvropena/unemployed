@@ -6,17 +6,19 @@ import type { ResumeData } from "@/types/types";
 import { SUGGESTED_SKILLS } from "@/constants/suggestedSkills";
 import { Button } from "@/components/ui/button";
 
+type SkillCategory = 'languages' | 'frameworks' | 'developerTools' | 'libraries';
+
 interface SkillsFormProps {
-	skills: ResumeData["skills"];
-	updateSkills: (index: number, category: string, value: string) => void;
+	skills?: ResumeData["skills"];
+	updateSkills: (index: number, category: SkillCategory, value: string) => void;
 	onBack?: () => void;
 }
 
 const defaultSkills: ResumeData["skills"] = [{
-	languages: null,
-	frameworks: null,
-	developerTools: null,
-	libraries: null,
+	languages: "",
+	frameworks: "",
+	developerTools: "",
+	libraries: "",
 }];
 
 export default function SkillsForm({
@@ -31,15 +33,18 @@ export default function SkillsForm({
 		libraries: "",
 	});
 
+	// Ensure skills[0] exists
+	const currentSkillsData = skills?.[0] || defaultSkills[0];
+
 	const handleKeyDown = (
-		category: keyof typeof SUGGESTED_SKILLS,
+		category: SkillCategory,
 		e: KeyboardEvent<HTMLInputElement>,
 	) => {
 		if (e.key === " " || e.key === "Enter") {
 			e.preventDefault();
 			const value = inputValues[category].trim();
 			if (value) {
-				const currentSkills = (skills[0][category] || "")
+				const currentSkills = (currentSkillsData[category] || "")
 					.split(",")
 					.filter(Boolean)
 					.map((s: string) => s.trim());
@@ -52,8 +57,8 @@ export default function SkillsForm({
 		}
 	};
 
-	const handleSuggestionClick = (category: keyof typeof SUGGESTED_SKILLS, skill: string) => {
-		const currentSkills = (skills[0][category] || "")
+	const handleSuggestionClick = (category: SkillCategory, skill: string) => {
+		const currentSkills = (currentSkillsData[category] || "")
 			.split(",")
 			.filter(Boolean)
 			.map((s: string) => s.trim());
@@ -63,8 +68,8 @@ export default function SkillsForm({
 		}
 	};
 
-	const removeSkill = (category: keyof typeof SUGGESTED_SKILLS, skillToRemove: string) => {
-		const currentSkills = (skills[0][category] || "")
+	const removeSkill = (category: SkillCategory, skillToRemove: string) => {
+		const currentSkills = (currentSkillsData[category] || "")
 			.split(",")
 			.filter(Boolean)
 			.map((s: string) => s.trim());
@@ -74,8 +79,8 @@ export default function SkillsForm({
 		updateSkills(0, category, newSkills);
 	};
 
-	const renderSkillSection = (category: keyof typeof SUGGESTED_SKILLS, label: string) => {
-		const currentSkills = (skills[0][category] || "")
+	const renderSkillSection = (category: SkillCategory, label: string) => {
+		const currentSkills = (currentSkillsData[category] || "")
 			.split(",")
 			.filter(Boolean)
 			.map((s: string) => s.trim());

@@ -50,9 +50,16 @@ export function useFormHandlers(
     });
   };
 
-  const updateSkills = (index: number, category: 'languages' | 'frameworks' | 'developerTools' | 'libraries', value: string | null) => {
+  const updateSkills = (
+    index: number,
+    category: 'languages' | 'frameworks' | 'developerTools' | 'libraries',
+    value: string | null
+  ) => {
     setData((prev) => {
-      const newSkills = [...prev.skills];
+      const newSkills = prev.skills?.length ? [...prev.skills] : [{ languages: "", frameworks: "", developerTools: "", libraries: "" }];
+      if (!newSkills[index]) {
+        newSkills[index] = { languages: "", frameworks: "", developerTools: "", libraries: "" };
+      }
       newSkills[index] = { ...newSkills[index], [category]: value };
       return { ...prev, skills: newSkills };
     });
