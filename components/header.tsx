@@ -8,11 +8,28 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { Download } from "lucide-react";
 import { exportResumeToPDF } from "@/lib/pdfExport";
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { loadStripe } from "@stripe/stripe-js";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  period: string;
+  features: string[];
+  popular: boolean;
+}
 
 export function Header() {
   const { isSignedIn } = useAuth();
@@ -20,56 +37,32 @@ export function Header() {
   const [isExporting, setIsExporting] = useState(false);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
   const [showSubscriptionDialog, setShowSubscriptionDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("annually");
+  const [selectedPlan, setSelectedPlan] = useState("");
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const plans = [
-    {
-      id: "monthly",
-      name: "Monthly",
-      price: "$4.99",
-      period: "per month",
-      description: "Perfect for short-term projects",
-      features: [
-        { name: "All basic features", included: true },
-        { name: "Up to 5 projects", included: true },
-        { name: "1GB storage", included: true },
-        { name: "Email support", included: true },
-        { name: "Advanced analytics", included: false },
-      ],
-      popular: false,
-    },
-    {
-      id: "annually",
-      name: "Annually",
-      price: "$39.99",
-      period: "per year",
-      description: "Save 33% compared to monthly",
-      features: [
-        { name: "All basic features", included: true },
-        { name: "Unlimited projects", included: true },
-        { name: "5GB storage", included: true },
-        { name: "Priority support", included: true },
-        { name: "Advanced analytics", included: true },
-      ],
-      popular: true,
-    },
-    {
-      id: "lifetime",
-      name: "Lifetime",
-      price: "$99.99",
-      period: "one-time payment",
-      description: "Pay once, use forever",
-      features: [
-        { name: "All premium features", included: true },
-        { name: "Unlimited projects", included: true },
-        { name: "10GB storage", included: true },
-        { name: "24/7 support", included: true },
-        { name: "Advanced analytics", included: true },
-      ],
-      popular: false,
-    },
-  ];
+  // Fetch prices from Stripe
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const response = await fetch("/api/stripe/prices");
+        const data = await response.json();
+        setPlans(data);
+        // Set the most popular plan as default selected
+        const popularPlan = data.find((plan: any) => plan.popular);
+        if (popularPlan) {
+          setSelectedPlan(popularPlan.id);
+        }
+      } catch (error) {
+        console.error("Error fetching prices:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPrices();
+  }, []);
 
   // Check subscription status when user is signed in
   useEffect(() => {
@@ -96,7 +89,7 @@ export function Header() {
           const response = await fetch("/api/auth", {
             method: "GET",
           });
-          
+
           if (!response.ok) {
             console.error("Failed to sync user data");
           }
@@ -132,18 +125,38 @@ export function Header() {
 
   const handleSubscribe = async () => {
     try {
+      // Find the selected plan from the plans array
+      const selectedPlanData = plans.find((plan: any) => plan.id === selectedPlan);
+      if (!selectedPlanData) {
+        throw new Error("Selected plan not found");
+      }
+
+      // Determine the plan type based on the period
+      let planType = "monthly"; // default
+      if (selectedPlanData.period === "year") {
+        planType = "annual";
+      } else if (selectedPlanData.period === "one-time") {
+        planType = "lifetime";
+      }
+
       const response = await fetch("/api/stripe/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ plan: selectedPlan }),
+        body: JSON.stringify({ plan: planType }),
       });
 
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
       const { sessionId } = await response.json();
-      
+
       // Redirect to Stripe Checkout
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+      const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+      );
       if (stripe) {
         await stripe.redirectToCheckout({ sessionId });
       }
@@ -214,7 +227,10 @@ export function Header() {
         )}
 
         <div className="flex items-center gap-4">
-          <Dialog open={showSubscriptionDialog} onOpenChange={setShowSubscriptionDialog}>
+          <Dialog
+            open={showSubscriptionDialog}
+            onOpenChange={setShowSubscriptionDialog}
+          >
             <DialogTrigger asChild>
               <Button
                 variant="default"
@@ -229,61 +245,90 @@ export function Header() {
             </DialogTrigger>
             <DialogContent className="max-w-4xl">
               <DialogHeader>
-                <DialogTitle className="text-center text-2xl font-bold">Choose Your Plan</DialogTitle>
+                <DialogTitle className="text-center text-2xl font-bold">
+                  Choose Your Plan
+                </DialogTitle>
                 <DialogDescription className="text-center">
                   Select the plan that works best for you. Cancel anytime.
                 </DialogDescription>
               </DialogHeader>
-              <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan} className="grid gap-6 pt-4 md:grid-cols-3">
-                {plans.map((plan) => (
-                  <div key={plan.id} className="relative">
-                    {plan.popular && (
-                      <div className="absolute -top-2 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
-                        Most Popular
-                      </div>
-                    )}
-                    <label
-                      htmlFor={plan.id}
-                      className={cn(
-                        "flex h-full cursor-pointer flex-col rounded-lg border p-6 shadow-sm transition-all hover:border-primary",
-                        selectedPlan === plan.id ? "border-2 border-primary" : "border-border",
-                      )}
-                    >
-                      <RadioGroupItem value={plan.id} id={plan.id} className="sr-only" />
-                      <div className="mb-4 flex flex-col gap-1">
-                        <h3 className="font-medium">{plan.name}</h3>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-3xl font-bold">{plan.price}</span>
-                          <span className="text-sm text-muted-foreground">{plan.period}</span>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <RadioGroup
+                  value={selectedPlan}
+                  onValueChange={setSelectedPlan}
+                  className="grid gap-6 pt-4 md:grid-cols-3"
+                >
+                  {plans.map((plan: any) => (
+                    <div key={plan.id} className="relative">
+                      {plan.popular && (
+                        <div className="absolute -top-2 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+                          Most Popular
                         </div>
-                        <p className="text-sm text-muted-foreground">{plan.description}</p>
-                      </div>
-                      <ul className="mb-6 flex flex-1 flex-col gap-2 text-sm">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-center gap-2">
-                            {feature.included ? (
-                              <Check className="h-4 w-4 text-primary" />
-                            ) : (
-                              <X className="h-4 w-4 text-muted-foreground" />
-                            )}
-                            <span className={!feature.included ? "text-muted-foreground" : ""}>{feature.name}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Button
-                        variant={selectedPlan === plan.id ? "default" : "outline"}
-                        className="w-full"
-                        onClick={() => {
-                          setSelectedPlan(plan.id);
-                          handleSubscribe();
-                        }}
+                      )}
+                      <label
+                        htmlFor={plan.id}
+                        className={cn(
+                          "flex h-full cursor-pointer flex-col rounded-lg border p-6 shadow-sm transition-all hover:border-primary",
+                          selectedPlan === plan.id
+                            ? "border-2 border-primary"
+                            : "border-border"
+                        )}
                       >
-                        Select Plan
-                      </Button>
-                    </label>
-                  </div>
-                ))}
-              </RadioGroup>
+                        <RadioGroupItem
+                          value={plan.id}
+                          id={plan.id}
+                          className="sr-only"
+                        />
+                        <div className="mb-4 flex flex-col gap-1">
+                          <h3 className="font-medium">{plan.name}</h3>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-3xl font-bold">
+                              ${plan.price}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {plan.period === "one-time"
+                                ? "one-time payment"
+                                : `per ${plan.period}`}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {plan.description}
+                          </p>
+                        </div>
+                        <ul className="mb-6 flex flex-1 flex-col gap-2 text-sm">
+                          {plan.features.map(
+                            (feature: string, index: number) => (
+                              <li
+                                key={index}
+                                className="flex items-center gap-2"
+                              >
+                                <Check className="h-4 w-4 text-primary" />
+                                <span>{feature}</span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                        <Button
+                          variant={
+                            selectedPlan === plan.id ? "default" : "outline"
+                          }
+                          className="w-full"
+                          onClick={() => {
+                            setSelectedPlan(plan.id);
+                            handleSubscribe();
+                          }}
+                        >
+                          Select Plan
+                        </Button>
+                      </label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              )}
             </DialogContent>
           </Dialog>
           <ThemeSwitcher />
