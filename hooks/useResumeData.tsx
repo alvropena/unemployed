@@ -71,7 +71,7 @@ export function useResumeData(
               responsibilityFour: null
             }
           ],
-          skills: savedData.skills || [{
+          skills: savedData.skills?.length ? savedData.skills : [{
             languages: null,
             frameworks: null,
             developerTools: null,

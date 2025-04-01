@@ -1,16 +1,14 @@
 import { useState, type KeyboardEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import type { ResumeData } from "@/types/types";
 import { SUGGESTED_SKILLS } from "@/constants/suggestedSkills";
 import { Button } from "@/components/ui/button";
 
-type SkillCategory = 'languages' | 'frameworks' | 'developerTools' | 'libraries';
-
 interface SkillsFormProps {
 	skills?: ResumeData["skills"];
-	updateSkills: (index: number, category: SkillCategory, value: string) => void;
+	updateSkills: (index: number, category: string, value: string) => void;
 	onBack?: () => void;
 }
 
@@ -37,7 +35,7 @@ export default function SkillsForm({
 	const currentSkillsData = skills?.[0] || defaultSkills[0];
 
 	const handleKeyDown = (
-		category: SkillCategory,
+		category: keyof typeof SUGGESTED_SKILLS,
 		e: KeyboardEvent<HTMLInputElement>,
 	) => {
 		if (e.key === " " || e.key === "Enter") {
@@ -57,7 +55,7 @@ export default function SkillsForm({
 		}
 	};
 
-	const handleSuggestionClick = (category: SkillCategory, skill: string) => {
+	const handleSuggestionClick = (category: keyof typeof SUGGESTED_SKILLS, skill: string) => {
 		const currentSkills = (currentSkillsData[category] || "")
 			.split(",")
 			.filter(Boolean)
@@ -68,7 +66,7 @@ export default function SkillsForm({
 		}
 	};
 
-	const removeSkill = (category: SkillCategory, skillToRemove: string) => {
+	const removeSkill = (category: keyof typeof SUGGESTED_SKILLS, skillToRemove: string) => {
 		const currentSkills = (currentSkillsData[category] || "")
 			.split(",")
 			.filter(Boolean)
@@ -79,7 +77,7 @@ export default function SkillsForm({
 		updateSkills(0, category, newSkills);
 	};
 
-	const renderSkillSection = (category: SkillCategory, label: string) => {
+	const renderSkillSection = (category: keyof typeof SUGGESTED_SKILLS, label: string) => {
 		const currentSkills = (currentSkillsData[category] || "")
 			.split(",")
 			.filter(Boolean)
@@ -175,6 +173,7 @@ export default function SkillsForm({
 					variant="outline" 
 					onClick={onBack}
 				>
+					<ArrowLeft className="w-4 h-4 mr-1" />
 					Back
 				</Button>
 			</div>

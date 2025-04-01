@@ -85,12 +85,12 @@ export default function ResumeBuilder({
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-5rem)]">
         {/* Editor */}
-        <div className="h-fit overflow-auto rounded-lg shadow-md p-4">
+        <div className="h-fit overflow-auto p-4">
           <ResumeForm data={data} setData={setData} />
         </div>
 
         {/* Preview */}
-        <div className="h-fit overflow-auto rounded-lg shadow-md p-4">
+        <div className="h-fit overflow-auto p-4">
           <div className="flex items-center justify-end gap-2 h-10 text-sm mb-4">
             {icon}
             {saveStatus === 'saved' && lastSaved ? (

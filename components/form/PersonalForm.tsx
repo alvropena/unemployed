@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { ResumeData } from "@/types/types";
 import { defaultResumeData } from "@/lib/defaultData";
+import { ArrowRight } from "lucide-react";
 
 interface PersonalFormProps {
   personal: ResumeData["personal"];
@@ -99,7 +100,9 @@ export default function PersonalForm({
 
   const getLinkedinPlaceholder = () => {
     const defaultLinkedin = defaultResumeData.personal.linkedin;
-    return defaultLinkedin ? defaultLinkedin.replace("linkedin.com/in/", "") : "";
+    return defaultLinkedin
+      ? defaultLinkedin.replace("linkedin.com/in/", "")
+      : "";
   };
 
   const getGithubPlaceholder = () => {
@@ -139,7 +142,9 @@ export default function PersonalForm({
             id="linkedin"
             label="LinkedIn"
             value={linkedin}
-            onChange={(value) => handleChange("linkedin", value || "", setLinkedin)}
+            onChange={(value) =>
+              handleChange("linkedin", value || "", setLinkedin)
+            }
             placeholder={getLinkedinPlaceholder()}
             prefix="linkedin.com/in/"
           />
@@ -155,7 +160,10 @@ export default function PersonalForm({
       </Card>
       {onContinue && (
         <div className="mt-4 flex justify-end">
-          <Button onClick={onContinue}>Continue</Button>
+          <Button onClick={onContinue}>
+            Next
+            <ArrowRight className="w-4 h-4 ml-1" />
+          </Button>
         </div>
       )}
     </div>

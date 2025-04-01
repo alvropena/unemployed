@@ -9,6 +9,7 @@ import { defaultResumeData } from "@/lib/defaultData";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface ExperienceFormProps {
 	experience: ResumeData["experience"];
@@ -354,10 +355,12 @@ export default function ExperienceForm({
 					variant="outline" 
 					onClick={handleBack}
 				>
+					<ArrowLeft className="w-4 h-4 mr-1" />
 					Back
 				</Button>
 				<Button onClick={handleNext}>
-					{currentExperience === 2 ? "Continue" : "Next"}
+					Next
+					<ArrowRight className="w-4 h-4 ml-1" />	
 				</Button>
 			</div>
 		</div>

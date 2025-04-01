@@ -13,6 +13,7 @@ interface EducationFormProps {
   education: ResumeData["education"];
   updateEducation: (index: number, field: string, value: string | Date | boolean | null) => void;
   onContinue?: () => void;
+  onBack?: () => void;
 }
 
 interface EducationState {
@@ -26,6 +27,7 @@ export default function EducationForm({
   education,
   updateEducation,
   onContinue,
+  onBack,
 }: EducationFormProps) {
   const institution1Ref = useRef<HTMLInputElement>(null);
   const institution2Ref = useRef<HTMLInputElement>(null);
@@ -77,7 +79,11 @@ export default function EducationForm({
   };
 
   const handleBack = () => {
-    setCurrentEducation(prev => prev - 1);
+    if (currentEducation === 0) {
+      onBack?.();
+    } else {
+      setCurrentEducation(prev => prev - 1);
+    }
   };
 
   return (
@@ -185,8 +191,7 @@ export default function EducationForm({
       <div className="mt-4 flex justify-between">
         <Button 
           variant="outline" 
-          onClick={handleBack}
-          disabled={currentEducation === 0}
+          onClick={handleBack}          
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
           Back
