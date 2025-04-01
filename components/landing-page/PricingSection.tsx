@@ -33,7 +33,7 @@ export default function PricingSection({
 	useEffect(() => {
 		const fetchPrices = async () => {
 			try {
-				const response = await fetch("/api/prices");
+				const response = await fetch("/api/stripe/prices");
 				if (!response.ok) {
 					throw new Error("Failed to fetch prices");
 				}

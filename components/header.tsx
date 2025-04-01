@@ -19,8 +19,8 @@ export function Header() {
     const syncUser = async () => {
       if (isSignedIn) {
         try {
-          const response = await fetch("/api/auth/sync", {
-            method: "POST",
+          const response = await fetch("/api/auth", {
+            method: "GET",
           });
           
           if (!response.ok) {
