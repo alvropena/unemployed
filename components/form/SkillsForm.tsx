@@ -1,12 +1,15 @@
 import { useState, type KeyboardEvent } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X } from "lucide-react";
 import type { ResumeData } from "@/types/types";
 import { SUGGESTED_SKILLS } from "@/constants/suggestedSkills";
+import { Button } from "@/components/ui/button";
 
 interface SkillsFormProps {
 	skills: ResumeData["skills"];
-	updateSkills: (index: number, category: "languages" | "frameworks" | "developerTools" | "libraries", value: string | null) => void;
+	updateSkills: (index: number, category: string, value: string) => void;
+	onBack?: () => void;
 }
 
 const defaultSkills: ResumeData["skills"] = [{
@@ -19,6 +22,7 @@ const defaultSkills: ResumeData["skills"] = [{
 export default function SkillsForm({
 	skills = defaultSkills,
 	updateSkills,
+	onBack,
 }: SkillsFormProps) {
 	const [inputValues, setInputValues] = useState({
 		languages: "",
@@ -148,11 +152,27 @@ export default function SkillsForm({
 	};
 
 	return (
-		<div className="grid gap-6">
-			{renderSkillSection("languages", "Languages")}
-			{renderSkillSection("frameworks", "Frameworks")}
-			{renderSkillSection("developerTools", "Developer Tools")}
-			{renderSkillSection("libraries", "Libraries")}
+		<div className="space-y-4">
+			<Card>
+				<CardHeader>
+					<CardTitle>Technical Skills</CardTitle>
+				</CardHeader>
+				<CardContent className="grid gap-6">
+					{renderSkillSection("languages", "Languages")}
+					{renderSkillSection("frameworks", "Frameworks")}
+					{renderSkillSection("developerTools", "Developer Tools")}
+					{renderSkillSection("libraries", "Libraries")}
+				</CardContent>
+			</Card>
+
+			<div className="flex justify-between">
+				<Button 
+					variant="outline" 
+					onClick={onBack}
+				>
+					Back
+				</Button>
+			</div>
 		</div>
 	);
 }

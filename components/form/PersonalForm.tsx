@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { ResumeData } from "@/types/types";
 import { defaultResumeData } from "@/lib/defaultData";
 
 interface PersonalFormProps {
   personal: ResumeData["personal"];
   updatePersonal: (field: string, value: string | null) => void;
+  onContinue?: () => void;
 }
 
 interface FormFieldProps {
@@ -67,6 +70,7 @@ const FormField = ({
 export default function PersonalForm({
   personal,
   updatePersonal,
+  onContinue,
 }: PersonalFormProps) {
   const [name, setName] = useState(personal?.name || "");
   const [phone, setPhone] = useState(personal?.phone || "");
@@ -104,44 +108,56 @@ export default function PersonalForm({
   };
 
   return (
-    <div className="space-y-4">
-      <FormField
-        id="name"
-        label="Name"
-        value={name}
-        onChange={(value) => handleChange("name", value || "", setName)}
-        placeholder={defaultResumeData.personal.name || ""}
-      />
-      <FormField
-        id="phone"
-        label="Phone"
-        value={phone}
-        onChange={(value) => handleChange("phone", value || "", setPhone)}
-        placeholder={defaultResumeData.personal.phone || ""}
-      />
-      <FormField
-        id="email"
-        label="Email"
-        value={email}
-        onChange={(value) => handleChange("email", value || "", setEmail)}
-        placeholder={defaultResumeData.personal.email || ""}
-      />
-      <FormField
-        id="linkedin"
-        label="LinkedIn"
-        value={linkedin}
-        onChange={(value) => handleChange("linkedin", value || "", setLinkedin)}
-        placeholder={getLinkedinPlaceholder()}
-        prefix="linkedin.com/in/"
-      />
-      <FormField
-        id="github"
-        label="GitHub"
-        value={github}
-        onChange={(value) => handleChange("github", value || "", setGithub)}
-        placeholder={getGithubPlaceholder()}
-        prefix="github.com/"
-      />
+    <div className="relative">
+      <Card>
+        <CardHeader>
+          <CardTitle>Personal Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FormField
+            id="name"
+            label="Name"
+            value={name}
+            onChange={(value) => handleChange("name", value || "", setName)}
+            placeholder={defaultResumeData.personal.name || ""}
+          />
+          <FormField
+            id="phone"
+            label="Phone"
+            value={phone}
+            onChange={(value) => handleChange("phone", value || "", setPhone)}
+            placeholder={defaultResumeData.personal.phone || ""}
+          />
+          <FormField
+            id="email"
+            label="Email"
+            value={email}
+            onChange={(value) => handleChange("email", value || "", setEmail)}
+            placeholder={defaultResumeData.personal.email || ""}
+          />
+          <FormField
+            id="linkedin"
+            label="LinkedIn"
+            value={linkedin}
+            onChange={(value) => handleChange("linkedin", value || "", setLinkedin)}
+            placeholder={getLinkedinPlaceholder()}
+            prefix="linkedin.com/in/"
+          />
+          <FormField
+            id="github"
+            label="GitHub"
+            value={github}
+            onChange={(value) => handleChange("github", value || "", setGithub)}
+            placeholder={getGithubPlaceholder()}
+            prefix="github.com/"
+          />
+        </CardContent>
+      </Card>
+      {onContinue && (
+        <div className="mt-4 flex justify-end">
+          <Button onClick={onContinue}>Continue</Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,21 +1,19 @@
 "use client";
 
-import type React from "react";
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ResumeData } from "@/types/types";
 import { useResumeData } from "@/hooks/useResumeData";
 import { useFormHandlers } from "@/hooks/useFormHandlers";
+import { useDebounce } from "@/hooks/useDebounce";
+import { saveResumeData } from "@/lib/resumeUtils";
 
 import SkillsForm from "./form/SkillsForm";
 import PersonalForm from "./form/PersonalForm";
 import ProjectsForm from "./form/ProjectsForm";
 import EducationForm from "./form/EducationForm";
 import ExperienceForm from "./form/ExperienceForm";
-import { Button } from "./ui/button";
-import { Save } from "lucide-react";
 import { useToast } from "./ui/useToast";
-import { saveResumeData } from "@/lib/resumeUtils";
 
 interface ResumeFormProps {
   data: ResumeData;
@@ -34,6 +32,7 @@ const ALL_TABS: TabType[] = [
 
 export default function ResumeForm({ data, setData }: ResumeFormProps) {
   const [activeTab, setActiveTab] = useState<TabType>("personal");
+  const [isSaving, setIsSaving] = useState(false);
   const { isLoading } = useResumeData(setData, data);
   const {
     updatePersonal,
@@ -42,8 +41,41 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
     updateProject,
     updateSkills,
   } = useFormHandlers(setData);
-  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+
+  // Debounce the data changes for 1 second
+  const debouncedData = useDebounce(data, 1000);
+
+  // Auto-save effect
+  React.useEffect(() => {
+    const saveData = async () => {
+      if (!isLoading) {
+        setIsSaving(true);
+        try {
+          const success = await saveResumeData(debouncedData);
+          if (success) {
+            toast({
+              title: "Changes saved",
+              description: "Your resume has been automatically saved.",
+              duration: 2000,
+            });
+          }
+        } catch (error) {
+          console.error("Error saving resume:", error);
+          toast({
+            title: "Error saving",
+            description: "There was an error saving your resume. Please try again.",
+            variant: "destructive",
+            duration: 3000,
+          });
+        } finally {
+          setIsSaving(false);
+        }
+      }
+    };
+
+    saveData();
+  }, [debouncedData, isLoading, toast]);
 
   // Get the current window of 3 tabs based on active tab
   const visibleTabs = useMemo(() => {
@@ -57,34 +89,6 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
     return ALL_TABS.slice(startIndex, startIndex + 3);
   }, [activeTab]);
 
-  const handleSaveChanges = async () => {
-    setIsSaving(true);
-    try {
-      const success = await saveResumeData(data);
-      if (success) {
-        toast({
-          title: "Success",
-          description: "Your resume has been saved successfully.",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to save your resume. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Error saving resume:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   return (
     <>
       {isLoading ? (
@@ -93,20 +97,6 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Resume Information</h2>
-            <Button
-              variant="default"
-              className="flex items-center justify-center gap-2 w-full md:w-auto"
-              onClick={handleSaveChanges}
-              disabled={isSaving}
-              size="sm"
-            >
-              <Save className="h-4 w-4" />
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
-
           <div id="resume-preview">
             <Tabs
               value={activeTab}
@@ -143,6 +133,7 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
                 <PersonalForm
                   personal={data.personal}
                   updatePersonal={updatePersonal}
+                  onContinue={() => setActiveTab("education")}
                 />
               </TabsContent>
 
@@ -150,6 +141,8 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
                 <EducationForm
                   education={data.education}
                   updateEducation={updateEducation}
+                  onContinue={() => setActiveTab("experience")}
+                  onBack={() => setActiveTab("personal")}
                 />
               </TabsContent>
 
@@ -157,6 +150,8 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
                 <ExperienceForm
                   experience={data.experience}
                   updateExperience={updateExperience}
+                  onContinue={() => setActiveTab("projects")}
+                  onBack={() => setActiveTab("education")}
                 />
               </TabsContent>
 
@@ -164,13 +159,16 @@ export default function ResumeForm({ data, setData }: ResumeFormProps) {
                 <ProjectsForm
                   projects={data.projects}
                   updateProject={updateProject}
+                  onContinue={() => setActiveTab("skills")}
+                  onBack={() => setActiveTab("experience")}
                 />
               </TabsContent>
 
               <TabsContent value="skills" className="space-y-4">
                 <SkillsForm 
                   skills={data.skills} 
-                  updateSkills={(index, category, value) => updateSkills(index, category, value)} 
+                  updateSkills={updateSkills}
+                  onBack={() => setActiveTab("projects")}
                 />
               </TabsContent>
             </Tabs>

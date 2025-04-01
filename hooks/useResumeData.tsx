@@ -17,36 +17,72 @@ export function useResumeData(
         // If we have user data, use it with proper schema structure
         setData({
           personal: savedData.personal,
-          education: savedData.education || [{
-            institution: "",
-            degree: "",
-            location: "",
-            startDate: new Date(),
-            endDate: null,
-            current: false
-          }],
-          experience: savedData.experience || [{
-            company: "",
-            position: "",
-            location: "",
-            startDate: new Date(),
-            endDate: null,
-            current: false,
-            responsibilityOne: null,
-            responsibilityTwo: null,
-            responsibilityThree: null,
-            responsibilityFour: null
-          }],
-          projects: savedData.projects || [{
-            name: "",
-            startDate: new Date(),
-            endDate: null,
-            current: false,
-            responsibilityOne: null,
-            responsibilityTwo: null,
-            responsibilityThree: null,
-            responsibilityFour: null
-          }],
+          education: savedData.education?.length ? savedData.education : [
+            {
+              institution: "",
+              degree: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false
+            },
+            {
+              institution: "",
+              degree: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false
+            }
+          ],
+          experience: savedData.experience?.length ? savedData.experience : [
+            {
+              company: "",
+              position: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            },
+            {
+              company: "",
+              position: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            }
+          ],
+          projects: savedData.projects?.length ? savedData.projects : [
+            {
+              name: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            },
+            {
+              name: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            }
+          ],
           skills: savedData.skills || [{
             languages: null,
             frameworks: null,
@@ -64,36 +100,72 @@ export function useResumeData(
             linkedin: "",
             github: "",
           },
-          education: [{
-            institution: "",
-            degree: "",
-            location: "",
-            startDate: new Date(),
-            endDate: null,
-            current: false
-          }],
-          experience: [{
-            company: "",
-            position: "",
-            location: "",
-            startDate: new Date(),
-            endDate: null,
-            current: false,
-            responsibilityOne: null,
-            responsibilityTwo: null,
-            responsibilityThree: null,
-            responsibilityFour: null
-          }],
-          projects: [{
-            name: "",
-            startDate: new Date(),
-            endDate: null,
-            current: false,
-            responsibilityOne: null,
-            responsibilityTwo: null,
-            responsibilityThree: null,
-            responsibilityFour: null
-          }],
+          education: [
+            {
+              institution: "",
+              degree: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false
+            },
+            {
+              institution: "",
+              degree: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false
+            }
+          ],
+          experience: [
+            {
+              company: "",
+              position: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            },
+            {
+              company: "",
+              position: "",
+              location: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            }
+          ],
+          projects: [
+            {
+              name: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            },
+            {
+              name: "",
+              startDate: new Date(),
+              endDate: null,
+              current: false,
+              responsibilityOne: null,
+              responsibilityTwo: null,
+              responsibilityThree: null,
+              responsibilityFour: null
+            }
+          ],
           skills: [{
             languages: null,
             frameworks: null,

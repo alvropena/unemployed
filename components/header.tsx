@@ -7,12 +7,33 @@ import { usePathname } from "next/navigation";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { Download } from "lucide-react";
 import { exportResumeToPDF } from "@/lib/pdfExport";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function Header() {
   const { isSignedIn } = useAuth();
   const pathname = usePathname();
   const [isExporting, setIsExporting] = useState(false);
+
+  // Sync user data with our database when they sign in
+  useEffect(() => {
+    const syncUser = async () => {
+      if (isSignedIn) {
+        try {
+          const response = await fetch("/api/auth/sync", {
+            method: "POST",
+          });
+          
+          if (!response.ok) {
+            console.error("Failed to sync user data");
+          }
+        } catch (error) {
+          console.error("Error syncing user data:", error);
+        }
+      }
+    };
+
+    syncUser();
+  }, [isSignedIn]);
 
   const handleExportPDF = () => {
     setIsExporting(true);

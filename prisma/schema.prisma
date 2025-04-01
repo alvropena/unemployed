@@ -117,14 +117,14 @@ model Skill {
 }
 
 model User {
-  id           String    @id
-  email        String    @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  education    Education[]
-  experience   Experience[]
-  projects     Project[]
-  skills       Skill[]
-  personal     Personal?
-  subscription Subscription?
+  id            String       @id
+  email         String?      @unique
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  personal      Personal?
+  subscription  Subscription?
+  education     Education[]
+  experience    Experience[]
+  projects      Project[]
+  skills        Skill[]
 }
